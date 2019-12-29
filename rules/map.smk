@@ -236,5 +236,4 @@ rule tag_with_true_barcodes:
         UMI_end=config['FILTER']['UMI-barcode']['end'],
         discard_secondary_alignements=True
     conda: '../envs/tag_true.yaml'
-    script:
-	'../scripts/tag_with_true_barcodes.py'
+    script: '../scripts/tag_with_true_barcodes.py'
