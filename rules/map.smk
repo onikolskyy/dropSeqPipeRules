@@ -228,9 +228,9 @@ rule plot_knee_plot:
 
 rule tag_with_true_barcodes:
     input:
-	fastq='{results_dir}/samples/{sample}/trimmmed_repaired_R1.fastq.gz',
-	bam='{results_dir}/samples/{sample}/Aligned.merged.bam',
-	whitelist='{results_dir}/samples/{sample}/top_barcodes.csv'
+	'{results_dir}/samples/{sample}/trimmmed_repaired_R1.fastq.gz',
+	'{results_dir}/samples/{sample}/Aligned.merged.bam',
+	'{results_dir}/samples/{sample}/top_barcodes.csv'
     benchmark: '{results_dir}/benchmarks/repair_barcodes.{sample}.txt'
     output:
 	bam=temp('{results_dir}/samples/{sample}/Aligned.repaired.bam')

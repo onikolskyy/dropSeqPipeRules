@@ -5,9 +5,11 @@ import pysam
 import gzip
 import sys
 
-fastq_parser = SeqIO.parse(gzip.open(snakemake.input[1], "rt"), "fastq")
+
+discard_secondary_alignements = snakemake.params['discard_secondary_alignements']
+fastq_parser = SeqIO.parse(gzip.open(snakemake.input[0], "rt"), "fastq")
 read_barcodes = defaultdict(lambda :{'XC':'','XM':''})
-infile_bam = pysam.AlignmentFile(snakemake.input[0], "rb")
+infile_bam = pysam.AlignmentFile(snakemake.input[1], "rb")
 outfile = pysam.AlignmentFile(snakemake.output[0], "wb", template=infile_bam)
 
 bins = []
@@ -29,7 +31,7 @@ barcodes_struct = {
 	}
 
 #construct bins
-with open(snakemake.input['whitelist'],'r') as whitelist:
+with open(snakemake.input[2],'r') as whitelist:
     for line in whitelist:
         if len(line.strip().split()) == 2:  # This means we didn't find any other linked barcode
             (reference, counts_ref) = line.strip().split()
@@ -68,7 +70,6 @@ for bam_read in infile_bam:
         raise SystemExit('Read from mapped file is missing in reference fastq file!')
         os.remove(snakemake.output[0])
     outfile.write(bam_read)
-
 
 
 
