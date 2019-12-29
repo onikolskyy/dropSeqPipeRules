@@ -232,8 +232,6 @@ rule tag_with_true_barcodes:
 	'{results_dir}/samples/{sample}/Aligned.merged.bam',
 	'{results_dir}/samples/{sample}/top_barcodes.csv'
     benchmark: '{results_dir}/benchmarks/repair_barcodes.{sample}.txt'
-    output:
-	bam=temp('{results_dir}/samples/{sample}/Aligned.repaired.bam')
     params:
         BC_start=config['FILTER']['cell-barcode']['start']-1,
         BC_end=config['FILTER']['cell-barcode']['end'],
@@ -243,3 +241,5 @@ rule tag_with_true_barcodes:
     conda: '../envs/tag_true.yaml'
     script:
 	'../scripts/tag_with_true_barcodes.py'
+    output:
+	bam=temp('{results_dir}/samples/{sample}/Aligned.repaired.bam')
