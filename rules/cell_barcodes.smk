@@ -1,7 +1,7 @@
 
 
-ruleorder: extend_barcode_whitelist > extend_barcode_top
-#ruleorder: extend_barcode_whitelist > get_cell_whitelist
+#ruleorder: extend_barcode_whitelist > extend_barcode_top
+ruleorder: extend_barcode_whitelist > get_cell_whitelist
 
 
 localrules:
