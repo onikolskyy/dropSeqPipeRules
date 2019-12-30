@@ -1,4 +1,5 @@
 rm -R /dropSeqPipe/rules && 
 	cp -R rules /dropSeqPipe && 
-	cp envs/tag_true.yaml /dropSeqPipe/envs && 
+	rm  -R /dropSeqPipe/envs
+	cp -R envs /dropSeqPipe/envs && 
 	cp scripts/* /dropSeqPipe/rules

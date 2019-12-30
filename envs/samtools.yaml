@@ -5,4 +5,4 @@ channels:
 dependencies:
   - samtools=1.9
   - ncurses=6.1
-  - psutils>=5.6
+  - psutil>=5.6

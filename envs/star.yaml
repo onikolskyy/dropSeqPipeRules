@@ -3,4 +3,4 @@ channels:
   - anaconda
 dependencies:
   - star=2.6.1b
-  - psutils>=5.6
+  - psutil>=5.6

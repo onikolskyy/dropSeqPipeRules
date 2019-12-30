@@ -4,4 +4,4 @@ channels:
 dependencies:
   - umi_tools=0.5.5
   - scipy=1.1.0
-  - psutils>=3.6
+  - psutil>=3.6

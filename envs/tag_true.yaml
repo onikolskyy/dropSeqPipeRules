@@ -6,4 +6,4 @@ dependencies:
   - biopython=1.72
   - python>=3.6
   - sortedcontainers>=2.1
-  - psutils>=5.6 
+  - psutil>=5.6 
