@@ -1,7 +1,9 @@
 channels:
   - r
   - conda-forge
+  - anaconda
 dependencies:
   - r=3.4.1
   - readline=6.2
   - r-matrix=1.2_14
+  - psutil>=5.6

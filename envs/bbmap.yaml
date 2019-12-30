@@ -1,4 +1,6 @@
 channels:
   - bioconda
+  - anaconda
 dependencies:
   - bbmap=38.22
+  - psutil>=5.6

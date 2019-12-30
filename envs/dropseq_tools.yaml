@@ -1,4 +1,6 @@
 channels:
   - bioconda
+  - anaconda
 dependencies:
   - dropseq_tools=2.0.0
+  - psutil>=5.6

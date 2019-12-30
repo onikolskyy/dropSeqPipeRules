@@ -1,6 +1,8 @@
 channels:
   - bioconda
   - conda-forge
+  - anaconda
 dependencies:
   - samtools=1.9
   - ncurses=6.1
+  - psutils>=5.6
