@@ -6,4 +6,4 @@ channels:
 dependencies:
   - python>=3.3
   - cutadapt=1.16
-  - psutil>=3.6
+  - psutil>=5.6
