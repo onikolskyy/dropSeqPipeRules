@@ -35,13 +35,13 @@ with open(snakemake.input[2],'r') as whitelist:
     for line in whitelist:
         if len(line.strip().split()) == 2:  # This means we didn't find any other linked barcode
             (reference, counts_ref) = line.strip().split()
-            bins.push ([reference, SortedList()]) #Push an empty bin and tag it with reference barcode
+            bins.append ([reference, SortedList()]) #Push an empty bin and tag it with reference barcode
         else:
             (reference, extended_ref, counts_ref, counts_ext) = line.strip().split()
             list = SortedList()
             for barcode in extended_ref.split(','):
                 list.add(barcode)
-            bins.push([reference, list])
+            bins.append([reference, list])
 
 #write umi/bc to dict
 for fastq_R1 in fastq_parser:
