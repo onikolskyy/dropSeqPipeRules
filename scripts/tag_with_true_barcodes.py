@@ -35,6 +35,8 @@ with open(snakemake.input[2],'r') as whitelist:
             mapping[reference]["ref"] = reference
 
 print("parsing whitelist done")
+print("saving barcode and umi for reads")
+ctr = 0
 
 #write umi/bc to dict
 for fastq_R1 in fastq_parser:
@@ -49,7 +51,8 @@ for fastq_R1 in fastq_parser:
     #write
     read_barcodes[fastq_R1.id]['XC'] = true_bc
     read_barcodes[fastq_R1.id]['XM'] = umi
-    print("saving tags for ID", fastq_R1.id, " -- ", ("found" if found else "did not found"), " reference in mapping")
+    if(ctr!=0 & ctr % 100000 == 0):
+        print("saved ", ctr, "reads")
 
 print("start tagging bam")
 
