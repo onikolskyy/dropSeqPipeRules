@@ -228,6 +228,7 @@ rule plot_knee_plot:
 
 rule tag_with_true_barcodes:
     input: '{results_dir}/samples/{sample}/trimmmed_repaired_R1.fastq.gz','{results_dir}/samples/{sample}/Aligned.out.bam','{results_dir}/samples/{sample}/top_barcodes.csv'
+    benchmark: '{results_dir}/benchmarks/{sample}.tag_true.txt'
     output:'{results_dir}/samples/{sample}/Aligned.repaired.bam'
     params:
         BC_start=config['FILTER']['cell-barcode']['start']-1,
