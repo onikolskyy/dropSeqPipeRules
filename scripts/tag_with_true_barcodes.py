@@ -24,7 +24,6 @@ print("parsing witelist")
 #construct bins
 with open(snakemake.input[2],'r') as whitelist:
     for line in whitelist:
-        print("parse line \n")
         if len(line.strip().split()) > 2:  # This means we didn't find any other linked barcode
             (reference, extended_ref, counts_ref, counts_ext) = line.strip().split()
             for barcode in extended_ref.split(','):
@@ -36,6 +35,7 @@ with open(snakemake.input[2],'r') as whitelist:
 
 print("parsing whitelist done")
 print("saving barcode and umi for reads")
+
 ctr = 0
 
 #write umi/bc to dict
@@ -51,10 +51,12 @@ for fastq_R1 in fastq_parser:
     #write
     read_barcodes[fastq_R1.id]['XC'] = true_bc
     read_barcodes[fastq_R1.id]['XM'] = umi
-    if(ctr!=0 & ctr % 100000 == 0):
-        print("saved ", ctr, "reads")
+    ctr+=1
 
+print("saved ", ctr, "reads")
 print("start tagging bam")
+
+ctr=0
 
 #tag each read in bam with umi/bc from dict
 for bam_read in infile_bam:
@@ -65,10 +67,14 @@ for bam_read in infile_bam:
         bam_read.set_tags([
             ('XC', current_barcodes['XC'], 'Z'),
             ('XM', current_barcodes['XM'], 'Z')])
+        ctr+=1
     else:
         raise SystemExit('Read from mapped file is missing in reference fastq file!')
         os.remove(snakemake.output[0])
+
     outfile.write(bam_read)
+
+print("tagged ", ctr, "reads")
 
 
 
