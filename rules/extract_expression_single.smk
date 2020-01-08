@@ -21,6 +21,7 @@ rule extract_umi_expression:
         locus_list=','.join(config['EXTRACTION']['LOCUS']),
         strand_strategy=config['EXTRACTION']['strand-strategy']
     conda: '../envs/dropseq_tools.yaml'
+    benchmark: '{results_dir}/benchmarks/extract_umi_expression.{sample}.txt'
     shell:
         """export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && DigitalExpression -m {params.memory}\
         I={input.data}\
@@ -37,6 +38,7 @@ rule extract_reads_expression:
     input:
         data='{results_dir}/samples/{sample}/final.bam',
         barcode_whitelist='{results_dir}/samples/{sample}/barcodes.csv'
+    benchmark: '{results_dir}/benchmarks/extract_reads_expression.{sample}.txt'
     output:
         long='{results_dir}/samples/{sample}/read/expression.long',
         dense=temp('{results_dir}/samples/{sample}/read/expression.tsv')
@@ -79,6 +81,7 @@ rule SingleCellRnaSeqMetricsCollector:
     params:     
         temp_directory=config['LOCAL']['temp-directory'],
         memory=config['LOCAL']['memory']
+    benchmark: '{results_dir}/benchmarks/SingleCellRnaSeqMetricsCollector.{sample}.txt'
     output:
         rna_metrics='{results_dir}/logs/dropseq_tools/{sample}_rna_metrics.txt',
     conda: '../envs/dropseq_tools.yaml'
@@ -105,6 +108,7 @@ rule plot_rna_metrics:
 rule convert_long_to_mtx:
     input:
         '{results_dir}/samples/{sample}/{type}/expression.long'
+    benchmark: '{results_dir}/benchmarks/convert_long_to_mtx.{sample}.txt'
     output:
         barcodes='{results_dir}/samples/{sample}/{type}/barcodes.tsv',
         features='{results_dir}/samples/{sample}/{type}/features.tsv',

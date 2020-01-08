@@ -21,6 +21,7 @@ rule extract_umi_expression_species:
         locus_list=','.join(config['EXTRACTION']['LOCUS']),
         strand_strategy=config['EXTRACTION']['strand-strategy']
     conda: '../envs/dropseq_tools.yaml'
+    benchmark: '{results_dir}/benchmarks/extract_umi_expression_species.{species}.{sample}.txt'
     shell:
         """export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && DigitalExpression -m {params.memory}\
         I={input.data}\
@@ -50,6 +51,7 @@ rule extract_reads_expression_species:
         dense=temp('{results_dir}/samples/{sample}/{species}/read/expression.txt'),
         long='{results_dir}/samples/{sample}/{species}/read/expression.long'
     conda: '../envs/dropseq_tools.yaml'
+    benchmark: '{results_dir}/benchmarks/extract_reads_expression_species.{species}.{sample}.txt'
     shell:
         """export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && DigitalExpression -m {params.memory}\
         I={input.data}\
@@ -69,6 +71,7 @@ rule convert_long_to_mtx_species:
         barcodes='{results_dir}/samples/{sample}/{species}/{type}/barcodes.tsv',
         features='{results_dir}/samples/{sample}/{species}/{type}/features.tsv',
         mtx='{results_dir}/samples/{sample}/{species}/{type}/expression.mtx'
+    benchmark: '{result_dir}/benchmarks/convert_long_to_mtx_species.{sample}.txt'
     params:
         samples=lambda wildcards: wildcards.sample
     script:
@@ -94,6 +97,7 @@ rule SingleCellRnaSeqMetricsCollector_species:
         temp_directory=config['LOCAL']['temp-directory']
     output:
         '{results_dir}/logs/dropseq_tools/{sample}/{species}/rna_metrics.txt'
+    benchmark: '{results_dir}/benchmarks/SingleCellRnaSeqMetricsCollector_species.{species}.{sample}.txt'
     conda: '../envs/dropseq_tools.yaml'
     shell:
         """export _JAVA_OPTIONS=-Djava.io.tmpdir={params.temp_directory} && SingleCellRnaSeqMetricsCollector -m {params.memory}\

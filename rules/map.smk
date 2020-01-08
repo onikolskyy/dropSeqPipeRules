@@ -20,6 +20,7 @@ rule STAR_align:
         temp('{results_dir}/samples/{sample}/Aligned.out.bam')
     log:
         '{results_dir}/samples/{sample}/Log.final.out'
+    benchmark: '{results_dir}/benchmarks/STAR_align.{sample}.txt'
     params:
         extra="""--outReadsUnmapped Fastx\
                 --outFilterMismatchNmax {}\
@@ -72,6 +73,7 @@ rule STAR_align:
 rule multiqc_star:
     input:
         expand('{results_dir}/samples/{sample}/Log.final.out', sample=samples.index, results_dir=results_dir)
+    benchmark: '{results_dir}/benchmarks/multiqc_star.txt'
     output:
         html='{results_dir}/reports/star.html'
     params: '-m star'
@@ -182,6 +184,7 @@ rule bam_hist:
     params:
         memory=config['LOCAL']['memory'],
         temp_directory=config['LOCAL']['temp-directory']
+    benchmark: '{results_dir}/benchmarks/bam_hist.{sample}.txt'
     output:
         '{results_dir}/logs/dropseq_tools/{sample}_hist_out_cell.txt'
     conda: '../envs/dropseq_tools.yaml'
