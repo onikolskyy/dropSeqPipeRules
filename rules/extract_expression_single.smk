@@ -108,7 +108,7 @@ rule plot_rna_metrics:
 rule convert_long_to_mtx:
     input:
         '{results_dir}/samples/{sample}/{type}/expression.long'
-    benchmark: '{results_dir}/benchmarks/convert_long_to_mtx.{sample}.txt'
+    benchmark: '{results_dir}/benchmarks/convert_long_to_mtx.{type}.{sample}..txt'
     output:
         barcodes='{results_dir}/samples/{sample}/{type}/barcodes.tsv',
         features='{results_dir}/samples/{sample}/{type}/features.tsv',
