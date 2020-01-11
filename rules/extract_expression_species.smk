@@ -71,7 +71,7 @@ rule convert_long_to_mtx_species:
         barcodes='{results_dir}/samples/{sample}/{species}/{type}/barcodes.tsv',
         features='{results_dir}/samples/{sample}/{species}/{type}/features.tsv',
         mtx='{results_dir}/samples/{sample}/{species}/{type}/expression.mtx'
-    benchmark: '{result_dir}/benchmarks/convert_long_to_mtx_species.{type}.{species}.{sample}.txt'
+    benchmark: '{results_dir}/benchmarks/convert_long_to_mtx_species.{type}.{species}.{sample}.txt'
     params:
         samples=lambda wildcards: wildcards.sample
     script:
