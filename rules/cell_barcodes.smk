@@ -26,16 +26,21 @@ rule extend_barcode_whitelist:
 rule fast_whitelist:
     input:
 	'{results_dir}/samples/{sample}/trimmmed_repaired_R1.fastq.gz'
-    params:
-	regex='(?P<cell_1>.{{{params.cell_barcode_length}}})(?P<umi_1>.{{{params.umi_barcode_length}}})',
-	CELL_NUMBER=lambda wildcards: round(int(samples.loc[wildcards.sample,'expected_cells'])*1.2),
-	N_THREADS=whitelis_opts.loc['opt','N_THREADS'],
+    params:    	
+        cell_barcode_length=(config['FILTER']['cell-barcode']['end'] - config['FILTER']['cell-barcode']['start'] + 1),
+        umi_barcode_length=(config['FILTER']['UMI-barcode']['end'] - config['FILTER']['UMI-barcode']['start'] + 1),
+        num_cells=lambda wildcards: round(int(samples.loc[wildcards.sample,'expected_cells'])*1.2),
     output:
         '{results_dir}/samples/{sample}/top_barcodes.csv'
     conda:
 	'../envs/wast_whitelist.yaml'
-    script:
-	'../scripts/whitelist.py'
+    shell:
+	"""python ../scripts/whitelist.py\ 
+	--fastq={input} \
+	--csv={output} \
+	--regex='(?P<cell_1>.{{{params.cell_barcode_length}}})(?P<umi_1>.{{{params.umi_barcode_length}}})'\
+	--N_THREADS=60 \
+	--N_CELLS={params.num_cells}"""
     benchmark:
         '{results_dir}/benchmarks/fast_whitelist.{sample}.txt'
 

@@ -1,8 +1,14 @@
 import threading
 import collections
+from Bio import SeqIO
 import gzip
 import time
+import sys
+import getopt
 import re
+
+N_THREADS = 60
+CELL_NUMBER = 24000
 
 bases = ['T', 'G', 'A', 'C', 'N']
 
@@ -83,79 +89,117 @@ def extract_barcodes(seq, regex):
     return cell, umi
 
 
-cell_barcode_counts = collections.Counter()
+def get_opts(argv):
+    N_THREADS = 0
+    regex = ""
+    CELL_NUMBER = 0
+    fastq = ""
+    csv = ""
 
-ctr = 0
-with gzip.open(snakemake.input[0], "rt") as infastq:
-    while 1:
-        line1 = convert2string(infastq.readline())
-        if len(line1) == 0:
-            break
+    for opt, arg in getopt.getopt(argv, 'f:v:t:c:r', ['fasq=','csv=','threads=', 'cells=', 'regex='])[0]:
+        if opt in ('t', '--threads'):
+            N_THREADS = int(arg)
+        if opt in ('-c', '--cells'):
+            CELL_NUMBER = int(arg)
+        if opt in ('-r', '--regex'):
+            regex = arg
+        if opt in ('-f', '--fastq'):
+            fastq = arg
+        if opt in ('-v', '--csv'):
+            csv = arg
 
-        seq = convert2string(infastq.readline())
-        line3 = convert2string(infastq.readline())
-        line4 = convert2string(infastq.readline())
+    return {
+        'N_THREADS' : N_THREADS,
+        'CELL_NUMBER' : CELL_NUMBER,
+        'regex' : regex,
+        'csv' : csv,
+        'fastq' : fastq
+    }
 
-        cell, umi = extract_barcodes(seq, snakemake.params["regex"])
-        cell_barcode_counts[cell] +=1
-        ctr += 1
-        if ctr % 500000 == 0:
-            print ("parsed %i reads" % ctr)
 
-counts = sorted(cell_barcode_counts.values(), reverse=True)
+def main():
 
-threshold = counts[snakemake.params['CELL_NUMBER']]
-final_barcodes = set([
-            x for x, y in cell_barcode_counts.items() if y > threshold])
+    opts = get_opts(sys.argv[1:])
 
-#now we have true barcodes
-#and can do work
+    cell_barcode_counts = collections.Counter()
 
-mapping = collections.defaultdict(set)
+    ctr = 0
+    with gzip.open(opts["fastq"], "rt") as infastq:
+        while 1:
+            line1 = convert2string(infastq.readline())
+            if len(line1) == 0:
+                break
 
-cell_barcode_counts_list = list(cell_barcode_counts.keys())
-n_cells_per_thread = round(len(cell_barcode_counts_list)/N_THREADS)
+            seq = convert2string(infastq.readline())
+            line3 = convert2string(infastq.readline())
+            line4 = convert2string(infastq.readline())
 
-threads = []
-sub_mappings  = []
-ctr = 0
+            cell, umi = extract_barcodes(seq, opts["regex"])
 
-print("All cells : %i"%len(cell_barcode_counts_list))
+            cell_barcode_counts[cell] += 1
+            ctr += 1
+            if ctr % 500000 == 0:
+                print ("parsed %i reads" % ctr)
 
-for i in range(snakemake.params["N_THREADS"]):
-    low = ctr
-    high = ctr + n_cells_per_thread if i < N_THREADS-1 else len(cell_barcode_counts_list)
-    sub_mapping = collections.defaultdict(set)
-    sub_mappings.append(sub_mapping)
-    threads.append(threading.Thread(args=(cell_barcode_counts_list, (low, high), sub_mapping, final_barcodes), target=worker))
-    ctr = high
+    counts = sorted(cell_barcode_counts.values(), reverse=True)
 
-for thread in threads:
-    thread.start()
+    threshold = counts[opts['CELL_NUMBER']]
+    final_barcodes = set([
+                x for x, y in cell_barcode_counts.items() if y > threshold])
 
-for thread in threads:
-    thread.join()
+    #now we have true barcodes
+    #and can do work
 
-for sub_mapping in sub_mappings:
-    for key in sub_mapping.keys():
-        for cell in sub_mapping[key]:
-            mapping[key].add(cell)
+    mapping = collections.defaultdict(set)
 
-#write map:
-out = opts["output"]
-outfile = open(snakemake.output[0], "w")
+    cell_barcode_counts_list = list(cell_barcode_counts.keys())
+    n_cells_per_thread = round(len(cell_barcode_counts_list)/opts["N_THREADS"])
 
-for final_barcode in final_barcodes:
-    corrected_barcodes = ",".join(
-        sorted(mapping[final_barcode]))
-    corrected_barcode_counts = ",".join(
-        map(str, [cell_barcode_counts[x] for x
-                  in sorted(mapping[final_barcode])]))
-    outfile.write("%s\t%s\t%s\t%s\n" % (
-        final_barcode, corrected_barcodes, cell_barcode_counts[final_barcode],
-        corrected_barcode_counts))
-outfile.close()
+    threads = []
+    sub_mappings  = []
+    ctr = 0
 
+    print("All cells : %i"%len(cell_barcode_counts_list))
+
+    for i in range(N_THREADS):
+        low = ctr
+        high = ctr + n_cells_per_thread if i < N_THREADS-1 else len(cell_barcode_counts_list)
+        sub_mapping = collections.defaultdict(set)
+        sub_mappings.append(sub_mapping)
+        threads.append(threading.Thread(args=(cell_barcode_counts_list, (low, high), sub_mapping, final_barcodes), target=worker))
+        ctr = high
+
+    for thread in threads:
+        thread.start()
+
+    for thread in threads:
+        thread.join()
+
+    for sub_mapping in sub_mappings:
+        for key in sub_mapping.keys():
+            for cell in sub_mapping[key]:
+                mapping[key].add(cell)
+
+
+    #write map:
+    out = opts["csv"]
+    outfile = open(out, "w")
+
+    for final_barcode in final_barcodes:
+        corrected_barcodes = ",".join(
+            sorted(mapping[final_barcode]))
+        corrected_barcode_counts = ",".join(
+            map(str, [cell_barcode_counts[x] for x
+                      in sorted(mapping[final_barcode])]))
+        outfile.write("%s\t%s\t%s\t%s\n" % (
+            final_barcode, corrected_barcodes, cell_barcode_counts[final_barcode],
+            corrected_barcode_counts))
+    outfile.close()
+
+
+
+if __name__ == "__main__":
+    main()
 
 
 
