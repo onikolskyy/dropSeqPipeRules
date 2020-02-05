@@ -24,18 +24,14 @@ rule extend_barcode_whitelist:
 
 
 rule fast_whitelist:
-    input:
-	'{results_dir}/samples/{sample}/trimmmed_repaired_R1.fastq.gz'
+    input: '{results_dir}/samples/{sample}/trimmmed_repaired_R1.fastq.gz'
     params:   	
         cell_barcode_length=(config['FILTER']['cell-barcode']['end'] - config['FILTER']['cell-barcode']['start'] + 1),
         umi_barcode_length=(config['FILTER']['UMI-barcode']['end'] - config['FILTER']['UMI-barcode']['start'] + 1),
         num_cells=lambda wildcards: round(int(samples.loc[wildcards.sample,'expected_cells'])*1.2),
-    output:
-	'{results_dir}/samples/{sample}/top_barcodes.csv'
-    benchmark:
-        '{results_dir}/benchmarks/fast_whitelist.{sample}.txt'
-    conda:
-	'../envs/wast_whitelist.yaml'
+    output: '{results_dir}/samples/{sample}/top_barcodes.csv'
+    benchmark: '{results_dir}/benchmarks/fast_whitelist.{sample}.txt'
+    conda: '../envs/wast_whitelist.yaml'
     shell: "python ../scripts/whitelist.py --fastq={input} --csv={output} --regex='(?P<cell_1>.{{params.cell_barcode_length}})(?P<umi_1>.{{params.umi_barcode_length}})' --N_THREAD<S=60 --N_CELLS={params.num_cells}"
 
 #rule get_top_barcodes:
