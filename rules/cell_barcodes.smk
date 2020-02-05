@@ -36,11 +36,11 @@ rule fast_whitelist:
 	'../envs/wast_whitelist.yaml'
     shell:
 	"""python ../scripts/whitelist.py\ 
-	--fastq={input} \
-	--csv={output} \
-	--regex='(?P<cell_1>.{{{params.cell_barcode_length}}})(?P<umi_1>.{{{params.umi_barcode_length}}})'\
-	--N_THREADS=60 \
-	--N_CELLS={params.num_cells}"""
+		--fastq={input} \
+		--csv={output} \
+		--regex='(?P<cell_1>.{{{params.cell_barcode_length}}})(?P<umi_1>.{{{params.umi_barcode_length}}})'\
+		--N_THREAD<S=60 \
+		--N_CELLS={params.num_cells}"""
     benchmark:
         '{results_dir}/benchmarks/fast_whitelist.{sample}.txt'
 
