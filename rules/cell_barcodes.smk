@@ -27,9 +27,9 @@ rule fast_whitelist:
     input:
 	'{results_dir}/samples/{sample}/trimmmed_repaired_R1.fastq.gz'
     params:
-	regex='(?P<cell_1>.{{{params.cell_barcode_length}}})(?P<umi_1>.{{{params.umi_barcode_length}}})'
-	CELL_NUMBER=lambda wildcards: round(int(samples.loc[wildcards.sample,'expected_cells'])*1.2)
-	N_THREADS=whitelis_opts.loc['opt','N_THREADS']
+	regex='(?P<cell_1>.{{{params.cell_barcode_length}}})(?P<umi_1>.{{{params.umi_barcode_length}}})',
+	CELL_NUMBER=lambda wildcards: round(int(samples.loc[wildcards.sample,'expected_cells'])*1.2),
+	N_THREADS=whitelis_opts.loc['opt','N_THREADS'],
     output:
         '{results_dir}/samples/{sample}/top_barcodes.csv'
     conda:
