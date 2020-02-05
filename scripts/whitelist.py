@@ -120,7 +120,7 @@ def get_opts(argv):
 def main():
 
     opts = get_opts(sys.argv[1:])
-
+    print(opts)
     cell_barcode_counts = collections.Counter()
 
     ctr = 0
@@ -139,7 +139,7 @@ def main():
             cell_barcode_counts[cell] += 1
             ctr += 1
             if ctr % 500000 == 0:
-                print ("parsed %i reads" % ctr)
+                print("parsed %i reads" % ctr)
 
     counts = sorted(cell_barcode_counts.values(), reverse=True)
 
