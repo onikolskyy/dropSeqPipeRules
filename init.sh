@@ -1,5 +1,5 @@
 rm -R /dropSeqPipe/rules && 
 	cp -R rules /dropSeqPipe && 
-	rm  -R /dropSeqPipe/envs
-	cp -R envs /dropSeqPipe/envs && 
+	cp whitelist_opts.csv / &&
+	cp  envs/* /dropSeqPipe/envs && 
 	cp scripts/* /dropSeqPipe/scripts

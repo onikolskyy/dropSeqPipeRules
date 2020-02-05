@@ -3,6 +3,7 @@
 #ruleorder: extend_barcode_whitelist > extend_barcode_top
 ruleorder: extend_barcode_whitelist > get_cell_whitelist
 
+whitelist_opts = pd.read_table("whitelist_opts.csv", sep=",").set_index("index", drop=False)
 
 localrules:
     get_cell_whitelist,
@@ -22,24 +23,40 @@ rule extend_barcode_whitelist:
         '../scripts/generate_extended_ref.py'
 
 
-rule get_top_barcodes:
+rule fast_whitelist:
     input:
-        '{results_dir}/samples/{sample}/trimmmed_repaired_R1.fastq.gz'
+	'{results_dir}/samples/{sample}/trimmmed_repaired_R1.fastq.gz'
+    params:
+	regex='(?P<cell_1>.{{{params.cell_barcode_length}}})(?P<umi_1>.{{{params.umi_barcode_length}}})'
+	CELL_NUMBER=lambda wildcards: round(int(samples.loc[wildcards.sample,'expected_cells'])*1.2)
+	N_THREADS=whitelis_opts.loc['opt','N_THREADS']
     output:
         '{results_dir}/samples/{sample}/top_barcodes.csv'
-    conda: '../envs/umi_tools.yaml'
-    params:
-        cell_barcode_length=(config['FILTER']['cell-barcode']['end'] - config['FILTER']['cell-barcode']['start'] + 1),
-        umi_barcode_length=(config['FILTER']['UMI-barcode']['end'] - config['FILTER']['UMI-barcode']['start'] + 1),
-        num_cells=lambda wildcards: round(int(samples.loc[wildcards.sample,'expected_cells'])*1.2),
-    benchmark: '{results_dir}/benchmarks/get_top_barcodes.{sample}.txt'
-    shell:
-        """umi_tools whitelist\
-        --stdin {input}\
-        --bc-pattern='(?P<cell_1>.{{{params.cell_barcode_length}}})(?P<umi_1>.{{{params.umi_barcode_length}}})'\
-        --extract-method=regex\
-        --set-cell-number={params.num_cells}\
-        --log2stderr > {output}"""
+    conda:
+	'../envs/wast_whitelist.yaml'
+    script:
+	'../scripts/whitelist.py'
+    benchmark:
+        '{results_dir}/benchmarks/fast_whitelist.{sample}.txt'
+
+#rule get_top_barcodes:
+#    input:
+#        '{results_dir}/samples/{sample}/trimmmed_repaired_R1.fastq.gz'
+#    output:
+#        '{results_dir}/samples/{sample}/top_barcodes.csv'
+#    conda: '../envs/umi_tools.yaml'
+#    params:
+#        cell_barcode_length=(config['FILTER']['cell-barcode']['end'] - config['FILTER']['cell-barcode']['start'] + 1),
+#        umi_barcode_length=(config['FILTER']['UMI-barcode']['end'] - config['FILTER']['UMI-barcode']['start'] + 1),
+#        num_cells=lambda wildcards: round(int(samples.loc[wildcards.sample,'expected_cells'])*1.2),
+#    benchmark: '{results_dir}/benchmarks/get_top_barcodes.{sample}.txt'
+#    shell:
+#        """umi_tools whitelist\
+#        --stdin {input}\
+#        --bc-pattern='(?P<cell_1>.{{{params.cell_barcode_length}}})(?P<umi_1>.{{{params.umi_barcode_length}}})'\
+#        --extract-method=regex\
+#        --set-cell-number={params.num_cells}\
+#        --log2stderr > {output}"""
 
 rule get_cell_whitelist:
     input:

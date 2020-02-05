@@ -1,0 +1,8 @@
+name: fastwhitelist
+channels:
+  - anaconda
+  - ostrokach
+dependencies:
+  - python=3.6
+  - biopython
+  - gzip
