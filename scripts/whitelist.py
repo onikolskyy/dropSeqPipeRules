@@ -96,7 +96,7 @@ def get_opts(argv):
     fastq = ""
     csv = ""
 
-    print(getopt.getopt(argv, 'f:v:t:c:r', ['fasq=','csv=','threads=', 'cells=', 'regex='])[0])
+    print(getopt.getopt(argv, 'f:v:t:c:r', ['fastq=','csv=','threads=', 'cells=', 'regex='])[0])
 
     for opt, arg in getopt.getopt(argv, 'f:v:t:c:r', ['fasq=','csv=','threads=', 'cells=', 'regex='])[0]:
         if opt in ('t', '--threads'):
