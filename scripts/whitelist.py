@@ -99,8 +99,6 @@ def get_opts(argv):
     print(getopt.getopt(argv, 'f:v:t:c:r', ['fastq=','csv=','threads=', 'cells=', 'regex='])[0])
 
     for opt, arg in getopt.getopt(argv, 'f:v:t:c:r', ['fastq=','csv=','threads=', 'cells=', 'regex='])[0]:
-        if opt in ('t', '--threads'):
-            N_THREADS = int(arg)
         if opt in ('-c', '--cells'):
             CELL_NUMBER = int(arg)
         if opt in ('-r', '--regex'):
@@ -111,7 +109,7 @@ def get_opts(argv):
             csv = arg
 
     return {
-        'N_THREADS' : N_THREADS,
+        'N_THREADS' : snakemake.threads,
         'CELL_NUMBER' : CELL_NUMBER,
         'regex' : regex,
         'csv' : csv,
