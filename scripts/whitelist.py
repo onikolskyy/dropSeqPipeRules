@@ -7,7 +7,6 @@ import sys
 import getopt
 import re
 
-N_THREADS = 60
 CELL_NUMBER = 24000
 
 bases = ['T', 'G', 'A', 'C', 'N']
@@ -120,7 +119,6 @@ def get_opts(argv):
 def main():
 
     opts = get_opts(sys.argv[1:])
-    print(opts)
     cell_barcode_counts = collections.Counter()
 
     ctr = 0
@@ -161,7 +159,7 @@ def main():
 
     print("All cells : %i"%len(cell_barcode_counts_list))
 
-    for i in range(N_THREADS):
+    for i in range(opts['N_THREADS']):
         low = ctr
         high = ctr + n_cells_per_thread if i < N_THREADS-1 else len(cell_barcode_counts_list)
         sub_mapping = collections.defaultdict(set)
