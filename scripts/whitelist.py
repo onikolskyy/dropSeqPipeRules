@@ -107,9 +107,11 @@ def get_opts(argv):
             fastq = arg
         if opt in ('-v', '--csv'):
             csv = arg
+	if opt in ('-t', '--threads'):
+	    N_THREADS = int(arg)
 
     return {
-        'N_THREADS' : snakemake.threads,
+        'N_THREADS' : N_THREADS,
         'CELL_NUMBER' : CELL_NUMBER,
         'regex' : regex,
         'csv' : csv,

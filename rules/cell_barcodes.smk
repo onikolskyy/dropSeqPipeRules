@@ -33,7 +33,7 @@ rule fast_whitelist:
     output: '{results_dir}/samples/{sample}/top_barcodes.csv'
     benchmark: '{results_dir}/benchmarks/fast_whitelist.{sample}.txt'
     conda: '../envs/fast_whitelist.yaml'
-    shell: "python /dropSeqPipe/scripts/whitelist.py --fastq={input} --csv={output} --regex='(?P<cell_1>.{{{params.cell_barcode_length}}})(?P<umi_1>.{{{params.umi_barcode_length}}})' --cells={params.num_cells}"
+    shell: "python /dropSeqPipe/scripts/whitelist.py --fastq={input} --csv={output} --regex='(?P<cell_1>.{{{params.cell_barcode_length}}})(?P<umi_1>.{{{params.umi_barcode_length}}})' --threads={threads} --cells={params.num_cells}"
 
 #rule get_top_barcodes:
 #    input:
