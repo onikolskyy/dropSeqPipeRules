@@ -119,7 +119,6 @@ def get_opts(argv):
 def main():
 
     opts = get_opts(sys.argv[1:])
-    print(opts)
     cell_barcode_counts = collections.Counter()
 
     ctr = 0
@@ -162,7 +161,7 @@ def main():
 
     for i in range(opts['N_THREADS']):
         low = ctr
-        high = ctr + n_cells_per_thread if i < N_THREADS-1 else len(cell_barcode_counts_list)
+        high = ctr + n_cells_per_thread if i < opts['N_THREADS'] - 1 else len(cell_barcode_counts_list)
         sub_mapping = collections.defaultdict(set)
         sub_mappings.append(sub_mapping)
         threads.append(threading.Thread(args=(cell_barcode_counts_list, (low, high), sub_mapping, final_barcodes), target=worker))
