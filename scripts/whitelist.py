@@ -97,16 +97,16 @@ def get_opts(argv):
     csv = ""
 
     for opt, arg in getopt.getopt(argv, 'f:v:t:c:r', ['fastq=','csv=', 'cells=','threads=', 'regex='])[0]:
-        if opt in ('-c', '--cells'):
-            CELL_NUMBER = int(arg)
-        if opt in ('-r', '--regex'):
-            regex = arg
-        if opt in ('-f', '--fastq'):
-            fastq = arg
-        if opt in ('-v', '--csv'):
-            csv = arg
+ 	if opt in ('-c', '--cells'):
+		CELL_NUMBER = int(arg)
+	if opt in ('-r', '--regex'):
+		regex = arg
+	if opt in ('-f', '--fastq'):
+		fastq = arg
+	if opt in ('-v', '--csv'):
+		csv = arg
 	if opt in ('-t', '--threads'):
-	    N_THREADS = int(arg)
+		N_THREADS = int(arg)
 
     return {
         'N_THREADS' : N_THREADS,
