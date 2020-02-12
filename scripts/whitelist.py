@@ -96,9 +96,7 @@ def get_opts(argv):
     fastq = ""
     csv = ""
 
-    print(getopt.getopt(argv, 'f:v:t:c:r', ['fastq=','csv=','threads=', 'cells=', 'regex='])[0])
-
-    for opt, arg in getopt.getopt(argv, 'f:v:c:r', ['fastq=','csv=', 'cells=', 'regex='])[0]:
+    for opt, arg in getopt.getopt(argv, 'f:v:t:c:r', ['fastq=','csv=', 'cells=','threads=', 'regex='])[0]:
         if opt in ('-c', '--cells'):
             CELL_NUMBER = int(arg)
         if opt in ('-r', '--regex'):
