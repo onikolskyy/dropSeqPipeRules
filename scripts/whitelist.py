@@ -119,6 +119,7 @@ def get_opts(argv):
 def main():
 
     opts = get_opts(sys.argv[1:])
+    print(opts)
     cell_barcode_counts = collections.Counter()
 
     ctr = 0
