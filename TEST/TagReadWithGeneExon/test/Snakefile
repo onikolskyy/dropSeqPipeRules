@@ -1,0 +1,14 @@
+rule test:
+    input:
+        # define input paths
+        refflat='',
+        inbam=''
+    output:
+        # define output path
+        outbam=''
+    # todo: define threads
+    treads: 0
+    conda: 'envs/tag_read_with_gene_exon.yaml'
+    #todo: Do I need params?
+    script: 'scripts/test.py'
+        
