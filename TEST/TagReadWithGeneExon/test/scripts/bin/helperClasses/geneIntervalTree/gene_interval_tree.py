@@ -1,11 +1,12 @@
 import re
-import math
 import collections
-from helperClasses.transcript import Transcript
-from helperClasses.gene import Gene
+#todo: correct importing
+from ..transcript import Transcript
+from ..gene import Gene
 from ncls import NCLS
-from helperClasses.geneIntervalTree.refflatEntries import RefflatEntries
-from typing import NewType
+from .refflat_entries import RefflatEntries
+
+
 #####################################################################################
 # clone for picard's OverlapDetector in Python
 ####################################################################################

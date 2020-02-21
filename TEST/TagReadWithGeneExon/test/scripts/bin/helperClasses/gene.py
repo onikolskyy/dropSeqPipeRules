@@ -1,7 +1,6 @@
 #this is a clone of Gene class from picard
-import collections
 import math
-from helperClasses.transcript import Transcript
+from .transcript import Transcript
 
 
 class Gene:

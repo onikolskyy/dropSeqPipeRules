@@ -1,0 +1,7 @@
+name: tagReadWithGeneExon
+channels:
+  - bioconda
+dependancies:
+  - python>=3.6
+  - ncls
+  - pysam

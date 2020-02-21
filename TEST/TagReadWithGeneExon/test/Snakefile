@@ -11,4 +11,3 @@ rule test:
     conda: 'envs/tag_read_with_gene_exon.yaml'
     #todo: Do I need params?
     script: 'scripts/test.py'
-        

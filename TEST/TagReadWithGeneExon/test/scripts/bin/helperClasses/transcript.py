@@ -1,5 +1,4 @@
-import math
-from helperClasses.locus_function import LocusFunctions
+from .locus_function import LocusFunctions
 
 
 class Transcript:
