@@ -1,9 +1,9 @@
 rule test:
     input:
         # define input paths
-        refflat='annotation.refFlat',
-        inbam='in.bam'
-        correctbam='correct.bam'
+        refflat='/input/annotation.refFlat',
+        inbam='/input/in.bam'
+        correctbam='/input/correct.bam'
     output:
         # define output path
         outbam='out.bam'
