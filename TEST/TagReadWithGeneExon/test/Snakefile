@@ -1,13 +1,11 @@
 rule test:
     input:
         # define input paths
-        refflat='',
-        inbam=''
+        refflat='annotation.refFlat',
+        inbam='in.bam'
+        correctbam='correct.bam'
     output:
         # define output path
-        outbam=''
-    # todo: define threads
-    treads: 0
+        outbam='out.bam'
     conda: 'envs/tag_read_with_gene_exon.yaml'
-    #todo: Do I need params?
     script: 'scripts/test.py'
