@@ -12,7 +12,7 @@ correct_reads = {}
 
 for read in correct_bam:
     correct_reads[read.query_name] = {}
-    for tag_name, bam_tag in Tags.tags_dict.keys():
+    for tag_name, bam_tag in Tags.tags_dict:
         correct_reads[read.query_name][tag_name] = read.get_tag(bam_tag)
 
 
@@ -20,7 +20,7 @@ for read in correct_bam:
 for read in infile_bam:
     tag_read_with_functional_data(read, gi_tree)
     reads_to_test[read.query_name] = {}
-    for tag_name, bam_tag in Tags.tags_dict.keys():
+    for tag_name, bam_tag in Tags.tags_dict:
         reads_to_test[read.query_name][tag_name] = read.get_tag(bam_tag)
     outfile.write(read)
 
