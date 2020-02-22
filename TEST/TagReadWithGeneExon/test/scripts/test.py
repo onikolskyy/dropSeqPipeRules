@@ -10,21 +10,23 @@ correct_bam = pysam.AlignmentFile(snakemake.input["correctbam"], "rb")
 reads_to_test = {}
 correct_reads = {}
 
-test_ctr = 0
 for read in correct_bam:
-    print(test_ctr)
-    if test_ctr == 11: print(read.get_tags())
     correct_reads[read.query_name] = {}
     for tag_name, bam_tag in Tags.tags_dict.items():
-        correct_reads[read.query_name][tag_name] = read.get_tag(bam_tag)
-    test_ctr+=1
+        if read.has_tag(bam_tag):
+            correct_reads[read.query_name][tag_name] = read.get_tag(bam_tag)
+        else:
+            correct_reads[read.query_name][tag_name] = ""
 
 #write to output file
 for read in infile_bam:
     tag_read_with_functional_data(read, gi_tree)
     reads_to_test[read.query_name] = {}
     for tag_name, bam_tag in Tags.tags_dict.items():
-        reads_to_test[read.query_name][tag_name] = read.get_tag(bam_tag)
+        if read.has_tag(bam_tag):
+            reads_to_test[read.query_name][tag_name] = read.get_tag(bam_tag)
+        else:
+            reads_to_test[read.query_name][tag_name] = ""
     outfile.write(read)
 
 #test against correct bam file
