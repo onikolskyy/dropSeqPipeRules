@@ -13,6 +13,7 @@ correct_reads = {}
 test_ctr = 0
 for read in correct_bam:
     print(test_ctr)
+    if test_ctr == 11: print(read.get_tags())
     correct_reads[read.query_name] = {}
     for tag_name, bam_tag in Tags.tags_dict.items():
         correct_reads[read.query_name][tag_name] = read.get_tag(bam_tag)
