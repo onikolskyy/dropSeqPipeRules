@@ -57,7 +57,7 @@ class RefflatEntries:
 
         for i in range(len(entries_list)):
             for entry_name in RefflatEntries.entries.keys():
-                if RefflatEntries.entries[entry_name].index == i:
+                if RefflatEntries.entries[entry_name]["index"] == i:
                     convert_func = RefflatEntries.entries[entry_name]["convert_func"]
                     res[entry_name] = convert_func(entries_list[i])
                     break
