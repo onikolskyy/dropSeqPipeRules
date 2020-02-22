@@ -22,6 +22,8 @@ class GeneIntervalTree:
 
     @staticmethod
     def get_genes(in_refflat):
+        ctr = 0
+        print("starting to parse refflat...")
         with open(in_refflat, "r") as refflat_file:
             refflat_line = refflat_file.readline()
             # mapping of parsed gene names to corresponding transcripts
@@ -40,6 +42,9 @@ class GeneIntervalTree:
                 genes[parsed_entries["gene_name"]].end = max(genes[parsed_entries["gene_name"]].end, parsed_entries["transcription_end"])
                 genes[parsed_entries["gene_name"]].strand = parsed_entries["strand"]
                 refflat_line = refflat_file.readline()
+                ctr = ctr+1
+                if ctr % 1000 == 0:
+                    print("parsed %i lines"%ctr)
         return genes
 
     def get_overlaps(self, block):
