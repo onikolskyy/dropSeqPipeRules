@@ -46,7 +46,7 @@ def get_locus_functions_by_interval(g, block):
 def simplify_functional_data(functional_data_map):
     # type: (Dict[Tuple, Dict[str, list]]) -> Dict[str,set]
 
-    common_gene_ids = set.intersection(*[set(map_for_block.keys()) for block, map_for_block in functional_data_map])
+    common_gene_ids = set.intersection(*[set(map_for_block.keys()) for block, map_for_block in functional_data_map.items()])
     result = collections.defaultdict(set())
     for b in iter(functional_data_map.keys()):
         for g in common_gene_ids:
