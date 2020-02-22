@@ -25,7 +25,7 @@ class GeneIntervalTree:
         with open(in_refflat, "r") as refflat_file:
             refflat_line = refflat_file.readline()
             # mapping of parsed gene names to corresponding transcripts
-            genes = collections.defaultdict(Gene())
+            genes = collections.defaultdict(lambda : Gene())
             while refflat_line:
                 parsed_entries = RefflatEntries.get_dict(re.split(r'\t+', refflat_line.rstrip('\t')))
                 genes[parsed_entries["gene_name"]].transcripts[parsed_entries["transcription_name"]] = Transcript(
