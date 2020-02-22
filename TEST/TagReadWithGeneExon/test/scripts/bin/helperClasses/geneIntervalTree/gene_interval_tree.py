@@ -1,5 +1,6 @@
 import re
 import collections
+import numpy as np
 #todo: correct importing
 from ..transcript import Transcript
 from ..gene import Gene
@@ -43,7 +44,7 @@ class GeneIntervalTree:
                 genes[parsed_entries["gene_name"]].strand = parsed_entries["strand"]
                 refflat_line = refflat_file.readline()
                 ctr = ctr+1
-                if ctr % 1000 == 0:
+                if ctr % 100000 == 0:
                     print("parsed %i lines"%ctr)
         return genes
 
