@@ -1,7 +1,7 @@
 import collections
 from bin.helperClasses.locus_function import LocusFunctions
 from typing import Tuple, List, Dict
-from bin.helperClasses.geneIntervalTree.geneIntervalTree import GeneIntervalTree
+from bin.helperClasses.geneIntervalTree.gene_interval_tree import GeneIntervalTree
 from bin.helperClasses.gene import Gene
 from bin.helperClasses.tags import Tags
 
