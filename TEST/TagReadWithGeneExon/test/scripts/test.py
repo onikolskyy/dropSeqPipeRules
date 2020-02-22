@@ -1,6 +1,6 @@
 import pysam
-from .bin.helperClasses.geneIntervalTree.gene_interval_tree import GeneIntervalTree
-from .bin.funcs import *
+from bin.helperClasses.geneIntervalTree.gene_interval_tree import GeneIntervalTree
+from bin.funcs import *
 
 infile_bam = pysam.AlignmentFile(snakemake.input["inbam"], "rb")
 gi_tree = GeneIntervalTree(snakemake.input["refflat"])
