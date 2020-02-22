@@ -12,16 +12,16 @@ correct_reads = {}
 
 for read in correct_bam:
     correct_reads[read.query_name] = {}
-    for tag in Tags:
-        correct_reads[read.query_name][tag.name] = read.get_tag(tag.name)
+    for tag_name, bam_tag in Tags.tags_dict.keys():
+        correct_reads[read.query_name][tag_name] = read.get_tag(bam_tag)
 
 
 #write to output file
 for read in infile_bam:
     tag_read_with_functional_data(read, gi_tree)
     reads_to_test[read.query_name] = {}
-    for tag in Tags:
-        reads_to_test[read.query_name][tag.name] = read.get_tag(tag.name)
+    for tag_name, bam_tag in Tags.tags_dict.keys():
+        reads_to_test[read.query_name][tag_name] = read.get_tag(bam_tag)
     outfile.write(read)
 
 #test against correct bam file
@@ -34,11 +34,11 @@ for read_id in reads_to_test.keys():
     if read_id in correct_reads.keys():
         correct_read = correct_reads[read_id]
         read_to_test = reads_to_test[read_id]
-        for tag in Tags:
-            if read_to_test[tag.name] == correct_read[tag.name]:
+        for tag_name, bam_tag in Tags.tags_dict:
+            if read_to_test[bam_tag] == correct_read[bam_tag]:
                 pass
             else:
-                raise Exception("Unequal reads: on tag %s - EXITING"%tag.name)
+                raise Exception("Unequal reads: on tag %s - EXITING"%tag_name)
     else:
         raise Exception("id %s is present in test data set but is not present in correct data set"%read_id)
     ctr=ctr+1
