@@ -13,6 +13,8 @@ correct_reads = {}
 for read in correct_bam:
     correct_reads[read.query_name] = {}
     for tag_name, bam_tag in Tags.tags_dict.items():
+        print(read.get_tags())
+        exit()
         correct_reads[read.query_name][tag_name] = read.get_tag(bam_tag)
 
 
