@@ -16,10 +16,11 @@ from .refflat_entries import RefflatEntries
 class GeneIntervalTree:
     def __init__(self, in_refflat):
         self.genes = GeneIntervalTree.get_genes(in_refflat)
-        genes_ids_list = np.array([gene_name for gene_name in self.genes.keys()])
-        starts = np.array([self.genes[genes_ids_list[i]].start for i in range(len(genes_ids_list))])
-        ends = np.array([self.genes[genes_ids_list[i]].end for i in range(len(genes_ids_list))])
-        self.tree = NCLS(starts, ends, genes_ids_list)
+        self.gene_ids = list(self.genes.keys())
+        genes_index_list = np.array([gene_name for gene_name in self.genes.keys()])
+        starts = np.array([self.genes[self.gene_ids[genes_index_list[i]]].start for i in range(len(genes_index_list))])
+        ends = np.array([self.genes[self.gene_ids[genes_index_list[i]]].end for i in range(len(genes_index_list))])
+        self.tree = NCLS(starts, ends, genes_index_list)
 
     @staticmethod
     def get_genes(in_refflat):
@@ -48,6 +49,8 @@ class GeneIntervalTree:
                     print("parsed %i lines"%ctr)
         return genes
 
+
     def get_overlaps(self, block):
-        return self.tree.find_overlap(block[0], block[1])
+        overlaps = self.tree.find_overlap(block[0], block[1])
+        return [self.genes[self.gene_ids[overlap]] for overlap in overlaps]
 
