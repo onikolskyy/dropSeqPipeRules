@@ -17,7 +17,8 @@ for read in correct_bam:
             correct_reads[read.query_name][tag_name] = read.get_tag(bam_tag)
         else:
             correct_reads[read.query_name][tag_name] = ""
-
+ctr = 0
+print("start tagging reads...")
 #write to output file
 for read in infile_bam:
     tag_read_with_functional_data(read, gi_tree)
@@ -27,6 +28,9 @@ for read in infile_bam:
             reads_to_test[read.query_name][tag_name] = read.get_tag(bam_tag)
         else:
             reads_to_test[read.query_name][tag_name] = ""
+    ctr+=1
+    if ctr % 100000 == 0:
+        print("tagged %ctr reads",ctr)
     outfile.write(read)
 
 #test against correct bam file
