@@ -1,9 +1,9 @@
 import collections
-from .helperClasses.locus_function import LocusFunctions
+from helperClasses.locus_function import LocusFunctions
 from typing import Tuple, List, Dict
-from .helperClasses.geneIntervalTree.geneIntervalTree import GeneIntervalTree
-from .helperClasses.gene import Gene
-from .helperClasses.tags import Tags
+from helperClasses.geneIntervalTree.geneIntervalTree import GeneIntervalTree
+from helperClasses.gene import Gene
+from helperClasses.tags import Tags
 
 
 def tag_read_with_functional_data(bam_read, gene_interval_tree):
