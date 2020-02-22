@@ -50,6 +50,7 @@ class GeneIntervalTree:
 
 
     def get_overlaps(self, block):
-        overlaps = self.tree.find_overlap(block[0], block[1])
+        overlap_tuples = self.tree.find_overlap(block[0], block[1])
+        overlaps = [overlap_tuple[0] for overlap_tuple in overlap_tuples]
         return [self.genes[self.gene_ids[overlap]] for overlap in overlaps]
 
