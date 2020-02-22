@@ -1,6 +1,6 @@
 channels:
   - bioconda
-dependancies:
+dependencies:
   - python>=3.6
   - ncls
   - pysam
