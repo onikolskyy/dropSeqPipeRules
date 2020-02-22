@@ -17,10 +17,9 @@ class GeneIntervalTree:
     def __init__(self, in_refflat):
         self.genes = GeneIntervalTree.get_genes(in_refflat)
         self.gene_ids = list(self.genes.keys())
-        genes_index_list = np.array([gene_name for gene_name in self.genes.keys()])
-        starts = np.array([self.genes[self.gene_ids[genes_index_list[i]]].start for i in range(len(genes_index_list))])
-        ends = np.array([self.genes[self.gene_ids[genes_index_list[i]]].end for i in range(len(genes_index_list))])
-        self.tree = NCLS(starts, ends, genes_index_list)
+        starts = np.array([self.genes[self.gene_ids[self.gene_ids[i]]].start for i in range(len(self.gene_ids))])
+        ends = np.array([self.genes[self.gene_ids[self.gene_ids[i]]].end for i in range(len(self.gene_ids))])
+        self.tree = NCLS(starts, ends, np.arange(0,len(self.gene_ids)))
 
     @staticmethod
     def get_genes(in_refflat):
