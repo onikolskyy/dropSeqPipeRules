@@ -38,7 +38,7 @@ def get_locus_functions_by_interval(g, block):
     # type: (Gene, Tuple) -> List[LocusFunctions]
 
     locus_functions = [LocusFunctions.INTERGENIC for i in range(block[1]-block[0]+1)]
-    for t in g.transcripts:
+    for t in g.transcripts.values():
         t.assignLocusFunctionForRange(locus_functions, block[0])
     return locus_functions
 
