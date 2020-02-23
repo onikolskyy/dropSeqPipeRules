@@ -39,7 +39,7 @@ def get_locus_functions_by_interval(g, block):
 
     locus_functions = [LocusFunctions.INTERGENIC for i in range(block[1]-block[0]+1)]
     for t in g.transcripts.values():
-        t.assignLocusFunctionForRange(locus_functions, block[0])
+        t.assign_locus_function_for_range(block[0], locus_functions)
     return locus_functions
 
 
