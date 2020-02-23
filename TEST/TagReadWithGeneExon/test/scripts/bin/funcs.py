@@ -18,7 +18,7 @@ def tag_read_with_functional_data(bam_read, gene_interval_tree):
     lf_lists = [sorted(list(final[gene_id]), reverse=True) for gene_id in gene_ids]
     read_is_negative_strand = bam_read.is_reverse
     gene_ids_same_strand = filter(lambda gene_id: gene_interval_tree.genes[gene_id].is_negative_strand == read_is_negative_strand, gene_ids)
-    bam_read.set_tag(Tags.tags_dict["GENE_FUNCTION_TAG"],  ", ".join(lf for lf_list in lf_lists for lf in lf_list))
+    bam_read.set_tag(Tags.tags_dict["GENE_FUNCTION_TAG"],  ", ".join(lf.name for lf_list in lf_lists for lf in lf_list))
     bam_read.set_tag(Tags.tags_dict["GENE_NAME_TAG"], ", ".join(gene_ids))
     bam_read.set_tag(Tags.tags_dict["GENE_STRAND_TAG"],   ", ".join(["-" if gene_interval_tree[gene_id].is_negative_strand() else "+" for gene_id in gene_ids]))
     bam_read.set_tag(Tags.tags_dict["READ_FUNCTION_TAG"], get_best_lf_name(final, gene_ids_same_strand))
