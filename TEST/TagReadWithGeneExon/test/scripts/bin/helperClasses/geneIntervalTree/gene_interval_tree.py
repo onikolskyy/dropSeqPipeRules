@@ -38,7 +38,7 @@ class GeneIntervalTree:
                     parsed_entries["coding_end"],
                     [(parsed_entries["exon_starts"][i], parsed_entries["exon_ends"][i]) for i in range(len(parsed_entries["exon_starts"]))]
                 )
-                #todo : correctness (should I take transcriptions or coding?)
+                # todo : correctness (should I take transcriptions or coding?)
                 genes[parsed_entries["gene_name"]].start = min(genes[parsed_entries["gene_name"]].start, parsed_entries["transcription_start"])
                 genes[parsed_entries["gene_name"]].end = max(genes[parsed_entries["gene_name"]].end, parsed_entries["transcription_end"])
                 genes[parsed_entries["gene_name"]].strand = parsed_entries["strand"]

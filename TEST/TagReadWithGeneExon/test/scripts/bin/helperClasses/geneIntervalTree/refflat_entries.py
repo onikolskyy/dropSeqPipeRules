@@ -1,3 +1,5 @@
+import re
+
 class RefflatEntries:
     entries = {
         "gene_name": {
@@ -38,11 +40,17 @@ class RefflatEntries:
         },
         "exon_starts" : {
             "index": 9,
-            "convert_func": lambda exon_starts: [int(exon_start) for exon_start in exon_starts.split(",")]
+            "convert_func": lambda exon_starts:
+                [int(exon_start) for exon_start in exon_starts.split(",")]
+                if (len(exon_starts) > 0 and not re.compile(" +\B").match(exon_starts))
+                else []
         },
         "exon_ends" : {
             "index": 10,
-            "convert_func": lambda exon_ends: [int(exon_end) for exon_end in exon_ends.split(",")]
+            "convert_func": lambda exon_ends:
+                [int(exon_end) for exon_end in exon_ends.split(",")]
+                if (len(exon_ends) > 0 and not re.compile(" +\B").match(exon_ends))
+                else []
         },
     }
 
@@ -61,5 +69,8 @@ class RefflatEntries:
                     convert_func = RefflatEntries.entries[entry_name]["convert_func"]
                     res[entry_name] = convert_func(entries_list[i])
                     break
+        if not len(res["exon_starts"]) == len(res["exon_ends"]):
+            raise Exception("Error while parsing refflat: length of exon starts does not match the length of exon ends...")
+
 
         return res
