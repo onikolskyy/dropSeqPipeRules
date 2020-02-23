@@ -48,10 +48,8 @@ def simplify_functional_data(functional_data_map):
 
     common_gene_ids = set.intersection(*[set(map_for_block.keys()) for block, map_for_block in functional_data_map.items()])
     result = collections.defaultdict(lambda : set())
-    for b in iter(functional_data_map.keys()):
+    for b in functional_data_map.keys():
         for g in common_gene_ids:
-            print(g)
-            exit()
             result[g].add(functional_data_map[b][g])
     return result
 
