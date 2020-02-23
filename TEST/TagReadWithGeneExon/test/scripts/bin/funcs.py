@@ -51,14 +51,7 @@ def simplify_functional_data(functional_data_map):
 
     for b in functional_data_map.keys():
         for g in common_gene_ids:
-            try:
-                result[g].add(functional_data_map[b][g])
-            except TypeError as e:
-                print(b)
-                print(g)
-                print(functional_data_map[b][g])
-                exit()
-
+            result[g].update(functional_data_map[b][g])
     return result
 
 
