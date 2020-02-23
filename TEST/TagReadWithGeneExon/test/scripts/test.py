@@ -31,7 +31,6 @@ for read in infile_bam:
     ctr+=1
     if ctr % 100000 == 0:
         print("tagged %ctr reads",ctr)
-    outfile.write(read)
 
 #test against correct bam file
 ctr = 0
