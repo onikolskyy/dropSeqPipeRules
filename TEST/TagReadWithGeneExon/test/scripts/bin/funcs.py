@@ -50,6 +50,8 @@ def simplify_functional_data(functional_data_map):
     result = collections.defaultdict(lambda : set())
     for b in iter(functional_data_map.keys()):
         for g in common_gene_ids:
+            print(g)
+            exit()
             result[g].add(functional_data_map[b][g])
     return result
 
