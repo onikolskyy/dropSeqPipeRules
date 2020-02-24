@@ -46,7 +46,7 @@ for read_id in reads_to_test.keys():
             if read_to_test[tag_name] == correct_read[tag_name]:
                 pass
             else:
-                raise Exception("Unequal reads: on tag %s - EXITING"%tag_name)
+                raise Exception("Unequal reads: on on read %s tag %s - EXITING"%(read_id,tag_name))
     else:
         raise Exception("id %s is present in test data set but is not present in correct data set"%read_id)
     ctr=ctr+1
