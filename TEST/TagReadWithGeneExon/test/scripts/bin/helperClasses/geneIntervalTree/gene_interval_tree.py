@@ -64,7 +64,8 @@ class GeneIntervalTree:
                             "end" : math.inf,
                             "strand" : parsed_entries["strand"],
                             "chrom" : parsed_entries["chrom"],
-                            "mismatch" : False
+                            "mismatch" : False,
+                            "transcripts" : {}
                         }
                         parsed_mapping["gene_name"]["transcripts"][parsed_entries["transcription_name"]] = Transcript(
                                 parsed_entries["transcription_start"],
