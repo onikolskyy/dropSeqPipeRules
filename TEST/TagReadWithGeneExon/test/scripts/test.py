@@ -3,7 +3,7 @@ from bin.helperClasses.geneIntervalTree.gene_interval_tree import GeneIntervalTr
 from bin.funcs import *
 
 infile_bam = pysam.AlignmentFile(snakemake.input["inbam"], "rb")
-gi_tree = GeneIntervalTree(snakemake.input["refflat"])
+gi_tree = GeneIntervalTree(snakemake.input["refflat"], infile_bam)
 outfile = pysam.AlignmentFile(snakemake.output["outbam"], "wb", template=infile_bam)
 correct_bam = pysam.AlignmentFile(snakemake.input["correctbam"], "rb")
 
