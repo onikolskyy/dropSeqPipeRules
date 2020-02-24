@@ -82,7 +82,7 @@ class GeneIntervalTree:
 
             # save the parsed genes
 
-            for gene_id, parsed_gene in parsed_entries.items():
+            for gene_id, parsed_gene in parsed_mapping.items():
                 if parsed_gene["mismatch"]:
                     continue
                 genes[gene_id].start = parsed_gene["start"]
