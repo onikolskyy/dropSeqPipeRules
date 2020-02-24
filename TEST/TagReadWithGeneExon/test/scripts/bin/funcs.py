@@ -1,6 +1,6 @@
 import collections
 from bin.helperClasses.locus_function import LocusFunctions
-from typing import Tuple, List, Dict
+from typing import Tuple, List, Dict, Set
 from bin.helperClasses.geneIntervalTree.gene_interval_tree import GeneIntervalTree
 from bin.helperClasses.gene import Gene
 from bin.helperClasses.tags import Tags
@@ -25,7 +25,7 @@ def tag_read_with_functional_data(bam_read, gene_interval_tree):
 
 
 def get_functional_data_for_interval(block, gene_interval_tree):
-    # type: (Tuple, GeneIntervalTree) -> Dict[str, List[LocusFunctions]]
+    # type: (Tuple, GeneIntervalTree) -> Dict[str, Set[LocusFunctions]]
 
     overlap_ids = gene_interval_tree.get_overlaps(block)
     result = {}
@@ -35,16 +35,16 @@ def get_functional_data_for_interval(block, gene_interval_tree):
 
 
 def get_locus_functions_by_interval(g, block):
-    # type: (Gene, Tuple) -> List[LocusFunctions]
+    # type: (Gene, Tuple) -> Set[LocusFunctions]
 
     locus_functions = [LocusFunctions.INTERGENIC for i in range(block[1]-block[0]+1)]
     for t in g.transcripts.values():
         t.assign_locus_function_for_range(block[0], locus_functions)
-    return locus_functions
+    return set(locus_functions)
 
 
 def simplify_functional_data(functional_data_map):
-    # type: (Dict[Tuple, Dict[str, list]]) -> Dict[str,set]
+    # type: (Dict[Tuple, Dict[str, Set]]) -> Dict[str,set]
 
     common_gene_ids = set.intersection(*[set(map_for_block.keys()) for block, map_for_block in functional_data_map.items()])
     result = collections.defaultdict(lambda : set())
