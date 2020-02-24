@@ -9,6 +9,7 @@ class Gene:
         self.strand = -1
         self.start = math.inf
         self.end = -math.inf
+        self.chrom = ""
 
     def add_transcript(self, name,
                        transcription_start, transcription_end, coding_start, coding_end, exons):

@@ -52,6 +52,7 @@ class GeneIntervalTree:
                     genes[parsed_entries["gene_name"]].start = min(genes[parsed_entries["gene_name"]].start, parsed_entries["transcription_start"]+1)
                     genes[parsed_entries["gene_name"]].end = max(genes[parsed_entries["gene_name"]].end, parsed_entries["transcription_end"])
                     genes[parsed_entries["gene_name"]].strand = parsed_entries["strand"]
+                    genes[parsed_entries["gene_name"]].chrom  = parsed_entries["chrom"]
                 refflat_line = refflat_file.readline()
                 ctr = ctr+1
                 if ctr % 100000 == 0:
