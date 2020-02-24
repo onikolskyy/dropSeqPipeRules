@@ -49,8 +49,8 @@ for read_id in reads_to_test.keys():
             print("gene strand mismatch for read_id", read_id)
             print("correct read:", correct_read["GENE_STRAND_TAG"])
             print("tested read:", read_to_test["GENE_STRAND_TAG"])
-            print("correct read mapped to chroms:", [gi_tree.genes[rid].chrom for rid in correct_read["GENE_NAME_TAG"].split(",")])
-            print("tested read mapped to chroms:", [gi_tree.genes[rid].chrom for rid in read_to_test["GENE_NAME_TAG"].split(",")])
+            print("correct read mapped to genes:", correct_read["GENE_NAME_TAG"])
+            print("tested read mapped to genes:",  read_to_test["GENE_NAME_TAG"])
             exit()
 
 
