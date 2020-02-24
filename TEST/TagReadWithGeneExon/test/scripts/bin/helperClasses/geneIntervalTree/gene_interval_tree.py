@@ -61,8 +61,8 @@ class GeneIntervalTree:
                             parsed_gene["end"] = max(parsed_gene["end"], parsed_entries["transcription_end"])
                     else:
                         parsed_mapping["gene_name"] = {
-                            "start" : -math.inf,
-                            "end" : math.inf,
+                            "start" : parsed_entries["transcription_start"],
+                            "end" : parsed_entries["transcription_end"],
                             "strand" : parsed_entries["strand"],
                             "chrom" : parsed_entries["chrom"],
                             "mismatch" : False,
