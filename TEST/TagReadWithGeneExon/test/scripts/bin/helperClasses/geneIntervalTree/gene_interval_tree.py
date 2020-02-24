@@ -39,7 +39,7 @@ class GeneIntervalTree:
                     if pair["SN"] == parsed_entries["chrom"]:
                         found = True
                         break
-                        
+
                 if found:
                     genes[parsed_entries["gene_name"]].transcripts[parsed_entries["transcription_name"]] = Transcript(
                         parsed_entries["transcription_start"],

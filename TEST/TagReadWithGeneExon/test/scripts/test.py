@@ -48,7 +48,7 @@ for read_id in reads_to_test.keys():
         correct_gene_ids = set(correct_read["GENE_NAME_TAG"].split(","))
         test_gene_ids = set(correct_read["GENE_NAME_TAG"].split(","))
 
-        if not correct_gene_ids.issubset(test_gene_ids):
+        if not correct_gene_ids == test_gene_ids :
             print("Fount a read where the correct gene mapping is NOT a subset of the tested")
             print("correct genes: ", correct_gene_ids)
             print("tested genes: ", test_gene_ids)
