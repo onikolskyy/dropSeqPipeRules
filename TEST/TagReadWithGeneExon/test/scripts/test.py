@@ -52,7 +52,7 @@ for read_id in reads_to_test.keys():
                 print(err_str)
                 print("tested read has blocks" , read_to_test["blocks"])
                 for gene_id in read_to_test["GENE_NAME_TAG"].split(", "):
-                    print(gene_id, "-->",  gi_tree.genes[gene_id].start, gi_tree.genes[gene_id].start.end)
+                    print(gene_id, "-->",  gi_tree.genes[gene_id].start, gi_tree.genes[gene_id].end)
                 raise Exception("EXIT")
     else:
         raise Exception("id %s is present in test data set but is not present in correct data set"%read_id)
