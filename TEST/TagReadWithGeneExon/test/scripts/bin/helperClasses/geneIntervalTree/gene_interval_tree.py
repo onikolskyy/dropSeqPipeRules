@@ -6,6 +6,7 @@ from ..transcript import Transcript
 from ..gene import Gene
 from ncls import NCLS
 from .refflat_entries import RefflatEntries
+import math
 
 
 #####################################################################################
@@ -31,6 +32,8 @@ class GeneIntervalTree:
             refflat_line = refflat_file.readline()
             # mapping of parsed gene names to corresponding transcripts
             genes = collections.defaultdict(lambda : Gene())
+            parsed_mapping = {}
+
             while refflat_line:
                 parsed_entries = RefflatEntries.get_dict(re.split(r'\t+', refflat_line.rstrip('\t')))
                 # find chromosome in header
@@ -41,6 +44,53 @@ class GeneIntervalTree:
                         break
 
                 if found:
+                    if parsed_entries["gene_name"] in parsed_mapping:
+                        parsed_gene = parsed_mapping["gene_name"]
+                        if parsed_gene["chrom"] != parsed_entries["chrom"] or parsed_gene["strand"] != parsed_entries["strand"] or parsed_gene["mismatch"]:
+                            parsed_gene["mismatch"] = True              # do not retain this gene
+                        else:
+                            parsed_gene["transcripts"][parsed_entries["transcription_name"]] = Transcript(
+                                parsed_entries["transcription_start"],
+                                parsed_entries["transcription_end"],
+                                parsed_entries["coding_start"],
+                                parsed_entries["coding_end"],
+                                [(parsed_entries["exon_starts"][i], parsed_entries["exon_ends"][i]) for i in range(len(parsed_entries["exon_starts"]))]
+                            )
+                            parsed_gene["start"] = min(parsed_gene["start"], parsed_entries["transcription_start"]+1)
+                            parsed_gene["end"] = max(parsed_gene["end"], parsed_entries["transcription_end"])
+                    else:
+                        parsed_mapping["gene_name"] = {
+                            "start" : -math.inf,
+                            "end" : math.inf,
+                            "strand" : parsed_entries["strand"],
+                            "chrom" : parsed_entries["chrom"],
+                            "mismatch" : False
+                        }
+                        parsed_mapping["gene_name"]["transcripts"][parsed_entries["transcription_name"]] = Transcript(
+                                parsed_entries["transcription_start"],
+                                parsed_entries["transcription_end"],
+                                parsed_entries["coding_start"],
+                                parsed_entries["coding_end"],
+                                [(parsed_entries["exon_starts"][i], parsed_entries["exon_ends"][i]) for i in range(len(parsed_entries["exon_starts"]))]
+                        )
+            refflat_line = refflat_file.readline()
+            ctr = ctr + 1
+            if ctr % 100000 == 0:
+                print("parsed %i lines" % ctr)
+
+
+            # save the parsed genes
+
+            for gene_id, parsed_gene in parsed_entries.items():
+                if parsed_gene["mismatch"]:
+                    continue
+                genes[gene_id].start = parsed_gene["start"]
+                genes[gene_id].end = parsed_gene["end"]
+                genes[gene_id].chrom = parsed_gene["chrom"]
+                genes[gene_id].strand = parsed_gene["strand"]
+                for transcript_name, transcript in parsed_gene["transcripts"].items():
+                    genes[gene_id].transcripts[transcript_name] = transcript
+
                     genes[parsed_entries["gene_name"]].transcripts[parsed_entries["transcription_name"]] = Transcript(
                         parsed_entries["transcription_start"],
                         parsed_entries["transcription_end"],
@@ -52,11 +102,12 @@ class GeneIntervalTree:
                     genes[parsed_entries["gene_name"]].start = min(genes[parsed_entries["gene_name"]].start, parsed_entries["transcription_start"]+1)
                     genes[parsed_entries["gene_name"]].end = max(genes[parsed_entries["gene_name"]].end, parsed_entries["transcription_end"])
                     genes[parsed_entries["gene_name"]].strand = parsed_entries["strand"]
-                    genes[parsed_entries["gene_name"]].chrom  = parsed_entries["chrom"]
-                refflat_line = refflat_file.readline()
-                ctr = ctr+1
-                if ctr % 100000 == 0:
-                    print("parsed %i lines"%ctr)
+                    genes[parsed_entries["gene_name"]].chrom = parsed_entries["chrom"]
+                    genes[parsed_entries["gene_name"]]
+
+
+
+
         return genes
 
 
