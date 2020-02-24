@@ -45,22 +45,24 @@ for read_id in reads_to_test.keys():
         correct_read = correct_reads[read_id]
         read_to_test = reads_to_test[read_id]
 
-        if not correct_read["GENE_NAME_TAG"] == read_to_test["GENE_NAME_TAG"]:
-            print("Not equel gene_names")
-            print("correct read: ", correct_read["GENE_NAME_TAG"])
-            print("tested read: ", read_to_test["GENE_NAME_TAG"])
-            raise Exception()
+        # if not correct_read["GENE_NAME_TAG"] == read_to_test["GENE_NAME_TAG"]:
+        #     print("Not equel gene_names")
+        #     print("correct read: ", correct_read["GENE_NAME_TAG"])
+        #     print("tested read: ", read_to_test["GENE_NAME_TAG"])
+        #     raise Exception()
 
-        # for tag_name, bam_tag in Tags.tags_dict.items():
-        #     if read_to_test[tag_name] == correct_read[tag_name]:
-        #         pass
-        #     else:
-        #         err_str = "on read " + read_id + ", tag " + tag_name + "\n correct read: " + correct_read[tag_name] + " read to test: " + read_to_test[tag_name] + "\n"
-        #         print(err_str)
-        #         print("tested read has blocks" , read_to_test["blocks"])
-        #         for gene_id in read_to_test["GENE_NAME_TAG"].split(", "):
-        #             print(gene_id, "-->",  gi_tree.genes[gene_id].start, gi_tree.genes[gene_id].end)
-        #         raise Exception("EXIT")
+        for tag_name, bam_tag in Tags.tags_dict.items():
+            if read_to_test[tag_name] == correct_read[tag_name]:
+                pass
+            else:
+                err_str = "on read " + read_id + ", tag " + tag_name + "\n correct read: " + correct_read[tag_name] + " read to test: " + read_to_test[tag_name] + "\n"
+                print(err_str)
+                print("correct read is mapped to: ", correct_read["GENE_NAME_TAG"])
+                print("tested read is mapped to: ", read_to_test["GENE_NAME_TAG"])
+                print("tested read has blocks" , read_to_test["blocks"])
+                for gene_id in read_to_test["GENE_NAME_TAG"].split(", "):
+                    print(gene_id, "-->",  gi_tree.genes[gene_id].start, gi_tree.genes[gene_id].end)
+                raise Exception("EXIT")
     else:
         raise Exception("id %s is present in test data set but is not present in correct data set"%read_id)
     ctr=ctr+1
