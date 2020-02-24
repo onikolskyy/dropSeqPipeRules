@@ -74,10 +74,10 @@ class GeneIntervalTree:
                                 parsed_entries["coding_end"],
                                 [(parsed_entries["exon_starts"][i], parsed_entries["exon_ends"][i]) for i in range(len(parsed_entries["exon_starts"]))]
                         )
-            refflat_line = refflat_file.readline()
-            ctr = ctr + 1
-            if ctr % 100000 == 0:
-                print("parsed %i lines" % ctr)
+                refflat_line = refflat_file.readline()
+                ctr = ctr + 1
+                if ctr % 100000 == 0:
+                    print("parsed %i lines" % ctr)
 
 
             # save the parsed genes
