@@ -29,7 +29,7 @@ for read in infile_bam:
         else:
             reads_to_test[read.query_name][tag_name] = ""
     # blocks
-    read["blocks"] = read.get_blocks()
+    read["blocks"] = [b for b in read.get_blocks()]
     ctr+=1
     if ctr % 100000 == 0:
         print("tagged %ctr reads",ctr)
