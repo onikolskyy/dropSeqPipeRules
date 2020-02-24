@@ -43,7 +43,7 @@ for read_id in reads_to_test.keys():
         correct_read = correct_reads[read_id]
         read_to_test = reads_to_test[read_id]
         for tag_name, bam_tag in Tags.tags_dict.items():
-            if read_to_test[bam_tag] == correct_read[bam_tag]:
+            if read_to_test[tag_name] == correct_read[tag_name]:
                 pass
             else:
                 raise Exception("Unequal reads: on tag %s - EXITING"%tag_name)
