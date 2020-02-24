@@ -60,7 +60,7 @@ for read_id in reads_to_test.keys():
                 print("correct read is mapped to: ", correct_read["GENE_NAME_TAG"])
                 print("tested read is mapped to: ", read_to_test["GENE_NAME_TAG"])
                 print("tested read has blocks" , read_to_test["blocks"])
-                for gene_id in read_to_test["GENE_NAME_TAG"].split(", "):
+                for gene_id in read_to_test["GENE_NAME_TAG"].split(","):
                     print(gene_id, "-->",  gi_tree.genes[gene_id].start, gi_tree.genes[gene_id].end)
                 raise Exception("EXIT")
     else:
