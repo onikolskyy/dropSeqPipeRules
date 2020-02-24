@@ -28,6 +28,8 @@ for read in infile_bam:
             reads_to_test[read.query_name][tag_name] = read.get_tag(bam_tag)
         else:
             reads_to_test[read.query_name][tag_name] = ""
+    # blocks
+    read["blocks"] = read.get_blocks()
     ctr+=1
     if ctr % 100000 == 0:
         print("tagged %ctr reads",ctr)
@@ -46,8 +48,10 @@ for read_id in reads_to_test.keys():
             if read_to_test[tag_name] == correct_read[tag_name]:
                 pass
             else:
-                raise Exception("Unequal reads: on on read %s tag %s - \n Correct read: %s, Tested read: %s \n Correct read has genes: %s, tested read has genes %s"
-                                %(read_id,tag_name,correct_read[tag_name],read_to_test[tag_name],correct_read["GENE_NAME_TAG"],read_to_test["GENE_NAME_TAG"]))
+                err_str = "on read " + read_id + ", tag " + tag_name + "\n correct read: " + correct_read[tag_name] + " read to test: " + read_to_test[tag_name] + "\n"
+                print(err_str)
+                print("tested read has blocks" , read_to_test["blocks"])
+                raise Exception("EXIT")
     else:
         raise Exception("id %s is present in test data set but is not present in correct data set"%read_id)
     ctr=ctr+1
