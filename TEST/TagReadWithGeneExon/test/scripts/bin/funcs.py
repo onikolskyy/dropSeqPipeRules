@@ -78,7 +78,7 @@ def getGenesWithOverlappedExon(read, genes):
 
 def checkIfExonOverlapped(block, gene):
     for t in gene.transcripts:
-        for ex in t.exons:
+        for ex in gene.transcripts[t].exons:
             if ex[0] <= block[0] and ex[1] >= block[1]:
                 return True
     return False
