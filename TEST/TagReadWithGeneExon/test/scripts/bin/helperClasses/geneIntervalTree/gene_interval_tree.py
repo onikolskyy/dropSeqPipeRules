@@ -68,7 +68,7 @@ class GeneIntervalTree:
                             "transcripts" : {}
                         }
                         parsed_mapping[parsed_entries["gene_name"]]["transcripts"][parsed_entries["transcription_name"]] = Transcript(
-                                parsed_entries["transcription_start"],
+                                parsed_entries["transcription_start"]+1,
                                 parsed_entries["transcription_end"],
                                 parsed_entries["coding_start"],
                                 parsed_entries["coding_end"],

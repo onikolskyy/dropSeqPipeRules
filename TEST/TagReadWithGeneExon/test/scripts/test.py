@@ -54,12 +54,12 @@ for read_id in reads_to_test.keys():
             print("tested read mapped to genes:",  read_to_test["GENE_NAME_TAG"])
 
             for g_id in correct_read["GENE_NAME_TAG"].split(","):
-                print("g_id-->", gi_tree.genes[g_id].start, gi_tree.genes[g_id].end)
+                print("g_id-->", gi_tree.genes[g_id].start, gi_tree.genes[g_id].end,gi_tree.genes[g_id].chrom, gi_tree.genes[g_id].strand)
 
             print("__________________________________")
 
             for g_id in read_to_test["GENE_NAME_TAG"].split(","):
-                print("g_id-->", gi_tree.genes[g_id].start,gi_tree.genes[g_id].end)
+                print("g_id-->", gi_tree.genes[g_id].start,gi_tree.genes[g_id].end,gi_tree.genes[g_id].chrom, gi_tree.genes[g_id].strand)
             print("____________________________")
             print(read_to_test["blocks"])
             exit()
