@@ -42,7 +42,6 @@ class GeneIntervalTree:
                 for pair in bam_header["SQ"]:
                     if pair["SN"] == parsed_entries["chrom"]:
                         found = True
-                        print("found")
                         break
 
                 if found:
@@ -62,7 +61,7 @@ class GeneIntervalTree:
                             parsed_gene["end"] = max(parsed_gene["end"], parsed_entries["transcription_end"])
                     else:
                         parsed_mapping["gene_name"] = {
-                            "start" : parsed_entries["transcription_start"],
+                            "start" : parsed_entries["transcription_start"]+1,
                             "end" : parsed_entries["transcription_end"],
                             "strand" : parsed_entries["strand"],
                             "chrom" : parsed_entries["chrom"],
