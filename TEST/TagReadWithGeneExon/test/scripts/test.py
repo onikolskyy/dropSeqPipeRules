@@ -62,7 +62,8 @@ for read_id in reads_to_test.keys():
                 print("g_id-->", gi_tree.genes[g_id].start,gi_tree.genes[g_id].end,gi_tree.genes[g_id].chrom, gi_tree.genes[g_id].strand)
             print("____________________________")
             print(read_to_test["blocks"])
-            exit()
+            print("____________________________________________________________________")
+            print("____________________________________________________________________")
         else:
             print("correct read:", correct_read["GENE_STRAND_TAG"])
             print("tested read:", read_to_test["GENE_STRAND_TAG"])
