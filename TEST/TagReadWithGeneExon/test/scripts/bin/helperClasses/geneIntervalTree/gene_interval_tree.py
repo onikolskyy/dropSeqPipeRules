@@ -39,25 +39,15 @@ class GeneIntervalTree:
                 parsed_entries = RefflatEntries.get_dict(re.split(r'\t+', refflat_line.rstrip('\t')))
                 # find chromosome in header
                 found = False
-                if parsed_entries["gene_name"] == "Gm43466":
-                    print("Gm43466")
-
                 for pair in bam_header["SQ"]:
                     if pair["SN"] == parsed_entries["chrom"]:
                         found = True
                         break
 
                 if found:
-                    if parsed_entries["gene_name"] == "Gm43466":
-                        print("found")
                     if parsed_entries["gene_name"] in parsed_mapping:
                         parsed_gene = parsed_mapping["gene_name"]
                         if parsed_gene["chrom"] != parsed_entries["chrom"] or parsed_gene["strand"] != parsed_entries["strand"]:
-                            if parsed_entries["gene_name"] == "Gm43466":
-                                if parsed_gene["chrom"] != parsed_entries["chrom"]:
-                                    print("Gm43466 -- chrom mismatch")
-                                else:
-                                    print("Gm43466 -- strand mismatch")
                             parsed_gene["mismatch"] = True              # do not retain this gene
                         else:
                             parsed_gene["transcripts"][parsed_entries["transcription_name"]] = Transcript(
@@ -104,6 +94,8 @@ class GeneIntervalTree:
                 genes[gene_id].strand = parsed_gene["strand"]
                 for transcript_name, transcript in parsed_gene["transcripts"].items():
                     genes[gene_id].transcripts[transcript_name] = transcript
+
+        print(genes.keys())
 
         return genes
 
