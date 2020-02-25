@@ -42,6 +42,7 @@ class GeneIntervalTree:
                 for pair in bam_header["SQ"]:
                     if pair["SN"] == parsed_entries["chrom"]:
                         found = True
+                        print("found")
                         break
 
                 if found:
