@@ -46,7 +46,7 @@ class GeneIntervalTree:
 
                 if found:
                     if parsed_entries["gene_name"] in parsed_mapping.keys():
-                        parsed_gene = parsed_mapping["gene_name"]
+                        parsed_gene = parsed_mapping[parsed_entries["gene_name"]]
                         if parsed_gene["chrom"] != parsed_entries["chrom"] or parsed_gene["strand"] != parsed_entries["strand"]:
                             parsed_gene["mismatch"] = True              # do not retain this gene
                         else:
@@ -60,7 +60,7 @@ class GeneIntervalTree:
                             parsed_gene["start"] = min(parsed_gene["start"], parsed_entries["transcription_start"]+1)
                             parsed_gene["end"] = max(parsed_gene["end"], parsed_entries["transcription_end"])
                     else:
-                        parsed_mapping["gene_name"] = {
+                        parsed_mapping[parsed_entries["gene_name"]] = {
                             "start" : parsed_entries["transcription_start"]+1,
                             "end" : parsed_entries["transcription_end"],
                             "strand" : parsed_entries["strand"],
@@ -68,7 +68,7 @@ class GeneIntervalTree:
                             "mismatch" : False,
                             "transcripts" : {}
                         }
-                        parsed_mapping["gene_name"]["transcripts"][parsed_entries["transcription_name"]] = Transcript(
+                        parsed_mapping[parsed_entries["gene_name"]]["transcripts"][parsed_entries["transcription_name"]] = Transcript(
                                 parsed_entries["transcription_start"],
                                 parsed_entries["transcription_end"],
                                 parsed_entries["coding_start"],
@@ -84,10 +84,7 @@ class GeneIntervalTree:
 
             # save the parsed genes
 
-            print(parsed_mapping.keys())
-
             for gene_id, parsed_gene in parsed_mapping.items():
-                print("gene_ids")
                 if parsed_gene["mismatch"]:
                     continue
                 genes[gene_id] = Gene()
