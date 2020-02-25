@@ -55,12 +55,13 @@ for read_id in reads_to_test.keys():
 
             for g_id in correct_read["GENE_NAME_TAG"].split(","):
                 print("g_id-->", gi_tree.genes[g_id].start, gi_tree.genes[g_id].end)
-                
+
             print("__________________________________")
 
             for g_id in read_to_test["GENE_NAME_TAG"].split(","):
                 print("g_id-->", gi_tree.genes[g_id].start,gi_tree.genes[g_id].end)
-
+            print("____________________________")
+            print(read_to_test["blocks"])
             exit()
         else:
             print("correct read:", correct_read["GENE_STRAND_TAG"])
