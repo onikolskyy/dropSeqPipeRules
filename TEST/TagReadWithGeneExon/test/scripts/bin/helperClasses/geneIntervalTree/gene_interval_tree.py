@@ -45,7 +45,7 @@ class GeneIntervalTree:
                         break
 
                 if found:
-                    if parsed_entries["gene_name"] in parsed_mapping:
+                    if parsed_entries["gene_name"] in parsed_mapping.keys():
                         parsed_gene = parsed_mapping["gene_name"]
                         if parsed_gene["chrom"] != parsed_entries["chrom"] or parsed_gene["strand"] != parsed_entries["strand"]:
                             parsed_gene["mismatch"] = True              # do not retain this gene
@@ -84,7 +84,7 @@ class GeneIntervalTree:
 
             # save the parsed genes
 
-
+            print(parsed_mapping.keys())
 
             for gene_id, parsed_gene in parsed_mapping.items():
                 print("gene_ids")
