@@ -41,6 +41,7 @@ if not len(reads_to_test.keys()) == len(correct_reads.keys()):
     raise Exception("read ids not equal")
 
 for read_id in reads_to_test.keys():
+    ctr+=1
     if read_id in correct_reads.keys():
         correct_read = correct_reads[read_id]
         read_to_test = reads_to_test[read_id]
@@ -68,5 +69,7 @@ for read_id in reads_to_test.keys():
             print("correct read:", correct_read["GENE_STRAND_TAG"])
             print("tested read:", read_to_test["GENE_STRAND_TAG"])
 
+        if(ctr==100):
+            exit()
 
 
