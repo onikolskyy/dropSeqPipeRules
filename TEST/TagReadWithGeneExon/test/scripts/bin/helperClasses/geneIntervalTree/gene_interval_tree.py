@@ -87,6 +87,7 @@ class GeneIntervalTree:
                 if parsed_gene["mismatch"]:
                     continue
                 genes[gene_id] = Gene()
+                genes[gene_id].name = gene_id
                 genes[gene_id].start = parsed_gene["start"]
                 genes[gene_id].end = parsed_gene["end"]
                 genes[gene_id].chrom = parsed_gene["chrom"]
