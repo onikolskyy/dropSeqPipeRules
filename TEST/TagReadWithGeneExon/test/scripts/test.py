@@ -55,6 +55,6 @@ for read_id in reads_to_test.keys():
         else:
             print("correct read:", correct_read["GENE_STRAND_TAG"])
             print("tested read:", read_to_test["GENE_STRAND_TAG"])
-            
+
 
 

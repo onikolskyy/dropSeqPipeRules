@@ -47,7 +47,7 @@ class GeneIntervalTree:
                 if found:
                     if parsed_entries["gene_name"] in parsed_mapping:
                         parsed_gene = parsed_mapping["gene_name"]
-                        if parsed_gene["chrom"] != parsed_entries["chrom"] or parsed_gene["strand"] != parsed_entries["strand"] or parsed_gene["mismatch"]:
+                        if parsed_gene["chrom"] != parsed_entries["chrom"] or parsed_gene["strand"] != parsed_entries["strand"]:
                             parsed_gene["mismatch"] = True              # do not retain this gene
                         else:
                             parsed_gene["transcripts"][parsed_entries["transcription_name"]] = Transcript(
@@ -101,15 +101,6 @@ class GeneIntervalTree:
                         [(parsed_entries["exon_starts"][i], parsed_entries["exon_ends"][i]) for i in range(len(parsed_entries["exon_starts"]))]
                     )
                     # todo : correctness (should I take transcriptions or coding?)
-                    genes[parsed_entries["gene_name"]].start = min(genes[parsed_entries["gene_name"]].start, parsed_entries["transcription_start"]+1)
-                    genes[parsed_entries["gene_name"]].end = max(genes[parsed_entries["gene_name"]].end, parsed_entries["transcription_end"])
-                    genes[parsed_entries["gene_name"]].strand = parsed_entries["strand"]
-                    genes[parsed_entries["gene_name"]].chrom = parsed_entries["chrom"]
-                    genes[parsed_entries["gene_name"]]
-
-
-
-
         return genes
 
 
