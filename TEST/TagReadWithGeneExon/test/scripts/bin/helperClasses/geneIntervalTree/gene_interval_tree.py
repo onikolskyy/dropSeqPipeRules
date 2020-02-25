@@ -48,6 +48,11 @@ class GeneIntervalTree:
                     if parsed_entries["gene_name"] in parsed_mapping:
                         parsed_gene = parsed_mapping["gene_name"]
                         if parsed_gene["chrom"] != parsed_entries["chrom"] or parsed_gene["strand"] != parsed_entries["strand"]:
+                            if parsed_entries["gene_name"] == "Gm43466":
+                                if parsed_gene["chrom"] != parsed_entries["chrom"]:
+                                    print("Gm43466 -- chrom mismatch")
+                                else:
+                                    print("Gm43466 -- strand mismatch")
                             parsed_gene["mismatch"] = True              # do not retain this gene
                         else:
                             parsed_gene["transcripts"][parsed_entries["transcription_name"]] = Transcript(
