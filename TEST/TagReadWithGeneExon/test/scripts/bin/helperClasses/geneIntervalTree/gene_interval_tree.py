@@ -19,7 +19,6 @@ class GeneIntervalTree:
         self.genes = GeneIntervalTree.get_genes(in_refflat, bam_file)
         self.gene_ids = list(self.genes.keys())
         starts = np.array([self.genes[self.gene_ids[i]].start for i in range(len(self.gene_ids))])
-        print(starts)
         ends = np.array([self.genes[self.gene_ids[i]].end for i in range(len(self.gene_ids))])
         self.tree = NCLS(starts, ends, np.arange(0,len(self.gene_ids)))
 
@@ -94,9 +93,6 @@ class GeneIntervalTree:
                 genes[gene_id].strand = parsed_gene["strand"]
                 for transcript_name, transcript in parsed_gene["transcripts"].items():
                     genes[gene_id].transcripts[transcript_name] = transcript
-
-        print(genes.keys())
-
         return genes
 
     def get_overlaps(self, block):

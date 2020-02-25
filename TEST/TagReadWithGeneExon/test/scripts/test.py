@@ -54,7 +54,13 @@ for read_id in reads_to_test.keys():
             print("tested read mapped to genes:",  read_to_test["GENE_NAME_TAG"])
 
             for g_id in correct_read["GENE_NAME_TAG"].split(","):
-                print("g_id-->", gi_tree.genes[g_id])
+                print("g_id-->", gi_tree.genes[g_id].start, gi_tree.genes[g_id].end)
+                
+            print("__________________________________")
+
+            for g_id in read_to_test["GENE_NAME_TAG"].split(","):
+                print("g_id-->", gi_tree.genes[g_id].start,gi_tree.genes[g_id].end)
+
             exit()
         else:
             print("correct read:", correct_read["GENE_STRAND_TAG"])
