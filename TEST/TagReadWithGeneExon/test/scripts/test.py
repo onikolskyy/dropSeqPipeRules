@@ -56,30 +56,10 @@ for read_id in reads_to_test.keys():
         correct_read = correct_reads[read_id]
         read_to_test = reads_to_test[read_id]
 
-        if not correct_read["GENE_STRAND_TAG"] == read_to_test["GENE_STRAND_TAG"]:
-            print("gene strand mismatch for read_id", read_id)
-            print("correct read:", correct_read["GENE_STRAND_TAG"])
-            print("tested read:", read_to_test["GENE_STRAND_TAG"])
-
+        if not correct_read["GENE_NAME_TAG"] == read_to_test["GENE_NAME_TAG"]:
+            print("gene name mismatch for read_id", read_id)
             print("correct read mapped to genes:", correct_read["GENE_NAME_TAG"])
             print("tested read mapped to genes:",  read_to_test["GENE_NAME_TAG"])
-
-            for g_id in correct_read["GENE_NAME_TAG"].split(","):
-                print("g_id-->", gi_tree.genes[g_id].start, gi_tree.genes[g_id].end,gi_tree.genes[g_id].chrom, gi_tree.genes[g_id].strand)
-
-            print("__________________________________")
-
-            for g_id in read_to_test["GENE_NAME_TAG"].split(","):
-                print("g_id-->", gi_tree.genes[g_id].start,gi_tree.genes[g_id].end,gi_tree.genes[g_id].chrom, gi_tree.genes[g_id].strand)
-            print("____________________________")
-            print(read_to_test["blocks"])
-            print("____________________________________________________________________")
-            print("____________________________________________________________________")
-        else:
-            print("correct read:", correct_read["GENE_STRAND_TAG"])
-            print("tested read:", read_to_test["GENE_STRAND_TAG"])
-
-        if(ctr==100):
             exit()
 
 
