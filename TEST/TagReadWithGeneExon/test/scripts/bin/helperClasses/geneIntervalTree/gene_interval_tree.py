@@ -32,7 +32,7 @@ class GeneIntervalTree:
         with open(in_refflat, "r") as refflat_file:
             refflat_line = refflat_file.readline()
             # mapping of parsed gene names to corresponding transcripts
-            genes = collections.defaultdict(lambda : Gene())
+            genes = {}
             parsed_mapping = {}
 
             while refflat_line:
@@ -75,6 +75,7 @@ class GeneIntervalTree:
                                 parsed_entries["coding_end"],
                                 [(parsed_entries["exon_starts"][i], parsed_entries["exon_ends"][i]) for i in range(len(parsed_entries["exon_starts"]))]
                         )
+
                 refflat_line = refflat_file.readline()
                 ctr = ctr + 1
                 if ctr % 100000 == 0:
@@ -86,6 +87,7 @@ class GeneIntervalTree:
             for gene_id, parsed_gene in parsed_mapping.items():
                 if parsed_gene["mismatch"]:
                     continue
+                genes[gene_id] = Gene()
                 genes[gene_id].start = parsed_gene["start"]
                 genes[gene_id].end = parsed_gene["end"]
                 genes[gene_id].chrom = parsed_gene["chrom"]
@@ -93,19 +95,10 @@ class GeneIntervalTree:
                 for transcript_name, transcript in parsed_gene["transcripts"].items():
                     genes[gene_id].transcripts[transcript_name] = transcript
 
-                    genes[parsed_entries["gene_name"]].transcripts[parsed_entries["transcription_name"]] = Transcript(
-                        parsed_entries["transcription_start"],
-                        parsed_entries["transcription_end"],
-                        parsed_entries["coding_start"],
-                        parsed_entries["coding_end"],
-                        [(parsed_entries["exon_starts"][i], parsed_entries["exon_ends"][i]) for i in range(len(parsed_entries["exon_starts"]))]
-                    )
-                    # todo : correctness (should I take transcriptions or coding?)
         return genes
 
-
     def get_overlaps(self, block):
-        #overlap_tuples = filter(lambda o : block[0] <= o[0] and block[1] >= o[1], self.tree.find_overlap(block[0], block[1]))
+        # overlap_tuples = filter(lambda o : block[0] <= o[0] and block[1] >= o[1], self.tree.find_overlap(block[0], block[1]))
         overlap_tuples = self.tree.find_overlap(block[0], block[1])
         overlaps = [overlap_tuple[2] for overlap_tuple in overlap_tuples]
         return [self.gene_ids[overlap] for overlap in overlaps]
