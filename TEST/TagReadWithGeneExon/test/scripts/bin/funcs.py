@@ -12,9 +12,9 @@ def tag_read_with_functional_data(bam_read, gene_interval_tree):
     for b in blocks:
         tmp_result[b] = get_functional_data_for_interval(b, gene_interval_tree)
     final = simplify_functional_data(tmp_result)
-    filtered_genes = filter_gene_ids(final.keys(), bam_read, gene_interval_tree)
-    filtered_ids = sorted([gene.name for gene in filtered_genes])
-
+    #filtered_genes = filter_gene_ids(final.keys(), bam_read, gene_interval_tree)
+    #filtered_ids = sorted([gene.name for gene in filtered_genes])
+    filtered_ids = final.keys()
     # gene_ids = filter(lambda gene_id: gene_interval_tree.genes[gene_id].is_negative_strand() == bam_read.is_reverse, list(final.keys()))
     # lf_lists = [sorted(list(final[gene_id]), reverse=True) for gene_id in gene_ids]
     #gene_ids_same_strand = filter(lambda gene_id: gene_interval_tree.genes[gene_id].is_negative_strand == read_is_negative_strand, gene_ids)
