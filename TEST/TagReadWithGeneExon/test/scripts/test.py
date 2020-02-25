@@ -17,15 +17,6 @@ for read in correct_bam:
             correct_reads[read.query_name][tag_name] = read.get_tag(bam_tag)
         else:
             correct_reads[read.query_name][tag_name] = ""
-    chr = None
-    if read.has_tag("gn"):
-        for g_id in read.get_tag("gn").split(","):
-            if chr == None:
-                chr = gi_tree.genes[g_id].chrom
-            else:
-                if chr != gi_tree.genes[g_id].chrom:
-                    print("FOUND correct read mapped to  genes with multiple chromosomes!")
-
 
 ctr = 0
 print("start tagging reads...")

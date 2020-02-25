@@ -12,13 +12,16 @@ def tag_read_with_functional_data(bam_read, gene_interval_tree):
     for b in blocks:
         tmp_result[b] = get_functional_data_for_interval(b, gene_interval_tree)
     final = simplify_functional_data(tmp_result)
-    gene_ids = filter(lambda gene_id: gene_interval_tree.genes[gene_id].is_negative_strand() == bam_read.is_reverse, list(final.keys()))
-    lf_lists = [sorted(list(final[gene_id]), reverse=True) for gene_id in gene_ids]
+    filtered_genes = filter_gene_ids(final.keys(), bam_read, gene_interval_tree)
+    filtered_ids = sorted([gene.name for gene in filtered_genes])
+
+    # gene_ids = filter(lambda gene_id: gene_interval_tree.genes[gene_id].is_negative_strand() == bam_read.is_reverse, list(final.keys()))
+    # lf_lists = [sorted(list(final[gene_id]), reverse=True) for gene_id in gene_ids]
     gene_ids_same_strand = filter(lambda gene_id: gene_interval_tree.genes[gene_id].is_negative_strand == read_is_negative_strand, gene_ids)
-    bam_read.set_tag(Tags.tags_dict["GENE_FUNCTION_TAG"],  ",".join(lf.name for lf_list in lf_lists for lf in lf_list))
-    bam_read.set_tag(Tags.tags_dict["GENE_NAME_TAG"], ",".join(gene_ids))
-    bam_read.set_tag(Tags.tags_dict["GENE_STRAND_TAG"],   ",".join(["-" if gene_interval_tree.genes[gene_id].is_negative_strand() else "+" for gene_id in gene_ids]))
-    bam_read.set_tag(Tags.tags_dict["READ_FUNCTION_TAG"], get_best_lf_name(final, gene_ids_same_strand))
+    #   bam_read.set_tag(Tags.tags_dict["GENE_FUNCTION_TAG"],  ",".join(lf.name for lf_list in lf_lists for lf in lf_list))
+    bam_read.set_tag(Tags.tags_dict["GENE_NAME_TAG"], ",".join(filtered_ids))
+    #  bam_read.set_tag(Tags.tags_dict["GENE_STRAND_TAG"],   ",".join(["-" if gene_interval_tree.genes[gene_id].is_negative_strand() else "+" for gene_id in gene_ids]))
+    #  bam_read.set_tag(Tags.tags_dict["READ_FUNCTION_TAG"], get_best_lf_name(final, gene_ids_same_strand))
 
 
 def get_functional_data_for_interval(block, gene_interval_tree):
@@ -61,3 +64,29 @@ def get_best_lf_name(lf_map, gene_ids):
                 if int(best_lf) >= 5:
                     return best_lf
     return best_lf.name
+
+
+def getGenesWithOverlappedExon(read, genes):
+    result = set()
+    blocks = read.get_blocks()
+    for gene in genes:
+        for block in blocks:
+            if checkIfExonOverlapped(block,gene):
+                result.add(gene)
+    return result
+
+
+def checkIfExonOverlapped(block, gene):
+    for t in gene.transcripts:
+        for ex in t.exons:
+            if ex[0] <= block[0] and ex[1] >= block[1]:
+                return True
+    return False
+
+
+def filter_gene_ids(gene_ids, read, gi_tree):
+    genes = [gi_tree.genes[gene_id] for gene_id in gene_ids]
+    # first filter for genes on same strand
+    genes_filtered = filter(lambda gene: gene.strand == read.is_reverse ,genes)
+    # retain only those genes where read overlaps an exon
+    return getGenesWithOverlappedExon(read, genes_filtered)
