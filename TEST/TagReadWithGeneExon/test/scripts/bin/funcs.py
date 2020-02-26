@@ -88,4 +88,5 @@ def filter_gene_ids(gene_ids, read, gi_tree):
     # first filter for genes on same strand
     genes_filtered = filter(lambda gene: (gene.strand < 0) == read.is_reverse, genes)
     # retain only those genes where read overlaps an exon
-    return getGenesWithOverlappedExon(read, genes_filtered)
+    #return getGenesWithOverlappedExon(read, genes_filtered)
+    return genes_filtered
