@@ -18,3 +18,9 @@ class Gene:
 
     def is_negative_strand(self):
         return self.strand < 0
+
+    def verbose(self):
+        print("strand:", self.strand, "start,end:" , self.start, self.end, "chrom", self.chrom)
+        for t_name, t in self.transcripts:
+            print("TRANSCRIPT", t_name)
+            t.verbose()

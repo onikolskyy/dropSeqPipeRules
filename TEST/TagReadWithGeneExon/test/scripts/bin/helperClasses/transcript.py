@@ -33,3 +33,8 @@ class Transcript:
 
     def utr(self, pos):
         return pos < self.coding_start or pos > self.coding_end
+
+    def verbose(self):
+        print("transcription", self.transcription_start, self.transcription_end)
+        print("coding", self.coding_start, self.coding_end)
+        print("exons", self.exons)

@@ -41,6 +41,9 @@ for read in correct_bam:
             print("correct genes", [gene.name for gene in correct_genes])
             print("correct_genes_with_coding_overlapped", [ gene.name for gene in correct_genes_with_coding_overlapped])
             print("correct_genes_with_exon_overlapped", [ gene.name for gene in correct_genes_with_exon_overlapped])
+            dif = correct_genes - correct_genes_with_coding_overlapped.union(correct_genes_with_exon_overlapped)
+            for gene in dif:
+                gene.verbose()
             print("_____________________________")
             ctr_wrong+=1
 
