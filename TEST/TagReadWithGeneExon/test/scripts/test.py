@@ -39,9 +39,9 @@ for read in correct_bam:
         if correct_genes == correct_genes_with_transcript_overlapped:
             ctr_correct+=1
         else:
-            print("_____________________________")
-            print("correct genes", [gene.name for gene in correct_genes])
-            print("correct_genes_with_transcript_overlapped", [gene.name for gene in correct_genes_with_transcript_overlapped])
+            # print("_____________________________")
+            # print("correct genes", [gene.name for gene in correct_genes])
+            # print("correct_genes_with_transcript_overlapped", [gene.name for gene in correct_genes_with_transcript_overlapped])
             # print("correct_genes_with_coding_overlapped", [ gene.name for gene in correct_genes_with_coding_overlapped])
             # print("correct_genes_with_exon_overlapped", [ gene.name for gene in correct_genes_with_exon_overlapped])
             # dif = correct_genes - correct_genes_with_coding_overlapped.union(correct_genes_with_exon_overlapped)
