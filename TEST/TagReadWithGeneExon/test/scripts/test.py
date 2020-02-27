@@ -31,12 +31,17 @@ for read in correct_bam:
         continue
     else:
         correct_genes_with_coding_overlapped = getGenesWithOverlappedCoding(read.get_blocks(),
-                                                                            correct_genes)
-        if correct_genes == correct_genes_with_coding_overlapped:
+                                                                                    correct_genes)
+        correct_genes_with_exon_overlapped = getGenesWithOverlappedExon(read.get_blocks(),
+                                                                                    correct_genes)
+        if correct_genes == correct_genes_with_coding_overlapped.union(correct_genes_with_exon_overlapped):
             ctr_correct+=1
         else:
+            print("_____________________________")
             print("correct genes", [gene.name for gene in correct_genes])
             print("correct_genes_with_coding_overlapped", [ gene.name for gene in correct_genes_with_coding_overlapped])
+            print("correct_genes_with_exon_overlapped", [ gene.name for gene in correct_genes_with_exon_overlapped])
+            print("_____________________________")
             ctr_wrong+=1
 
 print(ctr_correct)
