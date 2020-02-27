@@ -53,7 +53,18 @@ for read_id in reads_to_test.keys():
             print("correct read blocks:", correct_reads[read_id]['blocks'] )
             print("tested read blocks:", reads_to_test[read_id]['blocks'] )
             print("correct read mapped to genes:", correct_read["GENE_NAME_TAG"])
+            print("_________________________")
+            for gene_id in correct_read["GENE_NAME_TAG"].split(","):
+                gene = gi_tree.genes[gene_id]
+                print(gene_id, "--> (", gene.start, ",", gene.end, ")", gene.chrom)
+                for t_name, t in gene.transcripts.items():
+                    print("\t", t_name)
+                    print("\t ", t.transcription_start, t.transcription_end)
+                    print("\t ", t.coding_start, t.coding_end)
+                    print("\t ", t.exons)
+            print('\n')
             print("tested read mapped to genes:",  read_to_test["GENE_NAME_TAG"])
+
             exit()
 
 
