@@ -44,11 +44,13 @@ if not len(reads_to_test.keys()) == len(correct_reads.keys()):
 
 for read_id in reads_to_test.keys():
     ctr+=1
+    ctr_wrong = 1
     if read_id in correct_reads.keys():
         correct_read = correct_reads[read_id]
         read_to_test = reads_to_test[read_id]
 
         if not correct_read["GENE_NAME_TAG"] == read_to_test["GENE_NAME_TAG"]:
+            ctr_wrong+=1
             print("gene name mismatch for read_id", read_id)
             print("correct read blocks:", correct_reads[read_id]['blocks'] )
             print("tested read blocks:", reads_to_test[read_id]['blocks'] )
@@ -64,7 +66,17 @@ for read_id in reads_to_test.keys():
                     print("\t ", t.exons)
             print('\n')
             print("tested read mapped to genes:",  read_to_test["GENE_NAME_TAG"])
-
-            exit()
+            for gene_id in read_to_test["GENE_NAME_TAG"].split(","):
+                gene = gi_tree.genes[gene_id]
+                print(gene_id, "--> (", gene.start, ",", gene.end, ")", gene.chrom)
+                for t_name, t in gene.transcripts.items():
+                    print("\t", t_name)
+                    print("\t ", t.transcription_start, t.transcription_end)
+                    print("\t ", t.coding_start, t.coding_end)
+                    print("\t ", t.exons)
+            print('\n')
+            print("________________________________________________________-")
+            if (ctr_wrg >= 10):
+                exit()
 
 
