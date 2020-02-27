@@ -90,7 +90,7 @@ def getGenesWithOverlappedCoding(blocks, genes):
     return result
 
 def checkIfTranscriptOverlapped(block, gene):
-    for t in gene.transcripts:
+    for t_name, t in gene.transcripts.items():
         if checkIfIntervalsOverlap(block, (t.transcription_start, t.transcription_end)):
             return True
     return False
