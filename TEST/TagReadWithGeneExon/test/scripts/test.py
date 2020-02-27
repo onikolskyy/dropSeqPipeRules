@@ -35,6 +35,8 @@ for read in correct_bam:
         if correct_genes == correct_genes_with_coding_overlapped:
             ctr_correct+=1
         else:
+            print("correct genes", correct_genes)
+            print("correct_genes_with_coding_overlapped", correct_genes_with_coding_overlapped)
             ctr_wrong+=1
 
 print(ctr_correct)
