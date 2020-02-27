@@ -99,7 +99,7 @@ def checkIfExonOverlapped(block, gene):
 
 def checkIfCodingOverlapped(block, gene):
     for transcript_name, t in gene.transcripts.items():
-        if checkIfIntervalsOverlap(block, t.transcription_start, t.transcription_end):
+        if checkIfIntervalsOverlap(block, (t.transcription_start, t.transcription_end)):
             return True
     return False
 
