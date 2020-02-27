@@ -17,6 +17,7 @@ for read in correct_bam:
             correct_reads[read.query_name][tag_name] = read.get_tag(bam_tag)
         else:
             correct_reads[read.query_name][tag_name] = ""
+    correct_reads[read.query_name]["blocks"] = [b for b in read.get_blocks()]
 
 ctr = 0
 print("start tagging reads...")
@@ -49,6 +50,8 @@ for read_id in reads_to_test.keys():
 
         if not correct_read["GENE_NAME_TAG"] == read_to_test["GENE_NAME_TAG"]:
             print("gene name mismatch for read_id", read_id)
+            print("correct read blocks:", correct_reads[read_id]['blocks'] )
+            print("tested read blocks:", reads_to_test[read_id]['blocks'] )
             print("correct read mapped to genes:", correct_read["GENE_NAME_TAG"])
             print("tested read mapped to genes:",  read_to_test["GENE_NAME_TAG"])
             exit()

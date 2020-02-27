@@ -40,7 +40,7 @@ class RefflatEntries:
         },
         "exon_starts" : {
             "index": 9,
-            "convert_func": lambda exon_starts: [int(exon_start) for exon_start in exon_starts.split(",")[:-1]] if (len(exon_starts) > 0 and not re.compile(" +\B").match(exon_starts)) else []
+            "convert_func": lambda exon_starts: [int(exon_start)+1 for exon_start in exon_starts.split(",")[:-1]] if (len(exon_starts) > 0 and not re.compile(" +\B").match(exon_starts)) else []
         },
         "exon_ends" : {
             "index": 10,

@@ -75,6 +75,14 @@ def getGenesWithOverlappedExon(read, genes):
     return result
 
 
+def filterGenesBySameStrand(read, genes):
+    same_strand = set()
+    for gene in genes:
+        if bool(same_strand):
+            return set()
+
+    return same_strand
+
 def checkIfExonOverlapped(block, gene):
     for t in gene.transcripts:
         for ex in gene.transcripts[t].exons:
