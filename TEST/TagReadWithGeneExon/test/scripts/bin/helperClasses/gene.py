@@ -21,6 +21,6 @@ class Gene:
 
     def verbose(self):
         print("strand:", self.strand, "start,end:" , self.start, self.end, "chrom", self.chrom)
-        for t_name, t in self.transcripts:
+        for t_name, t in self.transcripts.items():
             print("TRANSCRIPT", t_name)
             t.verbose()
