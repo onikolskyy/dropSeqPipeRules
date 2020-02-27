@@ -22,9 +22,13 @@ for read in correct_bam:
             correct_reads[read.query_name][tag_name] = ""
     correct_reads[read.query_name]["blocks"] = [b for b in read.get_blocks()]
     # test if all genes a read is mapped to are only overlapped in coding section
+    if not read.has_tag("gn"):
+        ctr_correct+=1
+        continue
     correct_genes = set([gi_tree.genes[g_id] for g_id in read.get_tag("gn").split(",")])
     if "" in correct_genes:
-        pass
+        ctr_correct+=1
+        continue
     else:
         correct_genes_with_coding_overlapped = getGenesWithOverlappedCoding(read.get_blocks(),
                                                                             correct_genes)
