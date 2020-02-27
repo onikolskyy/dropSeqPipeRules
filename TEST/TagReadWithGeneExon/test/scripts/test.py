@@ -41,7 +41,7 @@ ctr = 0
 
 if not len(reads_to_test.keys()) == len(correct_reads.keys()):
     raise Exception("read ids not equal")
- ctr_wrong = 1
+ctr_wrong = 1
 for read_id in reads_to_test.keys():
     ctr+=1
 
