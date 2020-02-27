@@ -57,7 +57,7 @@ for read_id in reads_to_test.keys():
             print("correct read blocks:", correct_reads[read_id]['blocks'] )
             print("tested read blocks:", reads_to_test[read_id]['blocks'] )
             print("correct read mapped to genes:", correct_read["GENE_NAME_TAG"])
-            correct_genes = [gi_tree[g_id] for g_id in correct_read["GENE_NAME_TAG"].split(",")]
+            correct_genes = [gi_tree.genes[g_id] for g_id in correct_read["GENE_NAME_TAG"].split(",")]
             correct_reads_with_exon_overlapped = getGenesWithOverlappedExon(reads_to_test[read_id]['blocks'], correct_genes)
             print("correct_reads_with_exon_overlapped",[g.name for g  in correct_reads_with_exon_overlapped])
             print("_________________________")
