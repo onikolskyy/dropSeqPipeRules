@@ -100,7 +100,7 @@ def checkIfIntervalsOverlap(i1,i2):
         left = i2
     print ("right: ",right )
     print ("left: ",left )
-    return (right[1] - left[1] >= right[0])
+    return right[0] <= left[1]
 
 def filter_gene_ids(gene_ids, read, gi_tree):
     genes = [gi_tree.genes[gene_id] for gene_id in gene_ids]
