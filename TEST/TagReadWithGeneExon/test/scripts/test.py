@@ -41,10 +41,12 @@ ctr = 0
 
 if not len(reads_to_test.keys()) == len(correct_reads.keys()):
     raise Exception("read ids not equal")
-
+ ctr_wrong = 1
 for read_id in reads_to_test.keys():
     ctr+=1
-    ctr_wrong = 1
+
+    if (ctr_wrong >= 10):
+        exit()
     if read_id in correct_reads.keys():
         correct_read = correct_reads[read_id]
         read_to_test = reads_to_test[read_id]
@@ -55,7 +57,11 @@ for read_id in reads_to_test.keys():
             print("correct read blocks:", correct_reads[read_id]['blocks'] )
             print("tested read blocks:", reads_to_test[read_id]['blocks'] )
             print("correct read mapped to genes:", correct_read["GENE_NAME_TAG"])
+            correct_genes = [gi_tree[g_id] for g_id in correct_read["GENE_NAME_TAG"].split(",")]
+            correct_reads_with_exon_overlapped = getGenesWithOverlappedExon(reads_to_test[read_id]['blocks'], correct_genes)
+            print("correct_reads_with_exon_overlapped",[g.name for g  in correct_reads_with_exon_overlapped])
             print("_________________________")
+
             # for gene_id in correct_read["GENE_NAME_TAG"].split(","):
             #     gene = gi_tree.genes[gene_id]
             #     print(gene_id, "--> (", gene.start, ",", gene.end, ")", gene.chrom)
@@ -76,7 +82,6 @@ for read_id in reads_to_test.keys():
             #         print("\t ", t.exons)
             print('\n')
             print("________________________________________________________-")
-            if (ctr_wrong >= 10):
-                exit()
+
 
 
