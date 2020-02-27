@@ -34,16 +34,19 @@ for read in correct_bam:
                                                                                     correct_genes)
         correct_genes_with_exon_overlapped = getGenesWithOverlappedExon(read.get_blocks(),
                                                                                     correct_genes)
-        if correct_genes == correct_genes_with_coding_overlapped.union(correct_genes_with_exon_overlapped):
+        correct_genes_with_transcript_overlapped = getGenesWithOverlappedTranscript(read.get_blocks(), correct_genes)
+        #if correct_genes == correct_genes_with_coding_overlapped.union(correct_genes_with_exon_overlapped):
+        if correct_genes == correct_genes_with_transcript_overlapped:
             ctr_correct+=1
         else:
             print("_____________________________")
             print("correct genes", [gene.name for gene in correct_genes])
-            print("correct_genes_with_coding_overlapped", [ gene.name for gene in correct_genes_with_coding_overlapped])
-            print("correct_genes_with_exon_overlapped", [ gene.name for gene in correct_genes_with_exon_overlapped])
-            dif = correct_genes - correct_genes_with_coding_overlapped.union(correct_genes_with_exon_overlapped)
-            for gene in dif:
-                gene.verbose()
+            print("correct_genes_with_transcript_overlapped", [gene.name for gene in correct_genes_with_transcript_overlapped])
+            # print("correct_genes_with_coding_overlapped", [ gene.name for gene in correct_genes_with_coding_overlapped])
+            # print("correct_genes_with_exon_overlapped", [ gene.name for gene in correct_genes_with_exon_overlapped])
+            # dif = correct_genes - correct_genes_with_coding_overlapped.union(correct_genes_with_exon_overlapped)
+            # for gene in dif:
+            #     gene.verbose()
             print("_____________________________")
             ctr_wrong+=1
 

@@ -65,6 +65,14 @@ def get_best_lf_name(lf_map, gene_ids):
     return best_lf.name
 
 
+def getGenesWithOverlappedTranscript(blocks, genes):
+    result = set()
+    for gene in genes:
+        for block in blocks:
+            if checkIfTranscriptOverlapped(block, gene):
+                result.add(gene)
+    return result
+
 def getGenesWithOverlappedExon(blocks, genes):
     result = set()
     for gene in genes:
@@ -81,14 +89,11 @@ def getGenesWithOverlappedCoding(blocks, genes):
                 result.add(gene)
     return result
 
-
-def filterGenesBySameStrand(read, genes):
-    same_strand = set()
-    for gene in genes:
-        if bool(same_strand):
-            return set()
-
-    return same_strand
+def checkIfTranscriptOverlapped(block, gene):
+    for t in gene.transcripts:
+        if checkIfIntervalsOverlap(block, (t.transcription_start, t.transcription_end)):
+            return True
+    return False
 
 def checkIfExonOverlapped(block, gene):
     for t in gene.transcripts:
@@ -102,6 +107,16 @@ def checkIfCodingOverlapped(block, gene):
         if checkIfIntervalsOverlap(block, (t.transcription_start, t.transcription_end)):
             return True
     return False
+
+
+def filterGenesBySameStrand(read, genes):
+    same_strand = set()
+    for gene in genes:
+        if bool(same_strand):
+            return set()
+
+    return same_strand
+
 
 def checkIfIntervalsOverlap(i1,i2):
     if i2[1] >= i1[1]:
