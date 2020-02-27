@@ -26,7 +26,7 @@ for read in correct_bam:
     if "" in correct_genes:
         pass
     else:
-        correct_genes_with_coding_overlapped = getGenesWithOverlappedCoding(read.get_blocks,
+        correct_genes_with_coding_overlapped = getGenesWithOverlappedCoding(read.get_blocks(),
                                                                             correct_genes)
         if correct_genes == correct_genes_with_coding_overlapped:
             ctr_correct+=1
