@@ -86,10 +86,12 @@ def checkIfExonOverlapped(block, gene):
     for t in gene.transcripts:
         for ex in gene.transcripts[t].exons:
             if  checkIfIntervalsOverlap(ex, block):
+                print("->>true")
                 return True
     return False
 
 def checkIfIntervalsOverlap(i1,i2):
+    print("testing", i1, i2)
     if i2[1] >= i1[1]:
         right = i2
         left = i1
@@ -104,5 +106,5 @@ def filter_gene_ids(gene_ids, read, gi_tree):
     # first filter for genes on same strand
     genes_filtered = filter(lambda gene: (gene.strand < 0) == read.is_reverse, genes)
     # retain only those genes where read overlaps an exon
-    return getGenesWithOverlappedExon(read.get_blocks(), genes_filtered)
-    #return genes_filtered
+    #return getGenesWithOverlappedExon(read.get_blocks(), genes_filtered)
+    return genes_filtered
