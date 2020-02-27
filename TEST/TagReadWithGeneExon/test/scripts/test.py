@@ -61,7 +61,7 @@ for read_id in reads_to_test.keys():
             correct_reads_with_exon_overlapped = getGenesWithOverlappedExon(reads_to_test[read_id]['blocks'], correct_genes)
             correct_genes_with_coding_overlapped = getGenesWithOverlappedCoding(reads_to_test[read_id]['blocks'], correct_genes)
             print("correct_reads_with_exon_overlapped",[g.name for g  in correct_reads_with_exon_overlapped])
-            print("correct_reads_with_coding_overlapped",[g.name for g  in correct_reads_with_coding_overlapped])
+            print("correct_reads_with_coding_overlapped",[g.name for g  in correct_genes_with_coding_overlapped])
             print("_________________________")
 
             # for gene_id in correct_read["GENE_NAME_TAG"].split(","):
