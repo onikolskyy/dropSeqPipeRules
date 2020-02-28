@@ -57,9 +57,10 @@ for read in correct_bam:
             ctr_wrong += 1
 
     if CTR_TEST == 1000000:
-        print(ctr_correct)
-        print(ctr_wrong)
-        exit()
+        break()
+print(ctr_correct)
+print(ctr_wrong)
+exit()
 
 ctr = 0
 print("start tagging reads...")
