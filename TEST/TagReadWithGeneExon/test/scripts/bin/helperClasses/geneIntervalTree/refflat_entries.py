@@ -28,7 +28,7 @@ class RefflatEntries:
         },
         "coding_start": {
             "index": 6,
-            "convert_func": lambda start: int(start)
+            "convert_func": lambda start: int(start)+1
         },
         "coding_end": {
             "index": 7,

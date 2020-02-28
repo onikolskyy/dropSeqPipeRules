@@ -102,3 +102,4 @@ class GeneIntervalTree:
         overlaps = [overlap_tuple[2] for overlap_tuple in overlap_tuples]
         return [self.gene_ids[overlap] for overlap in overlaps]
 
+
