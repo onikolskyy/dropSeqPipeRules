@@ -39,24 +39,26 @@ for read in correct_bam:
 
         correct_genes_with_utr_overlapped = getGenesWitOverlappedUtr(read.get_blocks(), correct_genes)
 
-
+        read_strictly_mapped_to_genes = getGenesStrictlyOverlapped(read.get_blocks(), gi_tree)
         #if correct_genes == correct_genes_with_coding_overlapped.union(correct_genes_with_exon_overlapped):
-        if correct_genes == set().union(*[correct_genes_with_coding_overlapped, correct_genes_with_exon_overlapped,
-                                          correct_genes_with_transcript_overlapped, correct_genes_with_utr_overlapped]):
+        if correct_genes == read_strictly_mapped_to_genes:
+                #correct_genes == set().union(*[correct_genes_with_coding_overlapped, correct_genes_with_exon_overlapped,
+                 #                         correct_genes_with_transcript_overlapped, correct_genes_with_utr_overlapped]):
             ctr_correct+=1
         else:
             # print("_____________________________")
             print("blocks", [b for b in read.get_blocks()])
             print("correct genes", [gene.name for gene in correct_genes])
-            print("correct_genes_with_transcript_overlapped", [gene.name for gene in correct_genes_with_transcript_overlapped])
-            print("correct_genes_with_coding_overlapped", [ gene.name for gene in correct_genes_with_coding_overlapped])
-            print("correct_genes_with_exon_overlapped", [ gene.name for gene in correct_genes_with_exon_overlapped])
-            print("correct_genes_with_utr_overlapped", [ gene.name for gene in correct_genes_with_utr_overlapped])
-            dif = correct_genes - correct_genes_with_coding_overlapped.union(correct_genes_with_exon_overlapped)
-            for gene in dif:
-                if gene.name == 'Efcab8':
-                    gene.verbose(True)
-            #print("_____________________________")
+            print("read_strictly_mapped_to_genes", [gene.name for gene in read_strictly_mapped_to_genes])
+            # print("correct_genes_with_transcript_overlapped", [gene.name for gene in correct_genes_with_transcript_overlapped])
+            # print("correct_genes_with_coding_overlapped", [ gene.name for gene in correct_genes_with_coding_overlapped])
+            # print("correct_genes_with_exon_overlapped", [ gene.name for gene in correct_genes_with_exon_overlapped])
+            # print("correct_genes_with_utr_overlapped", [ gene.name for gene in correct_genes_with_utr_overlapped])
+            # dif = correct_genes - correct_genes_with_coding_overlapped.union(correct_genes_with_exon_overlapped)
+            # for gene in dif:
+            #     if gene.name == 'Efcab8':
+            #         gene.verbose(True)
+            # #print("_____________________________")
             ctr_wrong += 1
     if CTR_TEST == 10000:
         break
