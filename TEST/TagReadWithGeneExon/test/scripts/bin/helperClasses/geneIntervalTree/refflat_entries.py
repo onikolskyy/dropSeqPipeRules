@@ -20,7 +20,7 @@ class RefflatEntries:
         },
         "transcription_start": {
             "index": 4,
-            "convert_func": lambda start: int(start)
+            "convert_func": lambda start: int(start)+1
         },
         "transcription_end": {
             "index": 5,

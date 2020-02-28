@@ -56,11 +56,11 @@ class GeneIntervalTree:
                                 parsed_entries["coding_end"],
                                 [(parsed_entries["exon_starts"][i], parsed_entries["exon_ends"][i]) for i in range(len(parsed_entries["exon_starts"]))]
                             )
-                            parsed_gene["start"] = min(parsed_gene["start"], parsed_entries["transcription_start"]+1)
+                            parsed_gene["start"] = min(parsed_gene["start"], parsed_entries["transcription_start"])
                             parsed_gene["end"] = max(parsed_gene["end"], parsed_entries["transcription_end"])
                     else:
                         parsed_mapping[parsed_entries["gene_name"]] = {
-                            "start" : parsed_entries["transcription_start"]+1,
+                            "start" : parsed_entries["transcription_start"],
                             "end" : parsed_entries["transcription_end"],
                             "strand" : parsed_entries["strand"],
                             "chrom" : parsed_entries["chrom"],
@@ -68,7 +68,7 @@ class GeneIntervalTree:
                             "transcripts" : {}
                         }
                         parsed_mapping[parsed_entries["gene_name"]]["transcripts"][parsed_entries["transcription_name"]] = Transcript(
-                                parsed_entries["transcription_start"]+1,
+                                parsed_entries["transcription_start"],
                                 parsed_entries["transcription_end"],
                                 parsed_entries["coding_start"],
                                 parsed_entries["coding_end"],
