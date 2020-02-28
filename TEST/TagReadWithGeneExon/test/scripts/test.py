@@ -41,8 +41,7 @@ for read in correct_bam:
 
         read_strictly_mapped_to_genes = getGenesStrictlyOverlapped(read.get_blocks(), gi_tree)
         #if correct_genes == correct_genes_with_coding_overlapped.union(correct_genes_with_exon_overlapped):
-        if correct_genes == read_strictly_mapped_to_genes:
-                #correct_genes == set().union(*[correct_genes_with_coding_overlapped, correct_genes_with_exon_overlapped,
+        if correct_genes == set().union(*[correct_genes_with_coding_overlapped, correct_genes_with_exon_overlapped,
                  #                         correct_genes_with_transcript_overlapped, correct_genes_with_utr_overlapped]):
             ctr_correct+=1
         else:
