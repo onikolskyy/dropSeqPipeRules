@@ -12,8 +12,9 @@ correct_reads = {}
 
 ctr_correct = 0
 ctr_wrong = 0
-
+CTR_TEST = 0
 for read in correct_bam:
+    CTR_TEST+=1
     correct_reads[read.query_name] = {}
     for tag_name, bam_tag in Tags.tags_dict.items():
         if read.has_tag(bam_tag):
@@ -35,8 +36,13 @@ for read in correct_bam:
         correct_genes_with_exon_overlapped = getGenesWithOverlappedExon(read.get_blocks(),
                                                                                     correct_genes)
         correct_genes_with_transcript_overlapped = getGenesWithOverlappedTranscript(read.get_blocks(), correct_genes)
+
+        correct_genes_with_utr_overlapped = getGenesWitOverlappedUtr(read.get_blocks(), correct_genes)
+
+
         #if correct_genes == correct_genes_with_coding_overlapped.union(correct_genes_with_exon_overlapped):
-        if correct_genes == correct_genes_with_transcript_overlapped:
+        if correct_genes == set().union(*[correct_genes_with_coding_overlapped, correct_genes_with_exon_overlapped,
+                                          correct_genes_with_transcript_overlapped, correct_genes_with_utr_overlapped]):
             ctr_correct+=1
         else:
             # print("_____________________________")
@@ -48,11 +54,12 @@ for read in correct_bam:
             # for gene in dif:
             #     gene.verbose()
             #print("_____________________________")
-            ctr_wrong+=1
+            ctr_wrong += 1
 
-print(ctr_correct)
-print(ctr_wrong)
-exit()
+    if CTR_TEST == 1000000:
+        print(ctr_correct)
+        print(ctr_wrong)
+        exit()
 
 ctr = 0
 print("start tagging reads...")

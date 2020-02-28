@@ -65,6 +65,15 @@ def get_best_lf_name(lf_map, gene_ids):
     return best_lf.name
 
 
+def getGenesWitOverlappedUtr(blocks, genes):
+    result = set()
+    for gene in genes:
+        for block in blocks:
+            if checkIfUtrOverlapped(block, gene):
+                result.add(gene)
+    return result
+
+
 def getGenesWithOverlappedTranscript(blocks, genes):
     result = set()
     for gene in genes:
@@ -72,6 +81,7 @@ def getGenesWithOverlappedTranscript(blocks, genes):
             if checkIfTranscriptOverlapped(block, gene):
                 result.add(gene)
     return result
+
 
 def getGenesWithOverlappedExon(blocks, genes):
     result = set()
@@ -81,6 +91,7 @@ def getGenesWithOverlappedExon(blocks, genes):
                 result.add(gene)
     return result
 
+
 def getGenesWithOverlappedCoding(blocks, genes):
     result = set()
     for gene in genes:
@@ -88,6 +99,16 @@ def getGenesWithOverlappedCoding(blocks, genes):
             if checkIfCodingOverlapped(block, gene):
                 result.add(gene)
     return result
+
+
+def checkIfUtrOverlapped(block, gene):
+    for t_name, t in gene.transcripts.items():
+        utr_overlap1 = checkIfIntervalsOverlap(block, (t.transcription_start, t.coding_start))
+        utr_overlap2 = checkIfIntervalsOverlap(block, (t.coding_end, t.transcription_start))
+        if utr_overlap1 or utr_overlap2:
+            return True
+    return False
+
 
 def checkIfTranscriptOverlapped(block, gene):
     for t_name, t in gene.transcripts.items():
