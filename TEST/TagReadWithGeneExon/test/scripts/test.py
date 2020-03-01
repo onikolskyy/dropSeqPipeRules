@@ -31,18 +31,18 @@ for read in correct_bam:
         ctr_correct+=1
         continue
     else:
-        filter_transcripts  = GenesOverlappedByFn(read.get_blocks(), gi_tree, "transcript")
-        filter_exon  = GenesOverlappedByFn(read.get_blocks(), gi_tree, "exon")
-        filter_utr  = GenesOverlappedByFn(read.get_blocks(), gi_tree, "utr")
-        filter_coding = GenesOverlappedByFn(read.get_blocks(), gi_tree, "coding")
+        filter_transcripts  = GenesOverlappedByFn(read, gi_tree, "transcript")
+        filter_exon  = GenesOverlappedByFn(read, gi_tree, "exon")
+        filter_utr  = GenesOverlappedByFn(read, gi_tree, "utr")
+        filter_coding = GenesOverlappedByFn(read, gi_tree, "coding")
         if correct_genes == set().intersection(*[filter_transcripts,filter_exon, filter_utr, filter_coding]):
             ctr_correct+=1
         else:
-            print("correct genes", [gene.name for gene in correct_genes])
-            print("filter_transcripts", [gene.name for gene in filter_transcripts])
-            print("filter_exon", [gene.name for gene in filter_exon])
-            print("filter_utr", [gene.name for gene in filter_utr])
-            print("filter_coding", [gene.name for gene in filter_coding])
+            print("correct genes", [(gene.name,gene.strand) for gene in correct_genes])
+            print("filter_transcripts", [(gene.name,gene.strand) for gene in filter_transcripts])
+            print("filter_exon", [(gene.name,gene.strand) for gene in filter_exon])
+            print("filter_utr", [(gene.name,gene.strand) for gene in filter_utr])
+            print("filter_coding", [(gene.name,gene.strand) for gene in filter_coding])
     if CTR_TEST == 10:
         break
 print(ctr_correct)

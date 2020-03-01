@@ -68,7 +68,7 @@ def get_best_lf_name(lf_map, gene_ids):
     return best_lf.name
 
 
-def GenesOverlappedByFn(blocks, tree, fn):
+def GenesOverlappedByFn(read, tree, fn):
     filter_fns = {
         "transcript": lambda b: (lambda g: checkIfTranscriptOverlapped(b,g)),
         "exon": lambda b: (lambda g: checkIfTranscriptOverlapped(b,g)),
@@ -77,7 +77,7 @@ def GenesOverlappedByFn(blocks, tree, fn):
     }
     filter_fn = filter_fns[fn]
     blocks_overlap = {}
-    for block in blocks:
+    for block in read.get_blocks():
         overlapped_ids = tree.get_overlaps(block)
         overlapped_genes = [tree.genes[gene_id] for gene_id in overlapped_ids]
         filter(filter_fn(block), overlapped_genes)
