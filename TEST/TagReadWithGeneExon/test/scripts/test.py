@@ -43,7 +43,7 @@ for read in correct_bam:
             print("filter_exon", [gene.name for gene in filter_exon])
             print("filter_utr", [gene.name for gene in filter_utr])
             print("filter_coding", [gene.name for gene in filter_coding])
-    if CTR_TEST == 100:
+    if CTR_TEST == 10:
         break
 print(ctr_correct)
 print(ctr_wrong)
