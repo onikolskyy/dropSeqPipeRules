@@ -47,7 +47,7 @@ for read in correct_bam:
             ctr_correct+=1
         else:
             # print("_____________________________")
-            print("blocks", [b for b in read.get_blocks()])
+            #print("blocks", [b for b in read.get_blocks()])
             print("correct genes", [gene.name for gene in correct_genes])
             # print("read_strictly_mapped_to_genes",  [gene.name for gene in read_strictly_mapped_to_genes])
             print("filter_strictly_mapped_transcripts", [gene.name for gene in filter_strictly_mapped_transcripts])
