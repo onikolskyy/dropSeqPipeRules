@@ -40,7 +40,7 @@ for read in correct_bam:
         else:
             print("correct genes", [gene.name for gene in correct_genes])
             print("filter_transcripts", [gene.name for gene in filter_transcripts])
-            print("filter_exon", [gene.name for gene in filter_exons])
+            print("filter_exon", [gene.name for gene in filter_exon])
             print("filter_utr", [gene.name for gene in filter_utr])
             print("filter_coding", [gene.name for gene in filter_coding])
     if CTR_TEST == 10:
