@@ -73,9 +73,9 @@ def getGenesWithTranscript(blocks, tree):
         overlapped_ids = tree.get_overlaps(block)
         print(block, overlapped_ids)
         overlapped_genes = [tree.genes[gene_id] for gene_id in overlapped_ids]
-        filtered = filter(lambda gene: checkIfTranscriptOverlapped(block, gene), overlapped_genes)
-        print("filtered:", filtered)
-        blocks_overlap[block] = set(filtered)
+        filter(lambda gene: checkIfTranscriptOverlapped(block, gene), overlapped_genes)
+        print("filtered:", overlapped_genes)
+        blocks_overlap[block] = set(overlapped_genes)
     return set().intersection(*[genes for block, genes in blocks_overlap.items()])
 
 def getGenesWithExon(blocks, tree):
@@ -83,8 +83,8 @@ def getGenesWithExon(blocks, tree):
     for block in blocks:
         overlapped_ids = tree.get_overlaps(block)
         overlapped_genes = [tree.genes[gene_id] for gene_id in overlapped_ids]
-        filtered = filter(lambda gene: checkIfExonOverlapped(block, gene), overlapped_genes)
-        blocks_overlap[block] = set(filtered)
+        filter(lambda gene: checkIfExonOverlapped(block, gene), overlapped_genes)
+        blocks_overlap[block] = set(overlapped_genes)
     return set().intersection(*[genes for block, genes in blocks_overlap.items()])
 
 
