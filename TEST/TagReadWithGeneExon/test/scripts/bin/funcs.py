@@ -87,8 +87,8 @@ def GenesOverlappedByFn(read, tree, fn):
 def checkIfUtrOverlapped(block, gene):
     print("checkIfUtrOverlapped")
     for t_name, t in gene.transcripts.items():
-        utr_overlap1 = checkIfIntervalsOverlap(block, (t.transcription_start, t.coding_start))
-        utr_overlap2 = checkIfIntervalsOverlap(block, (t.coding_end, t.transcription_start))
+        utr_overlap1 = checkIfIntervalsOverlap(block, (t.transcription_start, t.coding_start), True)
+        utr_overlap2 = checkIfIntervalsOverlap(block, (t.coding_end, t.transcription_start), True)
         if utr_overlap1 or utr_overlap2:
             return True
     return False
@@ -97,7 +97,7 @@ def checkIfUtrOverlapped(block, gene):
 def checkIfTranscriptOverlapped(block, gene):
     print("checkIfTranscriptOverlapped")
     for t_name, t in gene.transcripts.items():
-        if checkIfIntervalsOverlap(block, (t.transcription_start, t.transcription_end)):
+        if checkIfIntervalsOverlap(block, (t.transcription_start, t.transcription_end), True):
             return True
     return False
 
@@ -105,14 +105,14 @@ def checkIfExonOverlapped(block, gene):
     print("checkIfExonOverlapped")
     for t in gene.transcripts:
         for ex in gene.transcripts[t].exons:
-            if  checkIfIntervalsOverlap(ex, block):
+            if  checkIfIntervalsOverlap(ex, block, True):
                 return True
     return False
 
 def checkIfCodingOverlapped(block, gene):
     print("checkIfCodingOverlapped")
     for transcript_name, t in gene.transcripts.items():
-        if checkIfIntervalsOverlap(block, (t.transcription_start, t.transcription_end)):
+        if checkIfIntervalsOverlap(block, (t.transcription_start, t.transcription_end), True):
             return True
     return False
 
@@ -126,14 +126,14 @@ def filterGenesBySameStrand(read, genes):
     return same_strand
 
 
-def checkIfIntervalsOverlap(i1,i2):
+def checkIfIntervalsOverlap(i1,i2,strict=False):
     if i2[1] >= i1[1]:
         right = i2
         left = i1
     else:
         right = i1
         left = i2
-    return right[0] <= left[1]
+    return right[0] <= left[1] and True if not strict else left[0] >= right[0]
 
 def filter_gene_ids(gene_ids, read, gi_tree):
     genes = [gi_tree.genes[gene_id] for gene_id in gene_ids]

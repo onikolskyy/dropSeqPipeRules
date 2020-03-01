@@ -27,7 +27,6 @@ class GeneIntervalTree:
         bam_header = bam_file.header
         SQ = bam_header["SQ"]
         ctr = 0
-        print("starting to parse refflat...")
         with open(in_refflat, "r") as refflat_file:
             refflat_line = refflat_file.readline()
             # mapping of parsed gene names to corresponding transcripts
