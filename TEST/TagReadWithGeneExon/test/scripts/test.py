@@ -39,12 +39,12 @@ for read in correct_bam:
             ctr_correct+=1
         else:
             print("blocks", [block for block in read.get_blocks()])
-            print("correct genes", [(gene.name,gene.strand) for gene in correct_genes])
-            print("filter_transcripts", [(gene.name,gene.strand) for gene in filter_transcripts])
-            print("filter_exon", [(gene.name,gene.strand) for gene in filter_exon])
-            print("filter_utr", [(gene.name,gene.strand) for gene in filter_utr])
-            print("filter_coding", [(gene.name,gene.strand) for gene in filter_coding])
-    if CTR_TEST == 10:
+            print("correct genes", [(gene.name,gene.strand,gene.start, gene.end) for gene in correct_genes])
+            print("filter_transcripts", [(gene.name,gene.strand,gene.start, gene.end) for gene in filter_transcripts])
+            print("filter_exon", [(gene.name,gene.strand,gene.start, gene.end) for gene in filter_exon])
+            print("filter_utr", [(gene.name,gene.strand,gene.start, gene.end) for gene in filter_utr])
+            print("filter_coding", [(gene.name,gene.strand,gene.start, gene.end) for gene in filter_coding])
+    if CTR_TEST == 1:
         break
 print(ctr_correct)
 print(ctr_wrong)
