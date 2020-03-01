@@ -41,11 +41,11 @@ for read in correct_bam:
             print(read.query_name)
             print(read.header)
             print("blocks", [block for block in read.get_blocks()])
-            print("correct genes", [(gene.name,gene.strand,gene.start, gene.end) for gene in correct_genes])
-            print("filter_transcripts", [(gene.name,gene.strand,gene.start, gene.end) for gene in filter_transcripts])
-            print("filter_exon", [(gene.name,gene.strand,gene.start, gene.end) for gene in filter_exon])
-            print("filter_utr", [(gene.name,gene.strand,gene.start, gene.end) for gene in filter_utr])
-            print("filter_coding", [(gene.name,gene.strand,gene.start, gene.end) for gene in filter_coding])
+            print("correct genes", [(gene.name,gene.strand,gene.start, gene.end,gene.chrom) for gene in correct_genes])
+            print("filter_transcripts", [(gene.name,gene.strand,gene.start, gene.end,gene.chrom) for gene in filter_transcripts])
+            print("filter_exon", [(gene.name,gene.strand,gene.start, gene.end, gene.chrom) for gene in filter_exon])
+            print("filter_utr", [(gene.name,gene.strand,gene.start, gene.end, gene.chrom) for gene in filter_utr])
+            print("filter_coding", [(gene.name,gene.strand,gene.start, gene.end, gene.chrom) for gene in filter_coding])
     if CTR_TEST == 1:
         break
 print(ctr_correct)
