@@ -67,6 +67,14 @@ def get_best_lf_name(lf_map, gene_ids):
                     return best_lf
     return best_lf.name
 
+def getGenesStrictlyMappedToTranscripts(blocks, tree):
+    blocks_overlap = {}
+    for block in blocks:
+        overlapped_ids = tree.get_overlaps(block)
+        overlapped_genes = [tree.genes[gene_id] for gene_id in overlapped_ids]
+        filtered = filter(lambda gene: checkIfTranscriptOverlapped(block, gene), overlapped_genes)
+        blocks_overlap[block] = filterd
+    return set().intersection(*[genes for block, genes in blocks_overlap.items()])
 
 def getGenesStrictlyOverlapped(blocks, tree):
     blocks_overlap = {}
