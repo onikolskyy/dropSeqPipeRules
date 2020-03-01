@@ -39,7 +39,7 @@ for read in correct_bam:
             ctr_correct+=1
         else:
             print(read.query_name)
-            print(read.header)
+            print(infile_bam.getrname(read.tid))
             print("blocks", [block for block in read.get_blocks()])
             print("correct genes", [(gene.name,gene.strand,gene.start, gene.end,gene.chrom) for gene in correct_genes])
             print("filter_transcripts", [(gene.name,gene.strand,gene.start, gene.end,gene.chrom) for gene in filter_transcripts])
