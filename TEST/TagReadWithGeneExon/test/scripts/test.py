@@ -31,106 +31,17 @@ for read in correct_bam:
         ctr_correct+=1
         continue
     else:
-        correct_genes_with_coding_overlapped = getGenesWithOverlappedCoding(read.get_blocks(),
-                                                                                    correct_genes)
-        correct_genes_with_exon_overlapped = getGenesWithOverlappedExon(read.get_blocks(),
-                                                                                    correct_genes)
-        correct_genes_with_transcript_overlapped = getGenesWithOverlappedTranscript(read.get_blocks(), correct_genes)
-
-        correct_genes_with_utr_overlapped = getGenesWitOverlappedUtr(read.get_blocks(), correct_genes)
-
-        read_strictly_mapped_to_genes = getGenesStrictlyOverlapped(read.get_blocks(), gi_tree)
-
-        filter_strictly_mapped_transcripts = getGenesStrictlyMappedToTranscripts(read.get_blocks(), gi_tree)
-        #if correct_genes == correct_genes_with_coding_overlapped.union(correct_genes_with_exon_overlapped):
-        if correct_genes == filter_strictly_mapped_transcripts:
+        filter_transcripts = getGenesWithTranscript(read.get_blocks(), gi_tree)
+        filter_exons = getGenesWithExon(read.get_blocks(), gi_tree)
+        if correct_genes == set().union(*[filter_transcripts,filter_exons]):
             ctr_correct+=1
         else:
-            # print("_____________________________")
-            #print("blocks", [b for b in read.get_blocks()])
             print("correct genes", [gene.name for gene in correct_genes])
-            # print("read_strictly_mapped_to_genes",  [gene.name for gene in read_strictly_mapped_to_genes])
-            print("filter_strictly_mapped_transcripts", [gene.name for gene in filter_strictly_mapped_transcripts])
-            # print("correct_genes_with_coding_overlapped", [ gene.name for gene in correct_genes_with_coding_overlapped])
-            # print("correct_genes_with_exon_overlapped", [ gene.name for gene in correct_genes_with_exon_overlapped])
-            # print("correct_genes_with_utr_overlapped", [ gene.name for gene in correct_genes_with_utr_overlapped])
-            # dif = correct_genes - correct_genes_with_coding_overlapped.union(correct_genes_with_exon_overlapped)
-            # for gene in dif:
-            #     if gene.name == 'Efcab8':
-            #         gene.verbose(True)
-            # #print("_____________________________")
-            # ctr_wrong += 1
+            print("filter_transcripts", [gene.name for gene in filter_transcripts])
+            print("filter_exons", [gene.name for gene in filter_exons])
     if CTR_TEST == 10:
         break
 print(ctr_correct)
 print(ctr_wrong)
 exit()
-
-ctr = 0
-print("start tagging reads...")
-#write to output file
-for read in infile_bam:
-    tag_read_with_functional_data(read, gi_tree)
-    reads_to_test[read.query_name] = {}
-    for tag_name, bam_tag in Tags.tags_dict.items():
-        if read.has_tag(bam_tag):
-            reads_to_test[read.query_name][tag_name] = read.get_tag(bam_tag)
-        else:
-            reads_to_test[read.query_name][tag_name] = ""
-    # blocks (debugging)
-    reads_to_test[read.query_name]["blocks"] = [b for b in read.get_blocks()]
-    ctr+=1
-    if ctr % 100000 == 0:
-        print("tagged %ctr reads",ctr)
-
-#test against correct bam file
-ctr = 0
-
-if not len(reads_to_test.keys()) == len(correct_reads.keys()):
-    raise Exception("read ids not equal")
-ctr_wrong = 1
-for read_id in reads_to_test.keys():
-    ctr+=1
-
-    if (ctr_wrong >= 10):
-        exit()
-    if read_id in correct_reads.keys():
-        correct_read = correct_reads[read_id]
-        read_to_test = reads_to_test[read_id]
-
-        if not correct_read["GENE_NAME_TAG"] == read_to_test["GENE_NAME_TAG"]:
-            ctr_wrong+=1
-            print("gene name mismatch for read_id", read_id)
-            print("correct read blocks:", correct_reads[read_id]['blocks'] )
-            print("tested read blocks:", reads_to_test[read_id]['blocks'] )
-            print("correct read mapped to genes:", correct_read["GENE_NAME_TAG"])
-            correct_genes = [gi_tree.genes[g_id] for g_id in correct_read["GENE_NAME_TAG"].split(",")]
-            correct_reads_with_exon_overlapped = getGenesWithOverlappedExon(reads_to_test[read_id]['blocks'], correct_genes)
-            correct_genes_with_coding_overlapped = getGenesWithOverlappedCoding(reads_to_test[read_id]['blocks'], correct_genes)
-            print("correct_reads_with_exon_overlapped",[g.name for g  in correct_reads_with_exon_overlapped])
-            print("correct_reads_with_coding_overlapped",[g.name for g  in correct_genes_with_coding_overlapped])
-            print("_________________________")
-
-            # for gene_id in correct_read["GENE_NAME_TAG"].split(","):
-            #     gene = gi_tree.genes[gene_id]
-            #     print(gene_id, "--> (", gene.start, ",", gene.end, ")", gene.chrom)
-            #     for t_name, t in gene.transcripts.items():
-            #         print("\t", t_name)
-            #         print("\t ", t.transcription_start, t.transcription_end)
-            #         print("\t ", t.coding_start, t.coding_end)
-            #         print("\t ", t.exons)
-            print('\n')
-            print("tested read mapped to genes:",  read_to_test["GENE_NAME_TAG"])
-            # for gene_id in read_to_test["GENE_NAME_TAG"].split(","):
-            #     gene = gi_tree.genes[gene_id]
-            #     print(gene_id, "--> (", gene.start, ",", gene.end, ")", gene.chrom)
-            #     for t_name, t in gene.transcripts.items():
-            #         print("\t", t_name)
-            #         print("\t ", t.transcription_start, t.transcription_end)
-            #         print("\t ", t.coding_start, t.coding_end)
-            #         print("\t ", t.exons)
-            print('\n')
-            print("________________________________________________________-")
-
-
 
