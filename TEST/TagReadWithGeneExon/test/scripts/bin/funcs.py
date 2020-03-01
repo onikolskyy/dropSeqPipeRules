@@ -73,7 +73,7 @@ def getGenesStrictlyMappedToTranscripts(blocks, tree):
         overlapped_ids = tree.get_overlaps(block)
         overlapped_genes = [tree.genes[gene_id] for gene_id in overlapped_ids]
         filtered = filter(lambda gene: checkIfTranscriptOverlapped(block, gene), overlapped_genes)
-        blocks_overlap[block] = filterd
+        blocks_overlap[block] = filtered
     return set().intersection(*[genes for block, genes in blocks_overlap.items()])
 
 def getGenesStrictlyOverlapped(blocks, tree):
