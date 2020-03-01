@@ -74,7 +74,6 @@ def getGenesWithTranscript(blocks, tree):
         print(block, overlapped_ids)
         overlapped_genes = [tree.genes[gene_id] for gene_id in overlapped_ids]
         filter(lambda gene: checkIfTranscriptOverlapped(block, gene), overlapped_genes)
-        print("filtered:", overlapped_genes)
         blocks_overlap[block] = set(overlapped_genes)
     return set().intersection(*[genes for block, genes in blocks_overlap.items()])
 
