@@ -85,7 +85,6 @@ def getGenesStrictlyOverlapped(blocks, tree):
         blocks_overlap[block] = set(filtered)
     return set.intersection(*[genes for block, genes in blocks_overlap.items()])
 
-
 def getGenesWitOverlappedUtr(blocks, genes):
     result = set()
     for gene in genes:

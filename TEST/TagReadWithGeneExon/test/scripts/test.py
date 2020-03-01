@@ -60,7 +60,7 @@ for read in correct_bam:
             #         gene.verbose(True)
             # #print("_____________________________")
             # ctr_wrong += 1
-    if CTR_TEST == 100:
+    if CTR_TEST == 10:
         break
 print(ctr_correct)
 print(ctr_wrong)
