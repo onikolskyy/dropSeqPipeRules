@@ -68,7 +68,7 @@ def get_best_lf_name(lf_map, gene_ids):
     return best_lf.name
 
 
-def defGenesOverlappedByFn(blocks, tree, fn):
+def GenesOverlappedByFn(blocks, tree, fn):
     filter_fns = {
         "transcript": lambda b: (lambda g: checkIfTranscriptOverlapped(b,g)),
         "exon": lambda b: (lambda g: checkIfTranscriptOverlapped(b,g)),
@@ -82,10 +82,10 @@ def defGenesOverlappedByFn(blocks, tree, fn):
         overlapped_genes = [tree.genes[gene_id] for gene_id in overlapped_ids]
         filter(filter_fn(block), overlapped_genes)
         blocks_overlap[block] = set(overlapped_genes)
-    return set().intersection(*[genes for block, genes in blocks_overlap.items()])
-
+    return set().union(*[genes for block, genes in blocks_overlap.items()])
 
 def checkIfUtrOverlapped(block, gene):
+    print("checkIfUtrOverlapped")
     for t_name, t in gene.transcripts.items():
         utr_overlap1 = checkIfIntervalsOverlap(block, (t.transcription_start, t.coding_start))
         utr_overlap2 = checkIfIntervalsOverlap(block, (t.coding_end, t.transcription_start))
@@ -95,12 +95,14 @@ def checkIfUtrOverlapped(block, gene):
 
 
 def checkIfTranscriptOverlapped(block, gene):
+    print("checkIfTranscriptOverlapped")
     for t_name, t in gene.transcripts.items():
         if checkIfIntervalsOverlap(block, (t.transcription_start, t.transcription_end)):
             return True
     return False
 
 def checkIfExonOverlapped(block, gene):
+    print("checkIfExonOverlapped")
     for t in gene.transcripts:
         for ex in gene.transcripts[t].exons:
             if  checkIfIntervalsOverlap(ex, block):
@@ -108,6 +110,7 @@ def checkIfExonOverlapped(block, gene):
     return False
 
 def checkIfCodingOverlapped(block, gene):
+    print("checkIfCodingOverlapped")
     for transcript_name, t in gene.transcripts.items():
         if checkIfIntervalsOverlap(block, (t.transcription_start, t.transcription_end)):
             return True
