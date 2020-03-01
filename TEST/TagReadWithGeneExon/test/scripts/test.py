@@ -31,14 +31,21 @@ for read in correct_bam:
         ctr_correct+=1
         continue
     else:
+        filter_transcripts  = defGenesOverlappedByFn(read.get_blocks(), gi_tree, "transcript")
+        filter_exon  = defGenesOverlappedByFn(read.get_blocks(), gi_tree, "exon")
+        filter_utr  = defGenesOverlappedByFn(read.get_blocks(), gi_tree, "utr")
+        filter_coding = defGenesOverlappedByFn(read.get_blocks(), gi_tree, "coding")
+
         filter_transcripts = getGenesWithTranscript(read.get_blocks(), gi_tree)
         filter_exons = getGenesWithExon(read.get_blocks(), gi_tree)
-        if correct_genes == set().union(*[filter_transcripts,filter_exons]):
+        if correct_genes == set().union(*[filter_transcripts,filter_exons, filter_utr, filter_coding]):
             ctr_correct+=1
         else:
             print("correct genes", [gene.name for gene in correct_genes])
             print("filter_transcripts", [gene.name for gene in filter_transcripts])
             print("filter_exons", [gene.name for gene in filter_exons])
+            print("filter_utr", [gene.name for gene in filter_utr])
+            print("filter_coding", [gene.name for gene in filter_coding])
     if CTR_TEST == 10:
         break
 print(ctr_correct)

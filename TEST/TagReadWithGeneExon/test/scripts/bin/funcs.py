@@ -67,69 +67,22 @@ def get_best_lf_name(lf_map, gene_ids):
                     return best_lf
     return best_lf.name
 
-def getGenesWithTranscript(blocks, tree):
+
+def defGenesOverlappedByFn(blocks, tree, fn):
+    filter_fns = {
+        "transcript": lambda b: (lambda g: checkIfTranscriptOverlapped(b,g)),
+        "exon": lambda b: (lambda g: checkIfTranscriptOverlapped(b,g)),
+        "utr" : lambda b: (lambda g: checkIfUtrOverlapped(b,g)),
+        "coding" : lambda b: (lambda g: checkIfCodingOverlapped(b,g))
+    }
+    filter_fn = filter_fns[fn]
     blocks_overlap = {}
     for block in blocks:
         overlapped_ids = tree.get_overlaps(block)
-        print(block, overlapped_ids)
         overlapped_genes = [tree.genes[gene_id] for gene_id in overlapped_ids]
-        filter(lambda gene: checkIfTranscriptOverlapped(block, gene), overlapped_genes)
+        filter(filter_fn(block), overlapped_genes)
         blocks_overlap[block] = set(overlapped_genes)
     return set().intersection(*[genes for block, genes in blocks_overlap.items()])
-
-def getGenesWithExon(blocks, tree):
-    blocks_overlap = {}
-    for block in blocks:
-        overlapped_ids = tree.get_overlaps(block)
-        overlapped_genes = [tree.genes[gene_id] for gene_id in overlapped_ids]
-        filter(lambda gene: checkIfExonOverlapped(block, gene), overlapped_genes)
-        blocks_overlap[block] = set(overlapped_genes)
-    return set().intersection(*[genes for block, genes in blocks_overlap.items()])
-
-
-def getGenesStrictlyOverlapped(blocks, tree):
-    blocks_overlap = {}
-    for block in blocks:
-        overlapped_ids = tree.get_overlaps(block)
-        overlapped_genes = [tree.genes[gene_id] for gene_id in overlapped_ids]
-        filtered = filter(lambda gene: gene.start <= block[0] and gene.end >= block[1], overlapped_genes)
-        blocks_overlap[block] = set(filtered)
-    return set.intersection(*[genes for block, genes in blocks_overlap.items()])
-
-def getGenesWitOverlappedUtr(blocks, genes):
-    result = set()
-    for gene in genes:
-        for block in blocks:
-            if checkIfUtrOverlapped(block, gene):
-                result.add(gene)
-    return result
-
-
-def getGenesWithOverlappedTranscript(blocks, genes):
-    result = set()
-    for gene in genes:
-        for block in blocks:
-            if checkIfTranscriptOverlapped(block, gene):
-                result.add(gene)
-    return result
-
-
-def getGenesWithOverlappedExon(blocks, genes):
-    result = set()
-    for gene in genes:
-        for block in blocks:
-            if checkIfExonOverlapped(block,gene):
-                result.add(gene)
-    return result
-
-
-def getGenesWithOverlappedCoding(blocks, genes):
-    result = set()
-    for gene in genes:
-        for block in blocks:
-            if checkIfCodingOverlapped(block, gene):
-                result.add(gene)
-    return result
 
 
 def checkIfUtrOverlapped(block, gene):
