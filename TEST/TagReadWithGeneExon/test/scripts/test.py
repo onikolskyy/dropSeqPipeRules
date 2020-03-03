@@ -33,11 +33,14 @@ for read in correct_bam:
     else:
         ref = infile_bam.getrname(read.tid)
         filter_chrom = set.intersection(*[set(gi_tree.get_overlaps(block, ref)) for block in read.get_blocks()])
-        if correct_genes == set([filtered.name for filtered in filter_chrom]):
+        filtered_names = set([filtered.name for filtered in filter_chrom])
+        if correct_genes == filtered_names:
             ctr_correct+=1
         else:
             print("correct genes",  correct_genes)
-            print("filter_chrom",  filter_chrom)
+            print("filter_chrom",  filtered_names)
+    if CTR_TEST == 100000:
+        break
 print(ctr_correct)
 print(ctr_wrong)
 exit()
