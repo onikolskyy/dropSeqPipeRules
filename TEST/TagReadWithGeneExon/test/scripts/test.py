@@ -47,6 +47,9 @@ for read in correct_bam:
                     gene.verbose(very=False)
                     for b in read.get_blocks():
                         print(b, "-->" ,[gene.name for gene in gi_tree.get_overlaps(b, ref)])
+                        all_overlapped = gi_tree.get_all_overlaps(b)
+                        for ref, overlaps in all_overlapped:
+                            print("ref:", ref, "-----", overlaps)
                 exit()
 
     if CTR_TEST == 100000:

@@ -105,7 +105,7 @@ class GeneIntervalTree:
                     genes[gene.chrom][gene_id] = gene
         return genes
 
-    def get_overlaps(self, block, ref):
+    def get_overlaps_by_ref(self, block, ref):
         tree_obj = self.trees[ref]
         overlap_tuples = tree_obj["ncls"].find_overlap(block[0], block[1])
         overlaps = [overlap_tuple[2] for overlap_tuple in overlap_tuples]
@@ -114,4 +114,10 @@ class GeneIntervalTree:
         result =  [genes[gene_ids[i]] for i in overlaps]
         return result
 
+    def get_all_overlaps(self,block):
+        result = {}
+        for ref,tree in self.trees.items():
+            overlapped = self.get_overlaps_by_ref(block,ref)
+            result[ref] = [o.name for o in overlapped]
 
+        return result
