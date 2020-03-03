@@ -22,7 +22,7 @@ class GeneIntervalTree:
             self.trees[chrom] = {}
             ids = [gene_id for gene_id, gene in genes.items()]
             starts = np.array([genes[ids[i]].start-1 for i in range(len(genes))])
-            ends = np.array([genes[ids[i]].end+1 for i in range(len(genes))])
+            ends = np.array([genes[ids[i]].end for i in range(len(genes))])
             self.trees[chrom]["ncls"] = NCLS(starts, ends, np.arange(0, len(ids)))
             self.trees[chrom]["ids"] = ids
             self.trees[chrom]["genes"] = genes
