@@ -38,7 +38,7 @@ for read in correct_bam:
         else:
             print("correct genes",  correct_genes)
             print("filter_chrom",  filter_chrom)
-    if CTR_TEST == 10:
+    if CTR_TEST == 10000:
         break
 print(ctr_correct)
 print(ctr_wrong)
