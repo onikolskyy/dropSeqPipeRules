@@ -37,6 +37,11 @@ for read in correct_bam:
         if correct_genes == filtered_names:
             ctr_correct+=1
         else:
+            if "Gm4218" in correct_genes:
+                print(ref, "-->", [b for b in read.get_blocks()])
+                if "Gm4218" in gi_tree.trees[ref].ids:
+                    print("Gm4218 found for ref")
+
             print("correct genes",  correct_genes)
             print("filter_chrom",  filtered_names)
     if CTR_TEST == 100000:
