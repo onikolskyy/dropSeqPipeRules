@@ -26,14 +26,14 @@ for read in correct_bam:
     if not read.has_tag("gn"):
         ctr_correct+=1
         continue
-    correct_genes = set([gi_tree.genes[g_id] for g_id in read.get_tag("gn").split(",")])
+    correct_genes = set(read.get_tag("gn").split(","))
     if "" in correct_genes:
         ctr_correct+=1
         continue
     else:
         ref = infile_bam.getrname(read.tid)
         filter_chrom = set().intersection(*[set(gi_tree.get_overlaps(block, ref)) for block in read.get_blocks])
-        if correct_genes == filter_chrom:
+        if correct_genes == set([filtered.name for filtered in filter_chrom]):
             ctr_correct+=1
         else:
             print("correct genes", [(gene.name,gene.strand,gene.start, gene.end,gene.chrom) for gene in correct_genes])
