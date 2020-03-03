@@ -37,6 +37,7 @@ for read in correct_bam:
         if correct_genes == filtered_names:
             ctr_correct+=1
         else:
+            ctr_wrong+=1
             print("correct genes", correct_genes)
             print("filter_chrom", filtered_names)
             if "Gm42418" in correct_genes:
