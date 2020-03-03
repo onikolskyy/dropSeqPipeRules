@@ -43,6 +43,10 @@ for read in correct_bam:
                 print(ref, "-->", [b for b in read.get_blocks()])
                 if "Gm42418" in gi_tree.trees[ref]["ids"]:
                     print("Gm4218 found for ref")
+                    gene = gi_tree.trees[ref]["genes"]["Gm42418"]
+                    gene.verbose(very=False)
+                    for b in read.get_blocks:
+                        print(b, "-->" ,[gene.name for gene in gi_tree.get_overlaps(b, ref)])
                 exit()
 
     if CTR_TEST == 100000:

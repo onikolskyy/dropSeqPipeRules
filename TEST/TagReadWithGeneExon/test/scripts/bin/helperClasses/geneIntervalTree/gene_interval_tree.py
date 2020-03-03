@@ -19,13 +19,10 @@ class GeneIntervalTree:
         genes = GeneIntervalTree.get_genes(in_refflat, bam_file)
         self.trees = {}
         for chrom, genes in genes.items():
-            print("parsing ", chrom)
             self.trees[chrom] = {}
             ids = [gene_id for gene_id, gene in genes.items()]
             starts = np.array([genes[ids[i]].start for i in range(len(genes))])
-            print("starts", starts)
             ends = np.array([genes[ids[i]].end for i in range(len(genes))])
-            print("ends", ends)
             self.trees[chrom]["ncls"] = NCLS(starts, ends, np.arange(0, len(ids)))
             self.trees[chrom]["ids"] = ids
             self.trees[chrom]["genes"] = genes
