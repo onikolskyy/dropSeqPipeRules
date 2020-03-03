@@ -16,11 +16,16 @@ import math
 
 class GeneIntervalTree:
     def __init__(self, in_refflat, bam_file):
-        self.genes = GeneIntervalTree.get_genes(in_refflat, bam_file)
-        self.gene_ids = list(self.genes.keys())
-        starts = np.array([self.genes[self.gene_ids[i]].start for i in range(len(self.gene_ids))])
-        ends = np.array([self.genes[self.gene_ids[i]].end for i in range(len(self.gene_ids))])
-        self.tree = NCLS(starts, ends, np.arange(0,len(self.gene_ids)))
+        genes = GeneIntervalTree.get_genes(in_refflat, bam_file)
+        self.trees = {}
+        for chrom, genes in genes.items():
+            self.trees[chrom] = {}
+            ids = [gene.name for gene in genes]
+            starts = np.array([genes[ids[i]].start for i in range(len(genes))])
+            ends = np.array([genes[ids[i]].end for i in range(len(genes))])
+            self.trees[chrom]["ncls"] = NCLS(starts, ends, np.arange(0, len(ids)))
+            self.trees[chrom]["ids"] = ids
+            self.trees[chrom]["genes"] = genes
 
     @staticmethod
     def get_genes(in_refflat, bam_file):
@@ -85,20 +90,27 @@ class GeneIntervalTree:
             for gene_id, parsed_gene in parsed_mapping.items():
                 if parsed_gene["mismatch"]:
                     continue
-                genes[gene_id] = Gene()
-                genes[gene_id].name = gene_id
-                genes[gene_id].start = parsed_gene["start"]
-                genes[gene_id].end = parsed_gene["end"]
-                genes[gene_id].chrom = parsed_gene["chrom"]
-                genes[gene_id].strand = parsed_gene["strand"]
+                gene = Gene()
+                gene.name = gene_id
+                gene.start = parsed_gene["start"]
+                gene.end = parsed_gene["end"]
+                gene.chrom = parsed_gene["chrom"]
+                gene.strand = parsed_gene["strand"]
                 for transcript_name, transcript in parsed_gene["transcripts"].items():
-                    genes[gene_id].transcripts[transcript_name] = transcript
+                    gene.transcripts[transcript_name] = transcript
+                if gene.chrom in genes:
+                    genes[gene.chrom][gene_id] = gene
+                else:
+                    genes[gene.chrom] = {}
+                    genes[gene.chrom][gene_id] = gene
         return genes
 
-    def get_overlaps(self, block):
-        # overlap_tuples = filter(lambda o : block[0] <= o[0] and block[1] >= o[1], self.tree.find_overlap(block[0], block[1]))
-        overlap_tuples = self.tree.find_overlap(block[0], block[1])
+    def get_overlaps(self, block, ref):
+        tree_obj = self.trees[ref]
+        overlap_tuples = tree_obj["ncls"].find_overlap(block[0], block[1])
         overlaps = [overlap_tuple[2] for overlap_tuple in overlap_tuples]
-        return [self.gene_ids[overlap] for overlap in overlaps]
+        genes = tree_obj["genes"]
+        gene_ids = tree_obj["ids"]
+        return [genes[gene_ids[i]] for i in overlaps]
 
 
