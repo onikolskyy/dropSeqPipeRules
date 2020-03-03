@@ -23,8 +23,8 @@ class GeneIntervalTree:
             if "Gm42418" in genes:
                 print("Gm42418 included into tree for", chrom)
             ids = [gene_id for gene_id, gene in genes.items()]
-            starts = np.array([genes[ids[i]].start for i in range(len(genes))])
-            ends = np.array([genes[ids[i]].end for i in range(len(genes))])
+            starts = np.array([genes[ids[i]].start-1 for i in range(len(genes))])
+            ends = np.array([genes[ids[i]].end+1 for i in range(len(genes))])
             self.trees[chrom]["ncls"] = NCLS(starts, ends, np.arange(0, len(ids)))
             self.trees[chrom]["ids"] = ids
             self.trees[chrom]["genes"] = genes
