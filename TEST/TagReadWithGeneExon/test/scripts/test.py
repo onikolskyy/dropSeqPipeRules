@@ -43,7 +43,7 @@ for read in correct_bam:
                 print(ref, "-->", [b for b in read.get_blocks()])
                 if "Gm4218" in gi_tree.trees[ref].ids:
                     print("Gm4218 found for ref")
-            exit()
+                exit()
 
     if CTR_TEST == 100000:
         break
