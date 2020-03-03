@@ -16,9 +16,9 @@ import math
 
 class GeneIntervalTree:
     def __init__(self, in_refflat, bam_file):
-        genes = GeneIntervalTree.get_genes(in_refflat, bam_file)
+        _genes = GeneIntervalTree.get_genes(in_refflat, bam_file)
         self.trees = {}
-        for chrom, genes in genes.items():
+        for chrom, genes in _genes.items():
             self.trees[chrom] = {}
             ids = [gene_id for gene_id, gene in genes.items()]
             starts = np.array([genes[ids[i]].start for i in range(len(genes))])
