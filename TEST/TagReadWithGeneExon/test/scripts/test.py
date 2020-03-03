@@ -41,6 +41,12 @@ for read in correct_bam:
             print("correct genes", correct_genes)
             print("filter_chrom", filtered_names)
 
+            gi_tree[ref]["genes"]["Gm28040"].verbose()
+
+            if "Gm28040" in filtered_names:
+                for b in read.get_blocks():
+                    print(b, "----->" , [gene.name for gene in gi_tree.get_overlaps_by_ref(b, ref)])
+
 print(ctr_correct)
 print(ctr_wrong)
 exit()
