@@ -41,13 +41,15 @@ for read in correct_bam:
             print("correct genes", correct_genes)
             print("filter_chrom", filtered_names)
 
-            for b in read.get_blocks:
-                print(b, " overlapps ", [o.name for o in gi_tree.get_overlaps_by_ref(b,ref)])
-
             if "mt-Tv" in filtered_names:
+                for b in read.get_blocks():
+                    print(b, " overlapps ", [o.name for o in gi_tree.get_overlaps_by_ref(b, ref)])
+
                 print("mt-Tv found", ref)
                 mt_Tv_gene = gi_tree.trees[ref]["genes"]["mt-Tv"]
                 mt_Tv_gene.verbose(False)
+
+                exit()
     if CTR_TEST == 100000:
         break
 print(ctr_correct)
