@@ -38,7 +38,7 @@ for read in correct_bam:
         else:
             print("correct genes", [(gene.name,gene.strand,gene.start, gene.end,gene.chrom) for gene in correct_genes])
             print("filter_chrom", [(gene.name,gene.strand,gene.start, gene.end,gene.chrom) for gene in filter_chrom])
-    if CTR_TEST == 1:
+    if CTR_TEST == 100:
         break
 print(ctr_correct)
 print(ctr_wrong)
