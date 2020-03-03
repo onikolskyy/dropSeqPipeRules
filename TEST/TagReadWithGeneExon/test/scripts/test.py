@@ -32,7 +32,7 @@ for read in correct_bam:
         continue
     else:
         ref = infile_bam.getrname(read.tid)
-        filter_chrom = set.intersection(*[set(gi_tree.get_overlaps(block, ref)) for block in read.get_blocks()])
+        filter_chrom = set.intersection(*[set(gi_tree.get_overlaps_by_ref(block, ref)) for block in read.get_blocks()])
         filtered_names = set([filtered.name for filtered in filter_chrom])
         if correct_genes == filtered_names:
             ctr_correct+=1
