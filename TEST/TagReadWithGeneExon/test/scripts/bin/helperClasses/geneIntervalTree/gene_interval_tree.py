@@ -20,6 +20,8 @@ class GeneIntervalTree:
         self.trees = {}
         for chrom, genes in _genes.items():
             self.trees[chrom] = {}
+            if "Gm42418" in genes:
+                print("Gm42418 included into tree for", chrom)
             ids = [gene_id for gene_id, gene in genes.items()]
             starts = np.array([genes[ids[i]].start for i in range(len(genes))])
             ends = np.array([genes[ids[i]].end for i in range(len(genes))])
