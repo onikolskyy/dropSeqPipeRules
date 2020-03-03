@@ -94,6 +94,8 @@ class GeneIntervalTree:
                     continue
                 gene = Gene()
                 gene.name = gene_id
+                if gene_id == "Gm42418":
+                    print("while parsing : 'Gm42418' found for", parsed_gene["chrom"])
                 gene.start = parsed_gene["start"]
                 gene.end = parsed_gene["end"]
                 gene.chrom = parsed_gene["chrom"]
