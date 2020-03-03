@@ -34,11 +34,13 @@ class GeneIntervalTree:
         bam_header = bam_file.header
         SQ = bam_header["SQ"]
         ctr = 0
+
+        genes = {}
+        parsed_mapping = {}
+
         with open(in_refflat, "r") as refflat_file:
             refflat_line = refflat_file.readline()
             # mapping of parsed gene names to corresponding transcripts
-            genes = {}
-            parsed_mapping = {}
 
             while refflat_line:
                 parsed_entries = RefflatEntries.get_dict(re.split(r'\t+', refflat_line.rstrip('\t')))

@@ -50,7 +50,7 @@ for read in correct_bam:
                         all_overlapped = gi_tree.get_all_overlaps(b)
                         for ref, overlaps in all_overlapped.items():
                             print("ref:", ref, "-----", overlaps)
-               exit()
+                exit()
 
     if CTR_TEST == 100000:
         break
