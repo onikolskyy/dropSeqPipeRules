@@ -11,9 +11,7 @@ gi_tree = GeneIntervalTree(snakemake.input["refflat"], infile_bam)
 outfile = pysam.AlignmentFile(snakemake.output["outbam"], "wb", template=infile_bam)
 correct_bam = pysam.AlignmentFile(snakemake.input["correctbam"], "rb")
 
-reads_dict = collections.defaultdict({
-    "reads_list": [],
-})
+reads_dict = collections.defaultdict(lambda: {"reads_list": []})
 
 correct_genenames = {}
 tested_genenames = {}
