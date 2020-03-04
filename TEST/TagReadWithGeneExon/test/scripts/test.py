@@ -27,7 +27,7 @@ for read in infile_bam:
 for ref in reads_dict:
     reads_list = reads_dict["ref"]["reads_list"]
     blocks_list = [reads_list[i].get_blocks()[j] for i in range(len(reads_list)) for j in range(len(reads_list[i].get_blocks()))]
-
+    print(blocks_list)
     total = 0
     for read in reads_list:
         total += len(read.get_blocks())
