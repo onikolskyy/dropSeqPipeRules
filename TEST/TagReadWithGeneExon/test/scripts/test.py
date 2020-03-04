@@ -12,7 +12,7 @@ outfile = pysam.AlignmentFile(snakemake.output["outbam"], "wb", template=infile_
 correct_bam = pysam.AlignmentFile(snakemake.input["correctbam"], "rb")
 
 reads_dict = collections.defaultdict({
-    reads_list : [],
+    "reads_list": [],
 })
 
 correct_genenames = {}
