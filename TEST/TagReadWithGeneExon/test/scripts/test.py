@@ -32,7 +32,7 @@ for ref in reads_dict:
     for read in reads_list:
         total += len(read.get_blocks())
 
-    R = np.zeros(total, dtype='i16')
+    R = np.zeros(total, dtype='int16')
     B = np.arange(total)
 
     ctr = 0
