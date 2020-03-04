@@ -35,10 +35,59 @@ class GeneIntervalTree:
 
         genes = {}
         with open(in_refflat, "r") as refflat_file:
-
-
-
             # save the parsed genes
+
+            parsed_mapping = {}
+
+            refflat_line = refflat_file.readline()
+            # mapping of parsed gene names to corresponding transcripts
+
+            while refflat_line:
+                parsed_entries = RefflatEntries.get_dict(re.split(r'\t+', refflat_line.rstrip('\t')))
+                # find chromosome in header
+                found = False
+                for pair in bam_header["SQ"]:
+                    if pair["SN"] == parsed_entries["chrom"]:
+                        found = True
+                        break
+
+                if found:
+                    if parsed_entries["gene_name"] in parsed_mapping.keys():
+                        parsed_gene = parsed_mapping[parsed_entries["gene_name"]]
+                        if parsed_gene["chrom"] != parsed_entries["chrom"] or parsed_gene["strand"] != parsed_entries[
+                            "strand"]:
+                            parsed_gene["mismatch"] = True  # do not retain this gene
+                        else:
+                            parsed_gene["transcripts"][parsed_entries["transcription_name"]] = Transcript(
+                                parsed_entries["transcription_start"],
+                                parsed_entries["transcription_end"],
+                                parsed_entries["coding_start"],
+                                parsed_entries["coding_end"],
+                                [(parsed_entries["exon_starts"][i], parsed_entries["exon_ends"][i]) for i in
+                                 range(len(parsed_entries["exon_starts"]))]
+                            )
+                            parsed_gene["start"] = min(parsed_gene["start"], parsed_entries["transcription_start"])
+                            parsed_gene["end"] = max(parsed_gene["end"], parsed_entries["transcription_end"])
+                    else:
+                        parsed_mapping[parsed_entries["gene_name"]] = {
+                            "start": parsed_entries["transcription_start"],
+                            "end": parsed_entries["transcription_end"],
+                            "strand": parsed_entries["strand"],
+                            "chrom": parsed_entries["chrom"],
+                            "mismatch": False,
+                            "transcripts": {}
+                        }
+                        parsed_mapping[parsed_entries["gene_name"]]["transcripts"][
+                            parsed_entries["transcription_name"]] = Transcript(
+                            parsed_entries["transcription_start"],
+                            parsed_entries["transcription_end"],
+                            parsed_entries["coding_start"],
+                            parsed_entries["coding_end"],
+                            [(parsed_entries["exon_starts"][i], parsed_entries["exon_ends"][i]) for i in
+                             range(len(parsed_entries["exon_starts"]))]
+                        )
+
+                refflat_line = refflat_file.readline()
 
             for gene_id, parsed_gene in parsed_mapping.items():
                 if parsed_gene["mismatch"]:
@@ -64,7 +113,7 @@ class GeneIntervalTree:
         overlaps = [overlap_tuple[2] for overlap_tuple in overlap_tuples]
         genes = tree_obj["genes"]
         gene_ids = tree_obj["ids"]
-        result =  [genes[gene_ids[i]] for i in overlaps]
+        result = [genes[gene_ids[i]] for i in overlaps]
         return result
 
     def get_all_overlaps_by_ref(self, query, ref):
@@ -76,55 +125,3 @@ class GeneIntervalTree:
         return tree_for_ref["genes"][tree_for_ref["ids"][index]]
 
 
-    def parse_map(self,refflat_file, bam_file):
-        parsed_mapping = {}
-
-        refflat_line = refflat_file.readline()
-        # mapping of parsed gene names to corresponding transcripts
-
-        while refflat_line:
-            parsed_entries = RefflatEntries.get_dict(re.split(r'\t+', refflat_line.rstrip('\t')))
-            # find chromosome in header
-            found = False
-            for pair in bam_header["SQ"]:
-                if pair["SN"] == parsed_entries["chrom"]:
-                    found = True
-                    break
-
-            if found:
-                if parsed_entries["gene_name"] in parsed_mapping.keys():
-                    parsed_gene = parsed_mapping[parsed_entries["gene_name"]]
-                    if parsed_gene["chrom"] != parsed_entries["chrom"] or parsed_gene["strand"] != parsed_entries[
-                        "strand"]:
-                        parsed_gene["mismatch"] = True  # do not retain this gene
-                    else:
-                        parsed_gene["transcripts"][parsed_entries["transcription_name"]] = Transcript(
-                            parsed_entries["transcription_start"],
-                            parsed_entries["transcription_end"],
-                            parsed_entries["coding_start"],
-                            parsed_entries["coding_end"],
-                            [(parsed_entries["exon_starts"][i], parsed_entries["exon_ends"][i]) for i in
-                             range(len(parsed_entries["exon_starts"]))]
-                        )
-                        parsed_gene["start"] = min(parsed_gene["start"], parsed_entries["transcription_start"])
-                        parsed_gene["end"] = max(parsed_gene["end"], parsed_entries["transcription_end"])
-                else:
-                    parsed_mapping[parsed_entries["gene_name"]] = {
-                        "start": parsed_entries["transcription_start"],
-                        "end": parsed_entries["transcription_end"],
-                        "strand": parsed_entries["strand"],
-                        "chrom": parsed_entries["chrom"],
-                        "mismatch": False,
-                        "transcripts": {}
-                    }
-                    parsed_mapping[parsed_entries["gene_name"]]["transcripts"][
-                        parsed_entries["transcription_name"]] = Transcript(
-                        parsed_entries["transcription_start"],
-                        parsed_entries["transcription_end"],
-                        parsed_entries["coding_start"],
-                        parsed_entries["coding_end"],
-                        [(parsed_entries["exon_starts"][i], parsed_entries["exon_ends"][i]) for i in
-                         range(len(parsed_entries["exon_starts"]))]
-                    )
-
-            refflat_line = refflat_file.readline()
