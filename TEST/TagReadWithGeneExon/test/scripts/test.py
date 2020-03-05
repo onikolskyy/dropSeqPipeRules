@@ -23,8 +23,10 @@ for read in infile_bam:
     ref = infile_bam.getrname(read.tid)
     reads_dict[ref]["reads_list"].append(read)
 
+print("start \"tagging\"")
 
 for ref in reads_dict:
+    count_reads = len(reads_dict[ref]["reads_list"])
     reads_list = reads_dict[ref]["reads_list"]
     blocks_list = [reads_list[i].get_blocks()[j] for i in range(len(reads_list)) for j in range(len(reads_list[i].get_blocks()))]
     total = 0
@@ -54,6 +56,7 @@ for ref in reads_dict:
         gene_ids = set.intersection(*[set(grouped_by_block['G']) for b, grouped_by_block in grouped_by_read.groupby("B")])
         tested_genenames[reads_list[r].tid] = set([gi_tree.get_gene_by_id(ref, gene_id).name for gene_id in gene_ids])
 
+    print("\"tagged\"", count_reads, "for", ref)
 
 ctr_wrong = 0
 ctr_correct = 0
