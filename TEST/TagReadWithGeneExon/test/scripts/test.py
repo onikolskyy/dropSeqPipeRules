@@ -50,9 +50,8 @@ for ref in reads_dict:
     RBG = pd.merge(RB, overlaps, on="B")
 
     grouped_by_reads = RBG.groupby("R")
-    for r, grouped_by_read in grouped_by_reads.groups:
+    for r, grouped_by_read in grouped_by_reads:
         gene_ids = set.intersection(*[set(grouped_by_block['G']) for b, grouped_by_block in grouped_by_read.groupby("B")])
-
         tested_genenames[reads_list[r].tid] = set([gi_tree.get_gene_by_id(ref, gene_id).name for gene_id in gene_ids])
 
 

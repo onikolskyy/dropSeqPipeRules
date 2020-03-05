@@ -117,7 +117,6 @@ class GeneIntervalTree:
         return result
 
     def get_all_overlaps_by_ref(self, query, ref):
-        print(query)
         overlaps = self.trees[ref]["ncls"].all_overlaps_both(query["starts"].values, query["ends"].values, query["ids"].values)
         return pd.DataFrame({'B': overlaps[0], 'G': overlaps[1]})
 
