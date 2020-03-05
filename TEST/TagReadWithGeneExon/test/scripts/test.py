@@ -23,6 +23,8 @@ for read in infile_bam:
     ref = infile_bam.getrname(read.tid)
     reads_dict[ref]["reads_list"].append(read)
 
+for ref in reads_dict:
+    print(len(reads_dict[ref]["reads_list"]))
 
 for ref in reads_dict:
     reads_list = reads_dict["ref"]["reads_list"]
