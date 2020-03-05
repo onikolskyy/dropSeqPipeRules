@@ -45,9 +45,9 @@ for ref in reads_dict:
     query_starts = [blocks_list[i][0] for i in range(len(blocks_list))]
     query_ends = [blocks_list[i][1] for i in range(len(blocks_list))]
     query = pd.DataFrame({'starts': query_starts, 'ends': query_ends, 'ids': B})
-    overlaps = gi_tree.get_all_overlaps_by_ref(query, ref)
+    BG = gi_tree.get_all_overlaps_by_ref(query, ref)
 
-    RBG = pd.merge(RB, overlaps, on="B")
+    RBG = pd.merge(RB, BG, on="B")
 
     grouped_by_reads = RBG.groupby("R")
     for r, grouped_by_read in grouped_by_reads:
@@ -57,7 +57,7 @@ for ref in reads_dict:
 
 ctr_wrong = 0
 ctr_correct = 0
-
+ctr = 0
 for pid, tagged_genes in correct_genenames:
     if len(tagged_genes) == 0:
         if pid not in tested_genenames or len(tested_genenames[pid]) == 0:
@@ -65,11 +65,14 @@ for pid, tagged_genes in correct_genenames:
             continue
         else:
             ctr_wrong += 1
+            print("corrrect:", ctr_correct, "; wrong:", ctr_wrong)
     else:
         if tested_genenames[pid] == correct_genenames[pid]:
             ctr_correct += 1
         else:
-            ctr_wrong += 1
+            print("corrrect:", ctr_correct, "; wrong:", ctr_wrong)
+
+    if(ctr % 100000 == 0): print("tested %i reads"%i)
 
 print("corrrect:", ctr_correct, "; wrong:", ctr_wrong)
 exit()
