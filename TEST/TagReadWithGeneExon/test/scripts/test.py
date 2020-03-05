@@ -23,11 +23,11 @@ for read in infile_bam:
     ref = infile_bam.getrname(read.tid)
     reads_dict[ref]["reads_list"].append(read)
 
-for ref in reads_dict:
-    print(len(reads_dict[ref]["reads_list"]))
 
 for ref in reads_dict:
     reads_list = reads_dict["ref"]["reads_list"]
+    print(reads_list)
+    print(reads_list[0].get_blocks()[0])
     blocks_list = [reads_list[i].get_blocks()[j] for i in range(len(reads_list)) for j in range(len(reads_list[i].get_blocks()))]
     print(blocks_list)
     total = 0
