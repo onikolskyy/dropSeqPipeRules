@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from bin.helperClasses.geneIntervalTree.gene_interval_tree import GeneIntervalTree
 from bin.funcs import *
-
+import time
 
 
 infile_bam = pysam.AlignmentFile(snakemake.input["inbam"], "rb")
@@ -26,6 +26,8 @@ for read in infile_bam:
 print("start \"tagging\"")
 
 for ref in reads_dict:
+    construction_start = time.time()
+
     count_reads = len(reads_dict[ref]["reads_list"])
     reads_list = reads_dict[ref]["reads_list"]
     blocks_list = [reads_list[i].get_blocks()[j] for i in range(len(reads_list)) for j in range(len(reads_list[i].get_blocks()))]
@@ -44,6 +46,9 @@ for ref in reads_dict:
 
     RB = pd.DataFrame(data={"R": R, "B": B})
 
+    construction_end = time.time()
+    query_start = time.time()
+
     query_starts = [blocks_list[i][0] for i in range(len(blocks_list))]
     query_ends = [blocks_list[i][1] for i in range(len(blocks_list))]
     query = pd.DataFrame({'starts': query_starts, 'ends': query_ends, 'ids': B})
@@ -51,12 +56,18 @@ for ref in reads_dict:
 
     RBG = pd.merge(RB, BG, on="B")
 
+    query_end = time.time()
+    genes_finding_start = time.time()
+
     grouped_by_reads = RBG.groupby("R")
     for r, grouped_by_read in grouped_by_reads:
         gene_ids = set.intersection(*[set(grouped_by_block['G']) for b, grouped_by_block in grouped_by_read.groupby("B")])
         tested_genenames[reads_list[r].tid] = set([gi_tree.get_gene_by_id(ref, gene_id).name for gene_id in gene_ids])
 
+    genes_finding_end = time.time()
+
     print("\"tagged\"", count_reads, "for", ref)
+    print("time elapsed: construction->", construction_end - construction_start, "; query->", query_end - query_start, "; gene merging->", genes_finding_end - genes_finding_start)
 
 ctr_wrong = 0
 ctr_correct = 0
