@@ -55,15 +55,14 @@ for ref in reads_dict:
     BG = gi_tree.get_all_overlaps_by_ref(query, ref)
 
     RBG = pd.merge(RB, BG, on="B")
-    print(RBG.memory_usage())
-    exit()
 
     query_end = time.time()
     genes_filtering_start = time.time()
 
-    print(RBG[["R", "B"]].groupby("R").transform("nunique"))
-    exit()
-    tags = RBG[RBG[["R", "B"]].groupby("R").transform("nunique") == RBG.groupby(["R", "G"])["B"].transform("nunique")]\
+    filter_RB = RBG[["R", "B"]].groupby("R").transform("nunique")
+    filter_RG = RBG.groupby(["R", "G"])["B"].transform("nunique")
+
+    tags = RBG[filter_RB == filter_RG]\
         .groupby("R").agg({"G": lambda x: set(x)})
 
     genes_filtering_end = time.time()
