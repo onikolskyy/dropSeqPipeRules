@@ -57,17 +57,22 @@ for ref in reads_dict:
     RBG = pd.merge(RB, BG, on="B")
 
     query_end = time.time()
-    genes_finding_start = time.time()
+    genes_filtering_start = time.time()
 
-    grouped_by_reads = RBG.groupby("R")
-    for r, grouped_by_read in grouped_by_reads:
-        gene_ids = set.intersection(*[set(grouped_by_block['G']) for b, grouped_by_block in grouped_by_read.groupby("B")])
-        tested_genenames[reads_list[r].tid] = set([gi_tree.get_gene_by_id(ref, gene_id).name for gene_id in gene_ids])
+    tags = RBG[RBG[["R", "B"]].groupby("R").transform("nunique") == RBG.groupby(["R", "G"])["B"].transform("nunique")]\
+        .groupby("R").agg({"G": lambda x: set(x)})
 
-    genes_finding_end = time.time()
+    genes_filtering_end = time.time()
+    genes_tagging_start = time.time()
+
+    for index, row in tags.iterrows():
+        read = reads_list[index]
+        tested_genenames[read.tid] = row["G"]
+
+    genes_tagging_end = time.time()
 
     print("\"tagged\"", count_reads, "for", ref)
-    print("time elapsed: construction->", construction_end - construction_start, "; query->", query_end - query_start, "; gene merging->", genes_finding_end - genes_finding_start)
+    print("time elapsed: construction->", construction_end - construction_start, "; query->", query_end - query_start, "; gene filtering->", genes_filtering_end - genes_filtering_start, "tagging", genes_tagging_end - genes_filtering_start)
 
 ctr_wrong = 0
 ctr_correct = 0
