@@ -59,6 +59,8 @@ for ref in reads_dict:
     query_end = time.time()
     genes_filtering_start = time.time()
 
+    print(RBG[["R", "B"]].groupby("R").transform("nunique"))
+    exit()
     tags = RBG[RBG[["R", "B"]].groupby("R").transform("nunique") == RBG.groupby(["R", "G"])["B"].transform("nunique")]\
         .groupby("R").agg({"G": lambda x: set(x)})
 
