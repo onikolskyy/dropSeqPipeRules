@@ -23,6 +23,10 @@ for read in infile_bam:
     ref = infile_bam.getrname(read.tid)
     reads_dict[ref]["reads_list"].append(read)
 
+for ref in reads_dict:
+    print(ref, "-->", len(reads_dict[ref]["reads_list"]))
+
+
 print("start \"tagging\"")
 
 for ref in reads_dict:
@@ -78,7 +82,7 @@ for ref in reads_dict:
 
     genes_tagging_end = time.time()
 
-    print("\"tagged\"", count_reads, "for", ref)
+    print(" \"tagged\"", count_reads, "for", ref)
     print("time elapsed: construction->", construction_end - construction_start, "; query->", query_end - query_start, "; gene filtering->", genes_filtering_end - genes_filtering_start, "tagging", genes_tagging_end - genes_filtering_start)
 
 ctr_wrong = 0
