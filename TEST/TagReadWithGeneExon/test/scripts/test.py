@@ -95,7 +95,7 @@ for pid, tagged_genes in correct_genenames.items():
     else:
         ctr_wrong+=1
         print("corrrect:", ctr_correct, "; wrong:", ctr_wrong)
-    if (ctr % 100000 == 0): print("tested %i reads" % i)
+    if (ctr % 100000 == 0): print("tested %i reads" % ctr)
 
 print("corrrect:", ctr_correct, "; wrong:", ctr_wrong)
 exit()
