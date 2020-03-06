@@ -25,7 +25,7 @@ for read in infile_bam:
 
 for ref in reads_dict:
     print(ref, "-->", len(reads_dict[ref]["reads_list"]))
-
+exit()
 
 print("start \"tagging\"")
 
