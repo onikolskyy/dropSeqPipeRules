@@ -55,6 +55,8 @@ for ref in reads_dict:
     BG = gi_tree.get_all_overlaps_by_ref(query, ref)
 
     RBG = pd.merge(RB, BG, on="B")
+    print(RBG)
+    exit()
 
     query_end = time.time()
     genes_filtering_start = time.time()
