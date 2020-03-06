@@ -59,10 +59,14 @@ for ref in reads_dict:
     query_end = time.time()
     genes_filtering_start = time.time()
 
-    filter_RB = RBG[["R", "B"]].groupby("R").transform("nunique")
-    filter_RG = RBG.groupby(["R", "G"])["B"].transform("nunique")
+    # how many distinct B's does an R have?
+    RBG["RB"] = RBG[["R", "B"]].groupby("R").B.transform("nunique")
+    # how many distinct B's does a G belong to in each R?
+    RBG["GB"] = RBG.groupby(["R", "G"]).B.transform("nunique")
 
-    tags = RBG[filter_RB == filter_RG]\
+    tags = RBG\
+        .merge(RBG, right_on=["R", "RB"], left_on=["R", "GB"], how="inner")[["R","G_x"]]\
+        .rename(columns={"G_x": "G"})\
         .groupby("R").agg({"G": lambda x: set(x)})
 
     genes_filtering_end = time.time()
