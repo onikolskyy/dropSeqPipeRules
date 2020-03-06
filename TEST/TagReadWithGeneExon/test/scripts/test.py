@@ -23,13 +23,14 @@ for read in infile_bam:
     ref = infile_bam.getrname(read.tid)
     reads_dict[ref]["reads_list"].append(read)
 
-for ref in reads_dict:
-    print(ref, "-->", len(reads_dict[ref]["reads_list"]))
-exit()
 
 print("start \"tagging\"")
 
 for ref in reads_dict:
+    if ref not in gi_tree.trees:
+        print("scipping", ref)
+        continue
+
     construction_start = time.time()
 
     count_reads = len(reads_dict[ref]["reads_list"])
@@ -52,7 +53,6 @@ for ref in reads_dict:
 
     construction_end = time.time()
     query_start = time.time()
-
     query_starts = [blocks_list[i][0] for i in range(len(blocks_list))]
     query_ends = [blocks_list[i][1] for i in range(len(blocks_list))]
     query = pd.DataFrame({'starts': query_starts, 'ends': query_ends, 'ids': B})
