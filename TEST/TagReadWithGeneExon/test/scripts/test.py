@@ -88,7 +88,7 @@ for ref in reads_dict:
 ctr_wrong = 0
 ctr_correct = 0
 ctr = 0
-for pid, tagged_genes in correct_genenames:
+for pid, tagged_genes in correct_genenames.items():
     if len(tagged_genes) == 0:
         if pid not in tested_genenames or len(tested_genenames[pid]) == 0:
             ctr_correct += 1
