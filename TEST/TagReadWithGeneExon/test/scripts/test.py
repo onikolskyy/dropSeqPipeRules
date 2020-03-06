@@ -55,7 +55,7 @@ for ref in reads_dict:
     BG = gi_tree.get_all_overlaps_by_ref(query, ref)
 
     RBG = pd.merge(RB, BG, on="B")
-    print(RBG)
+    print(RBG.memory_usage())
     exit()
 
     query_end = time.time()
