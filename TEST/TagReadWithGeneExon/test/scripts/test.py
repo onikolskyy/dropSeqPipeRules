@@ -67,7 +67,7 @@ for ref in reads_dict:
 
     for index, row in tags.iterrows():
         read = reads_list[index]
-        tested_genenames[read.tid] = row["G"]
+        tested_genenames[read.tid] = set([gi_tree.get_gene_by_index(ref,index).name for index in row["G"]])
 
     genes_tagging_end = time.time()
 
