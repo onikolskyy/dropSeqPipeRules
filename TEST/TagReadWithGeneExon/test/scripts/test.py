@@ -89,20 +89,13 @@ ctr_wrong = 0
 ctr_correct = 0
 ctr = 0
 for pid, tagged_genes in correct_genenames.items():
-    if len(tagged_genes) == 0:
-        if pid not in tested_genenames or len(tested_genenames[pid]) == 0:
-            ctr_correct += 1
-            continue
-        else:
-            ctr_wrong += 1
-            print("corrrect:", ctr_correct, "; wrong:", ctr_wrong)
+    set_to_test = set() if pid not in tested_genenames else tested_genenames[pid]
+    if set_to_test == tagged_genes:
+        ctr_correct+=1
     else:
-        if tested_genenames[pid] == correct_genenames[pid]:
-            ctr_correct += 1
-        else:
-            print("corrrect:", ctr_correct, "; wrong:", ctr_wrong)
-
-    if(ctr % 100000 == 0): print("tested %i reads"%i)
+        ctr_wrong+=1
+        print("corrrect:", ctr_correct, "; wrong:", ctr_wrong)
+    if (ctr % 100000 == 0): print("tested %i reads" % i)
 
 print("corrrect:", ctr_correct, "; wrong:", ctr_wrong)
 exit()
