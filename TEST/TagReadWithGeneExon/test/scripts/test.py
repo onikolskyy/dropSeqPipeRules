@@ -73,6 +73,8 @@ for ref in reads_dict:
         .rename(columns={"G_x": "G"})\
         .groupby("R").agg({"G": lambda x: set(x)})
 
+    print(tags)
+
     genes_filtering_end = time.time()
     genes_tagging_start = time.time()
 
