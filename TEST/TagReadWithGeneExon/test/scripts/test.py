@@ -69,7 +69,7 @@ for ref in reads_dict:
     RBG["GB"] = RBG.groupby(["R", "G"]).B.transform("nunique")
 
     tags = RBG\
-        .merge(RBG, right_on=["R", "RB"], left_on=["R", "GB"], how="inner")[["R","G_x"]]\
+        .merge(RBG, right_on=["R", "RB"], left_on=["R", "GB"], how="inner")[["R", "G_x"]]\
         .rename(columns={"G_x": "G"})\
         .groupby("R").agg({"G": lambda x: set(x)})
 
@@ -78,7 +78,7 @@ for ref in reads_dict:
 
     for index, row in tags.iterrows():
         read = reads_list[index]
-        tested_genenames[read.tid] = set([gi_tree.get_gene_by_index(ref,index).name for index in row["G"]])
+        tested_genenames[read.tid] = set([gi_tree.get_gene_by_index(ref, index).name for index in row["G"]])
 
     genes_tagging_end = time.time()
 
@@ -88,6 +88,9 @@ for ref in reads_dict:
 ctr_wrong = 0
 ctr_correct = 0
 ctr = 0
+
+print(len(correct_genenames))
+
 for pid, tagged_genes in correct_genenames.items():
     ctr+= 1
     set_to_test = set() if pid not in tested_genenames else tested_genenames[pid]
