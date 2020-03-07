@@ -99,8 +99,6 @@ ctr_wrong = 0
 ctr_correct = 0
 ctr = 0
 
-print("time elapsed TOTAL: construction->", construction_total, "; query->", query_total, "; gene filtering->", genes_filtering_total, "tagging", genes_tagging_total)
-
 for query_name, tagged_genes in correct_genenames.items():
     ctr+= 1
     set_to_test = set() if query_name not in tested_genenames else tested_genenames[query_name]
@@ -112,6 +110,8 @@ for query_name, tagged_genes in correct_genenames.items():
     if (ctr % 100000 == 0): print("tested %i reads" % ctr)
 
 print("corrrect:", ctr_correct, "; wrong:", ctr_wrong)
+print("time elapsed TOTAL: construction->", construction_total, "; query->", query_total, "; gene filtering->", genes_filtering_total, "tagging", genes_tagging_total)
+
 exit()
 
 
