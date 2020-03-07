@@ -68,7 +68,7 @@ for ref in reads_dict:
     # how many distinct B's does a G belong to in each R?
     RBG["GB"] = RBG.groupby(["R", "G"]).B.transform("nunique")
 
-    print(RBG.sort_valuess(by=["R","B"]))
+    print(RBG.sort_values(by=["R","B"]))
 
     print(RBG.merge(RBG, right_on=["R", "RB"], left_on=["R", "GB"], how="inner")[["R", "G_x"]])
     exit()
