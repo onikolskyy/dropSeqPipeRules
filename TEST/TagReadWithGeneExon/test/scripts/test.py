@@ -69,6 +69,8 @@ for ref in reads_dict:
     RBG["GB"] = RBG.groupby(["R", "G"]).B.transform("nunique")
 
     print(RBG)
+    print(RBG.merge(RBG, right_on=["R", "RB"], left_on=["R", "GB"], how="inner")[["R", "G_x"]])
+
 
     tags = RBG\
         .merge(RBG, right_on=["R", "RB"], left_on=["R", "GB"], how="inner")[["R", "G_x"]]\
