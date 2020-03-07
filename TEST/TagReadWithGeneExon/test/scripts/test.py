@@ -89,6 +89,7 @@ ctr_wrong = 0
 ctr_correct = 0
 ctr = 0
 for pid, tagged_genes in correct_genenames.items():
+    ctr+= 1
     set_to_test = set() if pid not in tested_genenames else tested_genenames[pid]
     if set_to_test == tagged_genes:
         ctr_correct+=1
