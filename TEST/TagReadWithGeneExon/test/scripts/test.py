@@ -16,8 +16,13 @@ reads_dict = collections.defaultdict(lambda: {"reads_list": []})
 correct_genenames = {}
 tested_genenames = {}
 
+construction_total = 0
+query_total = 0
+genes_filtering_total = 0
+genes_tagging_total = 0
+
 for read in correct_bam:
-    correct_genenames[read.tid] = set() if not read.has_tag("gn") else set(read.get_tag("gn").split(","))
+    correct_genenames[read.query_name] = set() if not read.has_tag("gn") else set(read.get_tag("gn").split(","))
 
 for read in infile_bam:
     ref = infile_bam.getrname(read.tid)
@@ -73,29 +78,32 @@ for ref in reads_dict:
         .rename(columns={"G_x": "G"})\
         .groupby("R").agg({"G": lambda x: set(x)})
 
-    print(tags)
-
     genes_filtering_end = time.time()
     genes_tagging_start = time.time()
 
     for index, row in tags.iterrows():
         read = reads_list[index]
-        tested_genenames[read.tid] = set([gi_tree.get_gene_by_index(ref, index).name for index in row["G"]])
+        tested_genenames[read.query_name] = set([gi_tree.get_gene_by_index(ref, index).name for index in row["G"]])
 
     genes_tagging_end = time.time()
 
     print(" \"tagged\"", count_reads, "for", ref)
     print("time elapsed: construction->", construction_end - construction_start, "; query->", query_end - query_start, "; gene filtering->", genes_filtering_end - genes_filtering_start, "tagging", genes_tagging_end - genes_filtering_start)
 
+    construction_total += construction_end - construction_start
+    query_total += query_end - query_start
+    genes_filtering_total += genes_filtering_end - genes_filtering_start
+    genes_tagging_total += genes_tagging_end - genes_filtering_start
+
 ctr_wrong = 0
 ctr_correct = 0
 ctr = 0
 
-print(len(correct_genenames))
+print("time elapsed TOTAL: construction->", construction_total, "; query->", query_total, "; gene filtering->", genes_filtering_total, "tagging", genes_tagging_total)
 
-for pid, tagged_genes in correct_genenames.items():
+for query_name, tagged_genes in correct_genenames.items():
     ctr+= 1
-    set_to_test = set() if pid not in tested_genenames else tested_genenames[pid]
+    set_to_test = set() if query_name not in tested_genenames else tested_genenames[query_name]
     if set_to_test == tagged_genes:
         ctr_correct+=1
     else:
