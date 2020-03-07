@@ -40,7 +40,7 @@ for ref in reads_dict:
     for read in reads_list:
         total += len(read.get_blocks())
 
-    R = np.zeros(total)
+    R = np.zeros(total, dtype='int64')
     B = np.arange(total)
 
     ctr = 0
@@ -67,11 +67,6 @@ for ref in reads_dict:
     RBG["RB"] = RBG[["R", "B"]].groupby("R").B.transform("nunique")
     # how many distinct B's does a G belong to in each R?
     RBG["GB"] = RBG.groupby(["R", "G"]).B.transform("nunique")
-
-    print(RBG.sort_values(by=["R","B"]))
-
-    print(RBG.merge(RBG, right_on=["R", "RB"], left_on=["R", "GB"], how="inner")[["R", "G_x"]])
-    exit()
 
     tags = RBG\
         .merge(RBG, right_on=["R", "RB"], left_on=["R", "GB"], how="inner")[["R", "G_x"]]\
