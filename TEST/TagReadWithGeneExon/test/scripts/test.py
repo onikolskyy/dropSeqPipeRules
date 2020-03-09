@@ -39,6 +39,9 @@ for i in range(len(reads_list)):
         R[ctr] = i
         refs.append(infile_bam.getrname(reads_list[i].tid))
         ctr += 1
+test_query = pd.DataFrame({"starts": np.array([55789169,55792884]), "ends": np.array([55789175, 55792888]), "ids": np.arange(2)})
+test_result = gi_tree.get_overlaps(test_query)
+print("TEST", test_result)
 
 RB = pd.DataFrame(data={"R": R, "B": B, "ref": refs})
 
