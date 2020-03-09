@@ -29,71 +29,63 @@ for read in infile_bam:
     reads_dict[ref]["reads_list"].append(read)
 
 
-print("start \"tagging\"")
+reads_list = [read for read in infile_bam]
+blocks_list = [reads_list[i].get_blocks()[j] for i in range(len(reads_list)) for j in range(len(reads_list[i].get_blocks()))]
+total = 0
+for read in reads_list:
+    total += len(read.get_blocks())
 
-for ref in reads_dict:
-    if ref not in gi_tree.trees:
-        print("scipping", ref)
-        continue
+R = np.zeros(total, dtype='int64')
+B = np.arange(total)
+refs = []
 
-    construction_start = time.time()
+ctr = 0
+for i in range(len(reads_list)):
+    for j in range(len(reads_list[i].get_blocks())):
+        R[ctr] = i
+        refs.append(infile_bam.getrname(reads_list[i].tid))
+        ctr += 1
 
-    count_reads = len(reads_dict[ref]["reads_list"])
-    reads_list = reads_dict[ref]["reads_list"]
-    blocks_list = [reads_list[i].get_blocks()[j] for i in range(len(reads_list)) for j in range(len(reads_list[i].get_blocks()))]
-    total = 0
-    for read in reads_list:
-        total += len(read.get_blocks())
+RB = pd.DataFrame(data={"R": R, "B": B, "ref": refs})
 
-    R = np.zeros(total, dtype='int64')
-    B = np.arange(total)
+construction_end = time.time()
+query_start = time.time()
+query_starts = [blocks_list[i][0] for i in range(len(blocks_list))]
+query_ends = [blocks_list[i][1] for i in range(len(blocks_list))]
+query = pd.DataFrame({'starts': query_starts, 'ends': query_ends, 'ids': B})
+res = gi_tree.get_overlaps(query)
 
-    ctr = 0
-    for i in range(len(reads_list)):
-        for j in range(len(reads_list[i].get_blocks())):
-            R[ctr] = i
-            ctr += 1
+merged = pd.merge(RB, res, on=["B","ref"])[["R","B","G"]]
 
-    RB = pd.DataFrame(data={"R": R, "B": B})
+query_end = time.time()
+genes_filtering_start = time.time()
 
-    construction_end = time.time()
-    query_start = time.time()
-    query_starts = [blocks_list[i][0] for i in range(len(blocks_list))]
-    query_ends = [blocks_list[i][1] for i in range(len(blocks_list))]
-    query = pd.DataFrame({'starts': query_starts, 'ends': query_ends, 'ids': B})
-    BG = gi_tree.get_all_overlaps_by_ref(query, ref)
+# how many distinct B's does an R have?
+merged["RB"] = merged[["R", "B"]].groupby("R").B.transform("nunique")
+# how many distinct B's does a G belong to in each R?
+merged["GB"] = merged.groupby(["R", "G"]).B.transform("nunique")
 
-    RBG = pd.merge(RB, BG, on="B")
+tags = merged\
+    .merge(merged, right_on=["R", "RB"], left_on=["R", "GB"], how="inner")[["R", "G_x"]]\
+    .rename(columns={"G_x": "G"})\
+    .groupby("R").agg({"G": lambda x: set(x)})
 
-    query_end = time.time()
-    genes_filtering_start = time.time()
+genes_filtering_end = time.time()
+genes_tagging_start = time.time()
 
-    # how many distinct B's does an R have?
-    RBG["RB"] = RBG[["R", "B"]].groupby("R").B.transform("nunique")
-    # how many distinct B's does a G belong to in each R?
-    RBG["GB"] = RBG.groupby(["R", "G"]).B.transform("nunique")
+for index, row in tags.iterrows():
+    read = reads_list[index]
+    tested_genenames[read.query_name] = set([gi_tree.get_gene_by_index(ref, index).name for index in row["G"]])
 
-    tags = RBG\
-        .merge(RBG, right_on=["R", "RB"], left_on=["R", "GB"], how="inner")[["R", "G_x"]]\
-        .rename(columns={"G_x": "G"})\
-        .groupby("R").agg({"G": lambda x: set(x)})
+genes_tagging_end = time.time()
 
-    genes_filtering_end = time.time()
-    genes_tagging_start = time.time()
+print(" \"tagged\"", count_reads, "for", ref)
+print("time elapsed: construction->", construction_end - construction_start, "; query->", query_end - query_start, "; gene filtering->", genes_filtering_end - genes_filtering_start, "tagging", genes_tagging_end - genes_filtering_start)
 
-    for index, row in tags.iterrows():
-        read = reads_list[index]
-        tested_genenames[read.query_name] = set([gi_tree.get_gene_by_index(ref, index).name for index in row["G"]])
-
-    genes_tagging_end = time.time()
-
-    print(" \"tagged\"", count_reads, "for", ref)
-    print("time elapsed: construction->", construction_end - construction_start, "; query->", query_end - query_start, "; gene filtering->", genes_filtering_end - genes_filtering_start, "tagging", genes_tagging_end - genes_filtering_start)
-
-    construction_total += construction_end - construction_start
-    query_total += query_end - query_start
-    genes_filtering_total += genes_filtering_end - genes_filtering_start
-    genes_tagging_total += genes_tagging_end - genes_filtering_start
+construction_total += construction_end - construction_start
+query_total += query_end - query_start
+genes_filtering_total += genes_filtering_end - genes_filtering_start
+genes_tagging_total += genes_tagging_end - genes_filtering_start
 
 ctr_wrong = 0
 ctr_correct = 0

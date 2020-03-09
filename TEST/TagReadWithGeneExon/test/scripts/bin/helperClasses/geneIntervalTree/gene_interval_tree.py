@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 #todo: correct importing
 from ..transcript import Transcript
+FROM ..locus_function import LocusFunction
 from ..gene import Gene
 from ncls import NCLS
 from .refflat_entries import RefflatEntries
@@ -16,16 +17,14 @@ import math
 
 class GeneIntervalTree:
     def __init__(self, in_refflat, bam_file):
+        self.I_starts = []
+        self.I_ends = []
+        self.LF = []
+        self.REFs = []
+        self.genes = []
+
         _genes = GeneIntervalTree.get_genes(in_refflat, bam_file)
-        self.trees = {}
-        for chrom, genes in _genes.items():
-            self.trees[chrom] = {}
-            ids = [gene_id for gene_id, gene in genes.items()]
-            starts = np.array([genes[ids[i]].start-1 for i in range(len(genes))])
-            ends = np.array([genes[ids[i]].end for i in range(len(genes))])
-            self.trees[chrom]["ncls"] = NCLS(starts, ends, np.arange(0, len(ids)))
-            self.trees[chrom]["ids"] = ids
-            self.trees[chrom]["genes"] = genes
+        self.gene_to_tree(_genes)
 
     @staticmethod
     def get_genes(in_refflat, bam_file):
@@ -107,18 +106,45 @@ class GeneIntervalTree:
                     genes[gene.chrom][gene_id] = gene
         return genes
 
-    def get_overlaps_by_ref(self, block, ref):
-        tree_obj = self.trees[ref]
-        overlap_tuples = tree_obj["ncls"].find_overlap(block[0], block[1])
-        overlaps = [overlap_tuple[2] for overlap_tuple in overlap_tuples]
-        genes = tree_obj["genes"]
-        gene_ids = tree_obj["ids"]
-        result = [genes[gene_ids[i]] for i in overlaps]
-        return result
+    def add_Locus(self,start, end, lf, ref, gene):
+        self.I_starts.append(start)
+        self.I_ends.append(end)
+        self.LF.append(lf)
+        self.REFs.append(ref)
+        self.genes.append(gene)
 
-    def get_all_overlaps_by_ref(self, query, ref):
-        overlaps = self.trees[ref]["ncls"].all_overlaps_both(query["starts"].values, query["ends"].values, query["ids"].values)
-        return pd.DataFrame({'B': overlaps[0], 'G': overlaps[1]})
+    def gene_to_tree(self, genes_dict):
+        for chrom, genes in genes_dict.items():
+            for gene_id, gene in genes:
+                for transcript_name, transcript in gene.transcripts:
+                    self.add_Locus(gene.start, transcript.transcription_start,LocusFunction.INTERGENIC,chrom, gene.name)
+                    self.add_Locus(transcript.transcription_end,gene.end,LocusFunction.INTERGENIC,chrom,gene.name)
+
+                    for exon in transcript.exons:
+                        if exon[0] < transcript.coding_start:
+                            self.add_Locus(exon[0],exon[1],LocusFunction.UTR,chrom)
+                            self.add_Locus(transcript.coding_start,exon[1],LocusFunction.CODING,chrom,gene.name)
+                            continue
+                        if exon[1] > transcript.coding_end:
+                            self.add_Locus(transcript.coding_end, exon[1], LocusFunction.UTR, chrom, gene.name)
+                            self.add_Locus(exon[0], transcript.coding_end, LocusFunction.CODING, chrom, gene.name)
+                            continue
+                        self.add_Locus(exon[0],exon[1],LocusFunction.CODING, chrom, gene.name)
+
+            self.intervals = pd.DataFrame({
+             "start": self.I_starts,
+             "end": self.I_ends,
+             "ref": self.REfs,
+             "LF": self.LF,
+             "G": self.genes,
+             "index": np.arange(len(self.I_starts))
+            })
+
+            self.tree = NCLS(self.I_starts,self.I_ends,np.arange(len(self.I_starts)))
+
+    def get_overlaps(self, query):
+        overlaps = self.tree.all_overlaps_both(query["starts"].values, query["ends"].values, query["ids"].values)
+        return pd.DataFrame({"B":overlaps[0], "index":overlaps[1]}).merge(self.intervals, on="index")[["B","LF","G","ref"]]
 
     def get_gene_by_index(self,ref,index):
         tree_for_ref = self.trees[ref]
