@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 #todo: correct importing
 from ..transcript import Transcript
-FROM ..locus_function import LocusFunction
+from ..locus_function import LocusFunction
 from ..gene import Gene
 from ncls import NCLS
 from .refflat_entries import RefflatEntries
