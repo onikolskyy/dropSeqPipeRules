@@ -137,8 +137,8 @@ class GeneIntervalTree:
                             self.add_Locus(exons[i][0]-1,transcript.coding_start,LocusFunctions.CODING,chrom,gene.name)
                             continue
                         if exons[i][1] > transcript.coding_end:
-                            self.add_Locus(transcript.coding_end+1, exons[1]+1, LocusFunctions.UTR, chrom, gene.name)
-                            self.add_Locus(exons[0]-1, transcript.coding_end+1, LocusFunctions.CODING, chrom, gene.name)
+                            self.add_Locus(transcript.coding_end+1, exons[i][1]+1, LocusFunctions.UTR, chrom, gene.name)
+                            self.add_Locus(exons[i][0]-1, transcript.coding_end+1, LocusFunctions.CODING, chrom, gene.name)
                             continue
                         self.add_Locus(exons[i][0]-1,exons[i][1]+1,LocusFunctions.CODING, chrom, gene.name)
 
