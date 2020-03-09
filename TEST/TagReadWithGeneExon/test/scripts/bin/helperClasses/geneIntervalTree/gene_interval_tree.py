@@ -152,9 +152,12 @@ class GeneIntervalTree:
              "index": np.arange(len(self.I_starts))
             })
 
+            print("constructing tree with ", np.array(self.I_starts), np.array(self.I_ends), np.arange(len(self.I_starts))
+
             self.tree = NCLS(np.array(self.I_starts),np.array(self.I_ends),np.arange(len(self.I_starts)))
 
     def get_overlaps(self, query):
+        print(query)
         overlaps = self.tree.all_overlaps_both(query["starts"].values, query["ends"].values, query["ids"].values)
         return pd.DataFrame({"B":overlaps[0], "index":overlaps[1]}).merge(self.intervals, on="index")[["B","LF","G","ref"]]
 
