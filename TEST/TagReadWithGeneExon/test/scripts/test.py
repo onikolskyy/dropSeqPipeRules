@@ -22,11 +22,6 @@ genes_tagging_total = 0
 for read in correct_bam:
     correct_genenames[read.query_name] = set() if not read.has_tag("gn") else set(read.get_tag("gn").split(","))
 
-for read in infile_bam:
-    ref = infile_bam.getrname(read.tid)
-    reads_dict[ref]["reads_list"].append(read)
-
-
 reads_list = [read for read in infile_bam]
 print(len(reads_list))
 blocks_list = [reads_list[i].get_blocks()[j] for i in range(len(reads_list)) for j in range(len(reads_list[i].get_blocks()))]
