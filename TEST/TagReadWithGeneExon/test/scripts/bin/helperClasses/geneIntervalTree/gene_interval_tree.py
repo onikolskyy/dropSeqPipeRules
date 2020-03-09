@@ -152,7 +152,7 @@ class GeneIntervalTree:
              "index": np.arange(len(self.I_starts))
             })
 
-            print("constructing tree with ", np.array(self.I_starts), np.array(self.I_ends), np.arange(len(self.I_starts))
+            print("constructing tree with ", np.array(self.I_starts), np.array(self.I_ends), np.arange(len(self.I_starts)))
 
             self.tree = NCLS(np.array(self.I_starts),np.array(self.I_ends),np.arange(len(self.I_starts)))
 
