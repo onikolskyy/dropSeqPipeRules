@@ -143,18 +143,18 @@ class GeneIntervalTree:
                         self.add_Locus(exons[i][0]-1,exons[i][1]+1,LocusFunctions.CODING, chrom, gene.name)
 
 
-            self.intervals = pd.DataFrame({
-             "start": self.I_starts,
-             "end": self.I_ends,
-             "ref": self.REFs,
-             "LF": self.LF,
-             "G": self.genes,
-             "index": np.arange(len(self.I_starts))
-            })
+        self.intervals = pd.DataFrame({
+         "start": self.I_starts,
+         "end": self.I_ends,
+         "ref": self.REFs,
+         "LF": self.LF,
+         "G": self.genes,
+         "index": np.arange(len(self.I_starts))
+        })
 
-            print("constructing tree with ", np.array(self.I_starts), np.array(self.I_ends), np.arange(len(self.I_starts)))
+        print("constructing tree with ", np.array(self.I_starts), np.array(self.I_ends), np.arange(len(self.I_starts)))
 
-            self.tree = NCLS(np.array(self.I_starts),np.array(self.I_ends),np.arange(len(self.I_starts)))
+        self.tree = NCLS(np.array(self.I_starts),np.array(self.I_ends),np.arange(len(self.I_starts)))
 
     def get_overlaps(self, query):
         print(query)
