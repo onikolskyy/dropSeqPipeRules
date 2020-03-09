@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 #todo: correct importing
 from ..transcript import Transcript
-from ..locus_function import LocusFunction
+from ..locus_function import LocusFunctions
 from ..gene import Gene
 from ncls import NCLS
 from .refflat_entries import RefflatEntries
@@ -123,24 +123,24 @@ class GeneIntervalTree:
         for chrom, genes in genes_dict.items():
             for gene_id, gene in genes:
                 for transcript_name, transcript in gene.transcripts:
-                    self.add_Locus(gene.start-1, transcript.transcription_start+1,LocusFunction.INTERGENIC,chrom, gene.name)
-                    self.add_Locus(transcript.transcription_end-1,gene.end+1,LocusFunction.INTERGENIC,chrom,gene.name)  ##todo
+                    self.add_Locus(gene.start-1, transcript.transcription_start+1,LocusFunctions.INTERGENIC,chrom, gene.name)
+                    self.add_Locus(transcript.transcription_end-1,gene.end+1,LocusFunctions.INTERGENIC,chrom,gene.name)  ##todo
 
                     for i in range(len(transcript.exons)):
                         exons = transcript.exons
 
                         if i < len(exons) - 1 and exons[i][0] > transcript.coding_start:
-                            self.add_Locus(exons[i][1], exons[i + 1][0], LocusFunction.INTRONIC, chrom, gene.name)#9
+                            self.add_Locus(exons[i][1], exons[i + 1][0], LocusFunctions.INTRONIC, chrom, gene.name)#9
 
                         if exons[i][0] < transcript.coding_start:
-                            self.add_Locus(transcript.coding_start-1,exons[i][1]+1,LocusFunction.CODING,chrom,gene.name)
-                            self.add_Locus(exons[i][0]-1,transcript.coding_start,LocusFunction.CODING,chrom,gene.name)
+                            self.add_Locus(transcript.coding_start-1,exons[i][1]+1,LocusFunctions.CODING,chrom,gene.name)
+                            self.add_Locus(exons[i][0]-1,transcript.coding_start,LocusFunctions.CODING,chrom,gene.name)
                             continue
                         if exons[i][1] > transcript.coding_end:
-                            self.add_Locus(transcript.coding_end+1, exons[1]+1, LocusFunction.UTR, chrom, gene.name)
-                            self.add_Locus(exons[0]-1, transcript.coding_end+1, LocusFunction.CODING, chrom, gene.name)
+                            self.add_Locus(transcript.coding_end+1, exons[1]+1, LocusFunctions.UTR, chrom, gene.name)
+                            self.add_Locus(exons[0]-1, transcript.coding_end+1, LocusFunctions.CODING, chrom, gene.name)
                             continue
-                        self.add_Locus(exons[i][0]-1,exons[i][1]+1,LocusFunction.CODING, chrom, gene.name)
+                        self.add_Locus(exons[i][0]-1,exons[i][1]+1,LocusFunctions.CODING, chrom, gene.name)
 
 
             self.intervals = pd.DataFrame({
