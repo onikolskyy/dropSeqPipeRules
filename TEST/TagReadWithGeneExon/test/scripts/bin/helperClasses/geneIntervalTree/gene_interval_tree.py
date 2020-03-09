@@ -158,7 +158,7 @@ class GeneIntervalTree:
 
     def get_overlaps(self, query):
         STEP=1000000
-        total_rows = query.count()
+        total_rows = len(query.index)
         print("total rows query",total_rows)
         res = []
 
