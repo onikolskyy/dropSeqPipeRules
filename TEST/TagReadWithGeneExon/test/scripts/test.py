@@ -11,8 +11,6 @@ gi_tree = GeneIntervalTree(snakemake.input["refflat"], infile_bam)
 outfile = pysam.AlignmentFile(snakemake.output["outbam"], "wb", template=infile_bam)
 correct_bam = pysam.AlignmentFile(snakemake.input["correctbam"], "rb")
 
-reads_dict = collections.defaultdict(lambda: {"reads_list": []})
-
 correct_genenames = {}
 tested_genenames = {}
 
@@ -30,6 +28,7 @@ for read in infile_bam:
 
 
 reads_list = [read for read in infile_bam]
+print(len(reads_list))
 blocks_list = [reads_list[i].get_blocks()[j] for i in range(len(reads_list)) for j in range(len(reads_list[i].get_blocks()))]
 total = 0
 for read in reads_list:
