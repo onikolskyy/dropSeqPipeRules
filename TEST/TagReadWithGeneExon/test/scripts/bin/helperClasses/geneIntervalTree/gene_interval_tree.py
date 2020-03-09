@@ -107,6 +107,12 @@ class GeneIntervalTree:
         return genes
 
     def add_Locus(self,start, end, lf, ref, gene):
+        if start > end:
+            return
+
+        if start < 0 :
+            start = 0
+
         self.I_starts.append(start)
         self.I_ends.append(end)
         self.LF.append(lf)
@@ -117,24 +123,30 @@ class GeneIntervalTree:
         for chrom, genes in genes_dict.items():
             for gene_id, gene in genes:
                 for transcript_name, transcript in gene.transcripts:
-                    self.add_Locus(gene.start, transcript.transcription_start,LocusFunction.INTERGENIC,chrom, gene.name)
-                    self.add_Locus(transcript.transcription_end,gene.end,LocusFunction.INTERGENIC,chrom,gene.name)
+                    self.add_Locus(gene.start-1, transcript.transcription_start+1,LocusFunction.INTERGENIC,chrom, gene.name)
+                    self.add_Locus(transcript.transcription_end-1,gene.end+1,LocusFunction.INTERGENIC,chrom,gene.name)  ##todo
 
-                    for exon in transcript.exons:
-                        if exon[0] < transcript.coding_start:
-                            self.add_Locus(exon[0],exon[1],LocusFunction.UTR,chrom)
-                            self.add_Locus(transcript.coding_start,exon[1],LocusFunction.CODING,chrom,gene.name)
+                    for i in range(len(transcript.exons)):
+                        exons = transcript.exons
+
+                        if i < len(exons) - 1 and exons[i][0] > transcript.coding_start:
+                            self.add_Locus(exons[i][1], exons[i + 1][0], LocusFunction.INTRONIC, chrom, gene.name)#9
+
+                        if exons[i][0] < transcript.coding_start:
+                            self.add_Locus(transcript.coding_start-1,exons[i][1]+1,LocusFunction.CODING,chrom,gene.name)
+                            self.add_Locus(exons[i][0]-1,transcript.coding_start,LocusFunction.CODING,chrom,gene.name)
                             continue
-                        if exon[1] > transcript.coding_end:
-                            self.add_Locus(transcript.coding_end, exon[1], LocusFunction.UTR, chrom, gene.name)
-                            self.add_Locus(exon[0], transcript.coding_end, LocusFunction.CODING, chrom, gene.name)
+                        if exons[i][1] > transcript.coding_end:
+                            self.add_Locus(transcript.coding_end+1, exons[1]+1, LocusFunction.UTR, chrom, gene.name)
+                            self.add_Locus(exons[0]-1, transcript.coding_end+1, LocusFunction.CODING, chrom, gene.name)
                             continue
-                        self.add_Locus(exon[0],exon[1],LocusFunction.CODING, chrom, gene.name)
+                        self.add_Locus(exons[i][0]-1,exons[i][1]+1,LocusFunction.CODING, chrom, gene.name)
+
 
             self.intervals = pd.DataFrame({
              "start": self.I_starts,
              "end": self.I_ends,
-             "ref": self.REfs,
+             "ref": self.REFs,
              "LF": self.LF,
              "G": self.genes,
              "index": np.arange(len(self.I_starts))
@@ -146,8 +158,5 @@ class GeneIntervalTree:
         overlaps = self.tree.all_overlaps_both(query["starts"].values, query["ends"].values, query["ids"].values)
         return pd.DataFrame({"B":overlaps[0], "index":overlaps[1]}).merge(self.intervals, on="index")[["B","LF","G","ref"]]
 
-    def get_gene_by_index(self,ref,index):
-        tree_for_ref = self.trees[ref]
-        return tree_for_ref["genes"][tree_for_ref["ids"][index]]
 
 
