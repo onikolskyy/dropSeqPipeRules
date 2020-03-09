@@ -122,7 +122,7 @@ class GeneIntervalTree:
     def gene_to_tree(self, genes_dict):
         for chrom, genes in genes_dict.items():
             for gene_id, gene in genes.items():
-                for transcript_name, transcript in gene.transcripts:
+                for transcript_name, transcript in gene.transcripts.items():
                     self.add_Locus(gene.start-1, transcript.transcription_start+1,LocusFunctions.INTERGENIC,chrom, gene.name)
                     self.add_Locus(transcript.transcription_end-1,gene.end+1,LocusFunctions.INTERGENIC,chrom,gene.name)  ##todo
 
