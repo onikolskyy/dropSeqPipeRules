@@ -161,14 +161,16 @@ class GeneIntervalTree:
         total_rows = len(query.index)
         print("total rows query",total_rows)
         res = []
+        overlaps = self.tree.all_overlaps_both(query["starts"].values,
+                                               query["ends"].values,
+                                               query["B"].values)
 
-        for i in range(0,total_rows,STEP):
-            overlaps = self.tree.all_overlaps_both(query[i:i+STEP-1]["starts"].values, query[i:i+STEP-1]["ends"].values,query[i:i+STEP-1]["ids"].values)
-            part_res = pd.DataFrame({"B":overlaps[0], "index":overlaps[1]})
-            print(part_res.memory_usage())
-            res.append(part_res)
 
-        return pd.concat(res).merge(self.intervals, on="index")[["B","LF","G","ref"]]
+        return query\
+            .merge(pd.DataFrame({"B":overlaps[0], "index":overlaps[1]}), on="B")\
+            .merge(self.intervals, on=["ref","index"])[["R","B","G","LF"]]
+
+
 
 
 

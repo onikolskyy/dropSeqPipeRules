@@ -8,4 +8,5 @@ rule test:
         # define output path
         outbam='out.bam'
     conda: 'envs/tag_read_with_gene_exon.yaml'
+    benchmark : 'benchmark.txt'
     script: 'scripts/test.py'

@@ -14,17 +14,16 @@ correct_bam = pysam.AlignmentFile(snakemake.input["correctbam"], "rb")
 correct_genenames = {}
 tested_genenames = {}
 
-construction_total = 0
-query_total = 0
-genes_filtering_total = 0
-genes_tagging_total = 0
 
+# construct dataframe with reads and corresponding blocks
 for read in correct_bam:
     correct_genenames[read.query_name] = set() if not read.has_tag("gn") else set(read.get_tag("gn").split(","))
 
 reads_list = [read for read in infile_bam]
-print(len(reads_list))
 blocks_list = [reads_list[i].get_blocks()[j] for i in range(len(reads_list)) for j in range(len(reads_list[i].get_blocks()))]
+starts_list = [blocks_list[i][0] for i in range(len(blocks_list))]
+ends_list = [blocks_list[i][1] for i in range(len(blocks_list))]
+
 total = 0
 for read in reads_list:
     total += len(read.get_blocks())
@@ -40,63 +39,46 @@ for i in range(len(reads_list)):
         refs.append(infile_bam.getrname(reads_list[i].tid))
         ctr += 1
 
-RB = pd.DataFrame(data={"R": R, "B": B, "ref": refs})
+RB = pd.DataFrame(data={"R": R, "B": B, "ref": refs, "starts": starts_list, "ends": ends_list})
 
-construction_end = time.time()
-query_start = time.time()
-query_starts = [blocks_list[i][0] for i in range(len(blocks_list))]
-query_ends = [blocks_list[i][1] for i in range(len(blocks_list))]
-query = pd.DataFrame({'starts': query_starts, 'ends': query_ends, 'ids': B})
-res = gi_tree.get_overlaps(query)
+STEP_SIZE = 100000
+i = 0
+tot_reads = len(reads_list)
+while i < tot_reads:
+    lo = i
+    hi = i+STEP_SIZE if i+STEP_SIZE < tot_reads else tot_reads
+    chunk = RB[RB["R"].isin(range(tot_reads)[lo:hi])].rename(columns={"B": "ids"})
+    res = gi_tree.get_overlaps(chunk)
 
-merged = pd.merge(RB, res, on=["B","ref"])[["R","B","G"]]
+    # how many distinct B's does an R have?
+    res["RB"] = res[["R", "B"]].groupby("R").B.transform("nunique")
+    # how many distinct B's does a G belong to in each R?
+    res["GB"] = res.groupby(["R", "G"]).B.transform("nunique")
 
-query_end = time.time()
-genes_filtering_start = time.time()
+    tags = res\
+        .merge(res, right_on=["R", "RB"], left_on=["R", "GB"], how="inner")[["R", "G_x","LF_x"]]\
+        .rename(columns={"G_x": "G", "LF_x": "LF" })\
+        .groupby(["R", "G"]).agg({"G": lambda x: set(x)})\
+        .reset_index()\
+        .groupby("R")\
+        .agg({"G": lambda x: set(x), "LF": lambda x: [e for sublist in list(x) for e in sublist]})
 
-# how many distinct B's does an R have?
-merged["RB"] = merged[["R", "B"]].groupby("R").B.transform("nunique")
-# how many distinct B's does a G belong to in each R?
-merged["GB"] = merged.groupby(["R", "G"]).B.transform("nunique")
+    for index, row in tags.iterrows():
+        read = reads_list[index]
+        tested_genenames[read.query_name] = row["G"]
 
-tags = merged\
-    .merge(merged, right_on=["R", "RB"], left_on=["R", "GB"], how="inner")[["R", "G_x"]]\
-    .rename(columns={"G_x": "G"})\
-    .groupby("R").agg({"G": lambda x: set(x)})
+# test stats
 
-genes_filtering_end = time.time()
-genes_tagging_start = time.time()
+tot_corr = 0
+tot_wrong = 0
 
-for index, row in tags.iterrows():
-    read = reads_list[index]
-    tested_genenames[read.query_name] = set([gi_tree.get_gene_by_index(ref, index).name for index in row["G"]])
+with open(snakemake.output[0], "w") as output:
+    for query_name, genes in correct_genenames.items():
+        if tested_genenames[query_name] == genes:
+            tot_corr += 1
+        else:
+            output.write("%s\t%s" % ((",").join([g in genes]),(",").join([g in tested_genenames[query_name]])) )
 
-genes_tagging_end = time.time()
-
-print(" \"tagged\"", count_reads, "for", ref)
-print("time elapsed: construction->", construction_end - construction_start, "; query->", query_end - query_start, "; gene filtering->", genes_filtering_end - genes_filtering_start, "tagging", genes_tagging_end - genes_filtering_start)
-
-construction_total += construction_end - construction_start
-query_total += query_end - query_start
-genes_filtering_total += genes_filtering_end - genes_filtering_start
-genes_tagging_total += genes_tagging_end - genes_filtering_start
-
-ctr_wrong = 0
-ctr_correct = 0
-ctr = 0
-
-for query_name, tagged_genes in correct_genenames.items():
-    ctr+= 1
-    set_to_test = set() if query_name not in tested_genenames else tested_genenames[query_name]
-    if set_to_test == tagged_genes:
-        ctr_correct+=1
-    else:
-        ctr_wrong+=1
-        print("corrrect:", ctr_correct, "; wrong:", ctr_wrong)
-    if (ctr % 100000 == 0): print("tested %i reads" % ctr)
-
-print("corrrect:", ctr_correct, "; wrong:", ctr_wrong)
-print("time elapsed TOTAL: construction->", construction_total, "; query->", query_total, "; gene filtering->", genes_filtering_total, "tagging", genes_tagging_total)
 
 exit()
 
