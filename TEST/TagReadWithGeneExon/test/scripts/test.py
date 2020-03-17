@@ -65,7 +65,7 @@ while i < tot_reads:
     for index, row in RG.iterrows():
         read = reads_list[index]
         tested_genenames[read.query_name] = row["G"]
-
+    i = hi
 # test stats
 
 tot_corr = 0
