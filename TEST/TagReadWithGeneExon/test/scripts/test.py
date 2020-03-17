@@ -41,7 +41,7 @@ for i in range(len(reads_list)):
 
 RB = pd.DataFrame(data={"R": R, "B": B, "ref": refs, "starts": starts_list, "ends": ends_list})
 
-STEP_SIZE = 100000
+STEP_SIZE = 300000
 i = 0
 tot_reads = len(reads_list)
 print(tot_reads)
@@ -67,6 +67,7 @@ while i < tot_reads:
         read = reads_list[index]
         tested_genenames[read.query_name] = row["G"]
     i = hi
+    print("i = ",i)
 # test stats
 
 tot_corr = 0
