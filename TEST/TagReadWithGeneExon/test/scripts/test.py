@@ -58,7 +58,7 @@ while i < tot_reads:
     tags = res\
         .merge(res, right_on=["R", "RB"], left_on=["R", "GB"], how="inner")[["R", "G_x","LF_x"]]\
         .rename(columns={"G_x": "G", "LF_x": "LF" })\
-        .groupby(["R", "G"]).agg({"G": lambda x: set(x)})\
+        .groupby(["R", "B"]).agg({"G": lambda x: set(x)})\
         .reset_index()\
         .groupby("R")\
         .agg({"G": lambda x: set(x), "LF": lambda x: [e for sublist in list(x) for e in sublist]})
