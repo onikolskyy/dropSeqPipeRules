@@ -55,15 +55,14 @@ while i < tot_reads:
     # how many distinct B's does a G belong to in each R?
     res["GB"] = res.groupby(["R", "G"]).B.transform("nunique")
 
-    tags = res\
+    res = res\
         .merge(res, right_on=["R", "RB"], left_on=["R", "GB"], how="inner")[["R", "G_x","LF_x"]]\
-        .rename(columns={"G_x": "G", "LF_x": "LF" })\
-        .groupby(["R", "B"]).agg({"G": lambda x: set(x)})\
-        .reset_index()\
-        .groupby("R")\
-        .agg({"G": lambda x: set(x), "LF": lambda x: [e for sublist in list(x) for e in sublist]})
+        .rename(columns={"G_x": "G", "LF_x": "LF", "B_x":"B" })
 
-    for index, row in tags.iterrows():
+    RG = res[["R","G"]].groupby("R").agg({"G" : lambda x:set(x)}).reset_index()
+    RLF = res[["R", "LF", "G"]].drop_duplicates().groupby(["R", "G"]).agg({"LF": lambda x: list(x)}).reset_index()
+
+    for index, row in RG.iterrows():
         read = reads_list[index]
         tested_genenames[read.query_name] = row["G"]
 
