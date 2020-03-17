@@ -47,7 +47,7 @@ tot_reads = len(reads_list)
 while i < tot_reads:
     lo = i
     hi = i+STEP_SIZE if i+STEP_SIZE < tot_reads else tot_reads
-    chunk = RB[RB["R"].isin(range(tot_reads)[lo:hi])].rename(columns={"B": "ids"})
+    chunk = RB[RB["R"].isin(range(tot_reads)[lo:hi])]
     res = gi_tree.get_overlaps(chunk)
 
     # how many distinct B's does an R have?
