@@ -80,6 +80,7 @@ with open(snakemake.output[0], "w") as output:
         else:
             output.write("%s\t%s" % ((",").join([g in genes]),(",").join([g in tested_genenames[query_name]])) )
 
+print(tot_corr, tot_wrong)
 
 exit()
 
