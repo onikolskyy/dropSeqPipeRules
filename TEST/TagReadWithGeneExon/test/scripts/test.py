@@ -44,6 +44,7 @@ RB = pd.DataFrame(data={"R": R, "B": B, "ref": refs, "starts": starts_list, "end
 STEP_SIZE = 100000
 i = 0
 tot_reads = len(reads_list)
+print(tot_reads)
 while i < tot_reads:
     lo = i
     hi = i+STEP_SIZE if i+STEP_SIZE < tot_reads else tot_reads
