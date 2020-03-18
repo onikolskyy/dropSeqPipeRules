@@ -41,7 +41,7 @@ for i in range(len(reads_list)):
 
 RB = pd.DataFrame(data={"R": R, "B": B, "ref": refs, "starts": starts_list, "ends": ends_list})
 
-STEP_SIZE = 1000000
+STEP_SIZE = 5000000
 i = 0
 tot_reads = len(reads_list)
 print(tot_reads)
