@@ -63,24 +63,25 @@ while i < tot_reads:
     RG = res[["R","G"]].groupby("R").agg({"G" : lambda x:set(x)}).reset_index()
     RLF = res[["R", "LF", "G"]].drop_duplicates().groupby(["R", "G"]).agg({"LF": lambda x: list(x)}).reset_index()
 
-    for index, row in RG.iterrows():
-        read = reads_list[index]
-        tested_genenames[read.query_name] = row["G"]
-    i = hi
-    print("i = ",i)
-# test stats
-
-tot_corr = 0
-tot_wrong = 0
-
-with open(snakemake.output[0], "w") as output:
-    for query_name, genes in correct_genenames.items():
-        if tested_genenames[query_name] == genes:
-            tot_corr += 1
-        else:
-            output.write("%s\t%s" % ((",").join([g for g in genes]),(",").join([g for g in tested_genenames[query_name]])) )
-
-print(tot_corr, tot_wrong)
+#     for index, row in RG.iterrows():
+#         read = reads_list[row["R"]]
+#         tested_genenames[read.query_name] = row["G"]
+#     i = hi
+#     print("i = ",i)
+# # test stats
+#
+# tot_corr = 0
+# tot_wrong = 0
+#
+# with open(snakemake.output[0], "w") as output:
+#     for
+#     for query_name, genes in correct_genenames.items():
+#         if tested_genenames[query_name] == genes:
+#             tot_corr += 1
+#         else:
+#             output.write("%s\t%s" % ((",").join([g for g in genes]),(",").join([g for g in tested_genenames[query_name]])) )
+#
+# print(tot_corr, tot_wrong)
 
 exit()
 
