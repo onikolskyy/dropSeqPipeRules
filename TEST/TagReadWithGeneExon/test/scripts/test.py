@@ -78,7 +78,7 @@ with open(snakemake.output[0], "w") as output:
         if tested_genenames[query_name] == genes:
             tot_corr += 1
         else:
-            output.write("%s\t%s" % ((",").join([g in genes]),(",").join([g in tested_genenames[query_name]])) )
+            output.write("%s\t%s" % ((",").join([g for g in genes]),(",").join([g for g in tested_genenames[query_name]])) )
 
 print(tot_corr, tot_wrong)
 
