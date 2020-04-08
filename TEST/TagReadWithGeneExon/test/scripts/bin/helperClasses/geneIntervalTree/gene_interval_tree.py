@@ -7,7 +7,7 @@ from ..locus_function import LocusFunctions
 from ..gene import Gene
 from ncls import NCLS
 from .refflat_entries import RefflatEntries
-from pytictoc import TicToc
+from time import time
 import math
 
 
@@ -162,13 +162,14 @@ class GeneIntervalTree:
         total_rows = len(query.index)
         print("total rows query",total_rows)
         res = []
-        t = TicToc()
-        t.tic()
+        t1 = time()
+
         overlaps = self.tree.all_overlaps_both(query["starts"].values,
                                                query["ends"].values,
                                                query["B"].values)
+        t2= time()
+        print("query took", t2-t1)
 
-        t.toc("Query took ")
         return query\
             .merge(pd.DataFrame({"B":overlaps[0], "index":overlaps[1]}), on="B")\
             .merge(self.intervals, on=["ref","index"])[["R","B","G","LF"]]
