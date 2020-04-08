@@ -6,3 +6,4 @@ dependencies:
   - ncls
   - pysam
   - numpy
+  - pandas
