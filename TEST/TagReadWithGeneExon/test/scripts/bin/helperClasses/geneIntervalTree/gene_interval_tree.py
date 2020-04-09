@@ -158,7 +158,7 @@ class GeneIntervalTree:
         self.tree = NCLS(np.array(self.I_starts),np.array(self.I_ends),np.arange(len(self.I_starts)))
 
     def get_overlaps(self, query):
-        STEP=500000
+        STEP=100000
         total_rows = len(query.index)
         print("total rows query",total_rows)
         res = []
