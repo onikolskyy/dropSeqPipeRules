@@ -1,7 +1,7 @@
 import re
 import pandas as pd
 import numpy as np
-#todo: correct importing
+import ray
 from ..transcript import Transcript
 from ..locus_function import LocusFunctions
 from ..gene import Gene
@@ -14,8 +14,9 @@ import math
 #####################################################################################
 # clone for picard's OverlapDetector in Python
 ####################################################################################
+ray.init()
 
-
+@ray.remote
 class GeneIntervalTree:
     def __init__(self, in_refflat, bam_file):
         self.I_starts = []
@@ -24,6 +25,7 @@ class GeneIntervalTree:
         self.REFs = []
         self.genes = []
 
+        self.data = {}
         _genes = GeneIntervalTree.get_genes(in_refflat, bam_file)
         self.gene_to_tree(_genes)
 
@@ -88,24 +90,7 @@ class GeneIntervalTree:
                         )
 
                 refflat_line = refflat_file.readline()
-
-            for gene_id, parsed_gene in parsed_mapping.items():
-                if parsed_gene["mismatch"]:
-                    continue
-                gene = Gene()
-                gene.name = gene_id
-                gene.start = parsed_gene["start"]
-                gene.end = parsed_gene["end"]
-                gene.chrom = parsed_gene["chrom"]
-                gene.strand = parsed_gene["strand"]
-                for transcript_name, transcript in parsed_gene["transcripts"].items():
-                    gene.transcripts[transcript_name] = transcript
-                if gene.chrom in genes:
-                    genes[gene.chrom][gene_id] = gene
-                else:
-                    genes[gene.chrom] = {}
-                    genes[gene.chrom][gene_id] = gene
-        return genes
+        return parsed_mapping
 
     def add_Locus(self,start, end, lf, ref, gene):
         if start > end:
@@ -114,65 +99,69 @@ class GeneIntervalTree:
         if start < 0 :
             start = 0
 
-        self.I_starts.append(start)
-        self.I_ends.append(end)
-        self.LF.append(lf)
-        self.REFs.append(ref)
-        self.genes.append(gene)
+        if ref not in self.data:
+            self.data[ref] = {
+                "I_starts" : [],
+                "I_ends" : [],
+                "LF" : [],
+                "genes" : [],
+            }
+
+        self.data[ref]["I_starts"].append(start)
+        self.data[ref]["I_ends"].append(end)
+        self.data[ref]["LF"].append(lf)
+        self.data[ref]["REFs"].append(ref)
+        self.data[ref]["genes"].append(gene)
 
     def gene_to_tree(self, genes_dict):
-        for chrom, genes in genes_dict.items():
+        for ref, genes in genes_dict.items():
             for gene_id, gene in genes.items():
                 for transcript_name, transcript in gene.transcripts.items():
-                    self.add_Locus(gene.start-1, transcript.transcription_start+1,LocusFunctions.INTERGENIC,chrom, gene.name)
-                    self.add_Locus(transcript.transcription_end-1,gene.end+1,LocusFunctions.INTERGENIC,chrom,gene.name)  ##todo
+                    self.add_Locus(gene.start-1, transcript.transcription_start+1,LocusFunctions.INTERGENIC,ref, gene.name)
+                    self.add_Locus(transcript.transcription_end-1,gene.end+1,LocusFunctions.INTERGENIC,ref,gene.name)  ##todo
 
                     for i in range(len(transcript.exons)):
                         exons = transcript.exons
 
                         if i < len(exons) - 1 and exons[i][0] > transcript.coding_start:
-                            self.add_Locus(exons[i][1], exons[i + 1][0], LocusFunctions.INTRONIC, chrom, gene.name)#9
+                            self.add_Locus(exons[i][1], exons[i + 1][0], LocusFunctions.INTRONIC, ref, gene.name)#9
 
                         if exons[i][0] < transcript.coding_start:
-                            self.add_Locus(transcript.coding_start-1,exons[i][1]+1,LocusFunctions.CODING,chrom,gene.name)
-                            self.add_Locus(exons[i][0]-1,transcript.coding_start,LocusFunctions.CODING,chrom,gene.name)
+                            self.add_Locus(transcript.coding_start-1,exons[i][1]+1,LocusFunctions.CODING,ref,gene.name)
+                            self.add_Locus(exons[i][0]-1,transcript.coding_start,LocusFunctions.CODING,ref,gene.name)
                             continue
                         if exons[i][1] > transcript.coding_end:
-                            self.add_Locus(transcript.coding_end+1, exons[i][1]+1, LocusFunctions.UTR, chrom, gene.name)
-                            self.add_Locus(exons[i][0]-1, transcript.coding_end+1, LocusFunctions.CODING, chrom, gene.name)
+                            self.add_Locus(transcript.coding_end+1, exons[i][1]+1, LocusFunctions.UTR, ref, gene.name)
+                            self.add_Locus(exons[i][0]-1, transcript.coding_end+1, LocusFunctions.CODING, ref, gene.name)
                             continue
-                        self.add_Locus(exons[i][0]-1,exons[i][1]+1,LocusFunctions.CODING, chrom, gene.name)
+                        self.add_Locus(exons[i][0]-1,exons[i][1]+1,LocusFunctions.CODING, ref, gene.name)
 
+        self.data[ref]["ncl"] = NCLS(
+            np.array(self.data[ref]["I_starts"]),
+            np.array(self.data[ref]["I_ends"]),
+            np.arange(len(self.data[ref]["I_starts"]))
+        )
 
-        self.intervals = pd.DataFrame({
-         "start": self.I_starts,
-         "end": self.I_ends,
-         "ref": self.REFs,
-         "LF": self.LF,
-         "G": self.genes,
-         "index": np.arange(len(self.I_starts))
+        self.data[ref]["intervals"] = pd.DataFrame({
+         "start": self.data[ref]["I_starts"],
+         "end": self.data[ref]["I_ends"],
+         "LF": self.data[ref]["LF"],
+         "G": self.data[ref]["genes"]
+        # "index": np.arange(len(self.I_starts))
         })
 
-        print("constructing tree with ", np.array(self.I_starts), np.array(self.I_ends), np.arange(len(self.I_starts)))
-        print(len(self.I_starts), len(self.I_ends), len(self.I_starts))
-        self.tree = NCLS(np.array(self.I_starts),np.array(self.I_ends),np.arange(len(self.I_starts)))
-
-    def get_overlaps(self, query):
-        STEP=100000
-        total_rows = len(query.index)
-        print("total rows query",total_rows)
-        res = []
+    def get_overlaps(self, query, ref):
         t1 = time()
-
-        overlaps = self.tree.all_overlaps_both(query["starts"].values,
+        overlaps = self.data[ref]["ncl"].all_overlaps_both(query["starts"].values,
                                                query["ends"].values,
                                                query["B"].values)
         t2= time()
         print("query took", t2-t1)
 
-        return query\
-            .merge(pd.DataFrame({"B":overlaps[0], "index":overlaps[1]}), on="B")\
-            .merge(self.intervals, on=["ref","index"])[["R","B","G","LF"]]
+        return {
+            "overlaps" : pd.DataFrame({"B":overlaps[0], "index":overlaps[1]}),
+            "intervals" : self.data[ref]["intervals"]
+        }
 
 
 

@@ -4,10 +4,37 @@ import pandas as pd
 from bin.helperClasses.geneIntervalTree.gene_interval_tree import GeneIntervalTree
 from bin.funcs import *
 import time
+import ray
 
+N_CORES = 10
+step = 500000
+ray.init()
+
+@ray.remote
+class Worker:
+    def __init__(self, t):
+        self.t = t
+
+    def work(self,query,ref):
+        response = ray.get(self.t.get_overlaps.remote(query,ref))
+        merged = query\
+            .merge(response["overlaps"], on="B") \
+            .merge(response["intervals"], right_index=True,left_on="index")
+
+        # how many distinct B's does an R have?
+        merged["RB"] = merged[["R", "B"]].groupby("R").B.transform("nunique")
+        # how many distinct B's does a G belong to in each R?
+        merged["GB"] = merged.groupby(["R", "G"]).B.transform("nunique")
+
+        res = merged \
+            .merge(merged, right_on=["R", "RB"], left_on=["R", "GB"], how="inner")[["R", "G_x", "LF_x"]] \
+            .rename(columns={"G_x": "G", "LF_x": "LF", "B_x": "B"}) \
+            .drop_duplicates()
+
+        return res
 
 infile_bam = pysam.AlignmentFile(snakemake.input["inbam"], "rb")
-gi_tree = GeneIntervalTree(snakemake.input["refflat"], infile_bam)
+refFlat_repr = GeneIntervalTree(snakemake.input["refflat"], infile_bam)
 outfile = pysam.AlignmentFile(snakemake.output["outbam"], "wb", template=infile_bam)
 correct_bam = pysam.AlignmentFile(snakemake.input["correctbam"], "rb")
 
@@ -39,50 +66,19 @@ for i in range(len(reads_list)):
         refs.append(infile_bam.getrname(reads_list[i].tid))
         ctr += 1
 
-RB = pd.DataFrame(data={"R": R, "B": B, "ref": refs, "starts": starts_list, "ends": ends_list})
+refs = pd.DataFrame(data={"R": R, "B": B, "ref": refs, "starts": starts_list, "ends": ends_list}).groupby("ref")
 
-STEP_SIZE = 5000000
-i = 0
-tot_reads = len(reads_list)
-print(tot_reads)
-while i < tot_reads:
-    lo = i
-    hi = i+STEP_SIZE if i+STEP_SIZE < tot_reads else tot_reads
-    chunk = RB[RB["R"].isin(range(tot_reads)[lo:hi])]
-    res = gi_tree.get_overlaps(chunk)
+workers = [Worker.remote(refFlat_repr) for _ in range(N_CORES)]
+result_ids = []
 
-    # how many distinct B's does an R have?
-    res["RB"] = res[["R", "B"]].groupby("R").B.transform("nunique")
-    # how many distinct B's does a G belong to in each R?
-    res["GB"] = res.groupby(["R", "G"]).B.transform("nunique")
+for ref, reads_for_ref in refs:
+    nrows = reads_for_ref.shape[0]
+    while i < nrows:
+        lo = i
+        hi = i + step if i + step < nrows else nrows
+        result_ids.append(workers[ctr % N_CORES].do_query.remote(reads_for_ref[lo:hi]))
 
-    res = res\
-        .merge(res, right_on=["R", "RB"], left_on=["R", "GB"], how="inner")[["R", "G_x","LF_x"]]\
-        .rename(columns={"G_x": "G", "LF_x": "LF", "B_x":"B" })\
-        .drop_duplicates()
-    i = hi
-    #RG = res[["R","G"]].groupby("R").agg({"G" : lambda x:set(x)}).reset_index()
-    #RLF = res[["R", "LF", "G"]].drop_duplicates().groupby(["R", "G"]).agg({"LF": lambda x: list(x)}).reset_index()
-
-#     for index, row in RG.iterrows():
-#         read = reads_list[row["R"]]
-#         tested_genenames[read.query_name] = row["G"]
-#     i = hi
-#     print("i = ",i)
-# # test stats
-#
-# tot_corr = 0
-# tot_wrong = 0
-#
-# with open(snakemake.output[0], "w") as output:
-#     for
-#     for query_name, genes in correct_genenames.items():
-#         if tested_genenames[query_name] == genes:
-#             tot_corr += 1
-#         else:
-#             output.write("%s\t%s" % ((",").join([g for g in genes]),(",").join([g for g in tested_genenames[query_name]])) )
-#
-# print(tot_corr, tot_wrong)
+results= ray.get(result_ids)
 
 exit()
 

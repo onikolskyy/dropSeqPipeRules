@@ -7,3 +7,4 @@ dependencies:
   - pysam
   - numpy
   - pandas
+  - ray
