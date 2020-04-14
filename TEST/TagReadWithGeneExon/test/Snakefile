@@ -6,7 +6,7 @@ rule test:
         correctbam='/input/correct.bam'
     output:
         # define output path
-        outbam='out.bam'
+        out='log.txt'
     conda: 'envs/tag_read_with_gene_exon.yaml'
     benchmark : 'benchmark.txt'
     script: 'scripts/test.py'

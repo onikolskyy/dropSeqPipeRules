@@ -2,6 +2,7 @@ import pysam
 import numpy as np
 import pandas as pd
 from ncls import NCLS
+from time import time
 #from bin.helperClasses.geneIntervalTree.gene_interval_tree import GeneIntervalTree
 from src.refFlat_repr import RefFlatParsed
 
@@ -20,8 +21,8 @@ print("start parsing refflat")
 refFlat = RefFlatParsed(snakemake.input["refflat"], infile_bam)
 print("end parsing refflat")
 #outfile bam
-outfile = pysam.AlignmentFile(snakemake.output["outbam"], "wb", template=infile_bam)
-
+#outfile = pysam.AlignmentFile(snakemake.output["outbam"], "wb", template=infile_bam)
+logfile = open(snakemake.output["out"],"w")
 #for testing
 correct_bam = pysam.AlignmentFile(snakemake.input["correctbam"], "rb")
 
@@ -56,6 +57,8 @@ for ref, group in refs:
 
     print("starting ref",ref)
 
+    t_start = time()
+
     refFlat_intervals =  refFlat.as_intervals(ref)
     ncl = NCLS(refFlat_intervals.start.to_numpy(), refFlat_intervals.end.to_numpy(), refFlat_intervals.index.to_numpy())
     query_index, ncl_index = ncl.all_overlaps_both(group.start.to_numpy(), group.end.to_numpy(), group.index.to_numpy())
@@ -73,6 +76,9 @@ for ref, group in refs:
 
     res = merged[merged.RB==merged.GB]
 
+    t_end = time.time()
+    s = ref+" :"+t_end-t_start
+    logfile.write(s)
     for read, grouped_by_read in res.groupby("R"):
         genes_for_read = grouped_by_read.G.to_list()
         genes_for_read.sort()
@@ -93,9 +99,12 @@ for qname, genenames in correct_genenames:
             ctr_correct += 1
         else:
             ctr_wrong += 1
-            print("correct:", genenames, "; tested:", tested_genenames[qname])
+           # print("correct:", genenames, "; tested:", tested_genenames[qname])
 
+s = "ctr_correct "+ctr_correct+"; ctr_wrong "+ctr_wrong
 
+logfile.write(s)
+logfile.close()
 exit()
 
 
