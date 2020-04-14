@@ -74,7 +74,8 @@ for ref, group in refs:
     res = merged[merged.RB==merged.GB]
 
     for read, grouped_by_read in res.groupby("R"):
-        genes_for_read = grouped_by_read.G.to_list().sort()
+        genes_for_read = grouped_by_read.G.to_list()
+        genes_for_read.sort()
         as_string = ','.join(genes_for_read)
 
         tested_genenames[reads_list[read].query_name] = as_string
