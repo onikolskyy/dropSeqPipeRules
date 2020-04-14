@@ -91,7 +91,7 @@ class RefFlatParsed:
                         break
 
                 if found:
-                    if not parsed_entries["ref"] in self.pased_mapping.keys():
+                    if not parsed_entries["ref"] in self.parsed_mapping.keys():
                         self.parsed_mapping[parsed_entries["ref"]] = {}
 
                     parsed_mapping_for_ref = self.parsed_mapping[parsed_entries["ref"]]
