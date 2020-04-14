@@ -26,11 +26,8 @@ class Worker:
         # how many distinct B's does a G belong to in each R?
         merged["GB"] = merged.groupby(["R", "G"]).B.transform("nunique")
 
-        res = merged \
-            .merge(merged, right_on=["R", "RB"], left_on=["R", "GB"], how="inner")[["R", "G_x", "LF_x"]] \
-            .rename(columns={"G_x": "G", "LF_x": "LF", "B_x": "B"}) \
-            .drop_duplicates()
-
+        res  = merged[merged.RB==merged.GB]
+        
         return res
 
 infile_bam = pysam.AlignmentFile(snakemake.input["inbam"], "rb")
