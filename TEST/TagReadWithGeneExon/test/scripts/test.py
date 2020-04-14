@@ -76,7 +76,7 @@ for ref, group in refs:
 
     res = merged[merged.RB==merged.GB]
 
-    t_end = time.time()
+    t_end = time()
     s = ref+" :"+t_end-t_start
     logfile.write(s)
     for read, grouped_by_read in res.groupby("R"):
