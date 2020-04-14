@@ -14,7 +14,6 @@ import math
 #####################################################################################
 # clone for picard's OverlapDetector in Python
 ####################################################################################
-ray.init()
 
 @ray.remote
 class GeneIntervalTree:
