@@ -121,6 +121,7 @@ class RefFlatParsed:
                     # proceed to next line
 
                 refflat_line = refflat_file.readline()
+        print(self.parsed_mapping.keys())
 
     def as_intervals(self,ref):
         parsed_mapping_for_ref = self.parsed_mapping[ref]
@@ -130,7 +131,7 @@ class RefFlatParsed:
         gene = []
         #LF = []
 
-        for gene_name, parsed_gene in parsed_mapping_for_ref:
+        for gene_name, parsed_gene in parsed_mapping_for_ref.items():
             gene.append(gene_name)
             start.append(parsed_gene["start"])
             end.append(parsed_gene["end"])
