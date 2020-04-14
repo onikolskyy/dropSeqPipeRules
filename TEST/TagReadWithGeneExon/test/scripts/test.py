@@ -15,11 +15,15 @@ class Worker:
     def __init__(self, t):
         self.t = t
 
-    def work(self,query,ref):
-        response = ray.get(self.t.get_overlaps.remote(query,ref))
+    def work(self,args,ref):
+        response = ray.get(self.t.get_overlaps.remote(args,ref))
+        query = pd.DataFrame(args["query_arr"],columns=args["columns"])
+        overlaps = pd.DataFrame(response["oberlaps"]["data"], response["overlaps"]["columns"])
+        intervals = pd.DataFrame(response["intervals"]["data"], response["intervals"]["columns"])
+
         merged = query\
-            .merge(response["overlaps"], on="B") \
-            .merge(response["intervals"], right_index=True,left_on="index")
+            .merge(overlaps, on="B") \
+            .merge(intervals, right_index=True,left_on="index")
 
         # how many distinct B's does an R have?
         merged["RB"] = merged[["R", "B"]].groupby("R").B.transform("nunique")
@@ -28,11 +32,21 @@ class Worker:
 
         res  = merged[merged.RB==merged.GB]
 
-        return res
+        return {
+            "data" : res.to_numpy(),
+            "columns" : res.columns
+        }
 
+#bam file
 infile_bam = pysam.AlignmentFile(snakemake.input["inbam"], "rb")
+
+#gene trees for querying
 refFlat_repr = GeneIntervalTree.remote(snakemake.input["refflat"], infile_bam)
+
+#outfile bam
 outfile = pysam.AlignmentFile(snakemake.output["outbam"], "wb", template=infile_bam)
+
+#for testing
 correct_bam = pysam.AlignmentFile(snakemake.input["correctbam"], "rb")
 
 correct_genenames = {}
@@ -63,8 +77,10 @@ for i in range(len(reads_list)):
         refs.append(infile_bam.getrname(reads_list[i].tid))
         ctr += 1
 
+#group by ref for querying gene tree
 refs = pd.DataFrame(data={"R": R, "B": B, "ref": refs, "starts": starts_list, "ends": ends_list}).groupby("ref")
 
+#start merge
 workers = [Worker.remote(refFlat_repr) for _ in range(N_CORES)]
 result_ids = []
 
@@ -73,7 +89,11 @@ for ref, reads_for_ref in refs:
     while i < nrows:
         lo = i
         hi = i + step if i + step < nrows else nrows
-        result_ids.append(workers[ctr % N_CORES].do_query.remote(reads_for_ref[lo:hi]))
+        args = {
+            "data" : reads_for_ref.to_numpy()[lo:hi,],
+            "columns" : reads_for_ref.columns
+        }
+        result_ids.append(workers[ctr % N_CORES].do_query.remote())
 
 results= ray.get(result_ids)
 

@@ -149,17 +149,21 @@ class GeneIntervalTree:
         # "index": np.arange(len(self.I_starts))
         })
 
-    def get_overlaps(self, query, ref):
-        t1 = time()
+    def get_overlaps(self, args, ref):
+        query = pd.DataFrame(args["query_arr"],columns=args["columns"])
         overlaps = self.data[ref]["ncl"].all_overlaps_both(query["starts"].values,
                                                query["ends"].values,
                                                query["B"].values)
-        t2= time()
-        print("query took", t2-t1)
-
+        res = pd.DataFrame({"B":overlaps[0], "index":overlaps[1]})
         return {
-            "overlaps" : pd.DataFrame({"B":overlaps[0], "index":overlaps[1]}),
-            "intervals" : self.data[ref]["intervals"]
+            "overlaps" : {
+                "data" : res.to_numpy(),
+                "columns" : res.columns
+            },
+            "intervals" : {
+                "data" : self.data[ref]["intervals"].to_numpy(),
+                "columns" : self.data[ref]["intervals"].columns
+            }
         }
 
 
