@@ -27,7 +27,7 @@ class Worker:
         merged["GB"] = merged.groupby(["R", "G"]).B.transform("nunique")
 
         res  = merged[merged.RB==merged.GB]
-        
+
         return res
 
 infile_bam = pysam.AlignmentFile(snakemake.input["inbam"], "rb")
