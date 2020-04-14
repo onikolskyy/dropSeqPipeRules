@@ -74,7 +74,7 @@ class RefflatEntries:
 class RefFlatParsed:
     def __init__(self,in_refflat, bam_file):
         bam_header = bam_file.header
-        self.pased_mapping = {}
+        self.parsed_mapping = {}
 
         with open(in_refflat, "r") as refflat_file:
             # save the parsed genes
