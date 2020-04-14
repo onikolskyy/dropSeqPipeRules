@@ -83,7 +83,7 @@ class RefFlatParsed:
 
             while refflat_line:
                 parsed_entries = RefflatEntries.get_dict(re.split(r'\t+', refflat_line.rstrip('\t')))
-                # find chromosome in header
+                # find ref in header
                 found = False
                 for pair in bam_header["SQ"]:
                     if pair["SN"] == parsed_entries["ref"]:
@@ -102,7 +102,6 @@ class RefFlatParsed:
                             "start" : float('inf'),
                             "end" : -float('inf')
                         }
-
                     parsed_mapping_for_gene = parsed_mapping_for_ref[parsed_entries["gene_name"]]
 
                     transcript = {
@@ -116,6 +115,8 @@ class RefFlatParsed:
 
                     parsed_mapping_for_gene["transcripts"].append(transcript)
 
+                    parsed_mapping_for_gene["start"] = min(parsed_mapping_for_gene["start"],parsed_entries["transcription_start"] )
+                    parsed_mapping_for_gene["end"] = max(parsed_mapping_for_gene["start"],parsed_entries["transcription_end"] )
 
                     # proceed to next line
 

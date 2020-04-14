@@ -14,10 +14,10 @@ tested_genenames = {}
 
 #bam file
 infile_bam = pysam.AlignmentFile(snakemake.input["inbam"], "rb")
-
+print("start parsing refflat")
 #parse refflat
 refFlat = RefFlatParsed(snakemake.input["refflat"], infile_bam)
-
+print("end parsing refflat")
 #outfile bam
 outfile = pysam.AlignmentFile(snakemake.output["outbam"], "wb", template=infile_bam)
 
@@ -53,7 +53,7 @@ refs = pd.DataFrame(data={"R": R, "B": B, "ref": refs, "start": starts_list, "en
 
 for ref, group in refs:
 
-    print("starting ref")
+    print("starting ref",ref)
 
     refFlat_intervals =  refFlat.as_intervals(ref)
     ncl = NCLS(refFlat_intervals.starts, refFlat_intervals.ends, refFlat_intervals.index.to_list())
