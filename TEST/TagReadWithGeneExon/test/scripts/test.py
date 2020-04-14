@@ -28,7 +28,6 @@ for read in correct_bam:
     correct_genenames[read.query_name] = set() if not read.has_tag("gn") else set(read.get_tag("gn").split(","))
 
 
-
 reads_list = [read for read in infile_bam]
 blocks_list = [reads_list[i].get_blocks()[j] for i in range(len(reads_list)) for j in range(len(reads_list[i].get_blocks()))]
 starts_list = [blocks_list[i][0] for i in range(len(blocks_list))]
@@ -53,6 +52,8 @@ for i in range(len(reads_list)):
 refs = pd.DataFrame(data={"R": R, "B": B, "ref": refs, "start": starts_list, "end": ends_list}).groupby("ref")
 
 for ref, group in refs:
+
+    print("starting ref")
 
     refFlat_intervals =  refFlat.as_intervals(ref)
     ncl = NCLS(refFlat_intervals.starts, refFlat_intervals.ends, refFlat_intervals.index.to_list())
