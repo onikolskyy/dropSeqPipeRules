@@ -25,7 +25,7 @@ outfile = pysam.AlignmentFile(snakemake.output["outbam"], "wb", template=infile_
 correct_bam = pysam.AlignmentFile(snakemake.input["correctbam"], "rb")
 
 for read in correct_bam:
-    correct_genenames[read.query_name] = set() if not read.has_tag("gn") else set(read.get_tag("gn").split(","))
+    correct_genenames[read.query_name] =  read.get_tag("gn")
 
 
 reads_list = [read for read in infile_bam]
@@ -80,8 +80,18 @@ for ref, group in refs:
 
     print("finished ref \n", ref)
 
-
-
+ctr_correct = 0
+ctr_wrong = 0
+ctr_not_found = 0
+for qname, genenames in correct_genenames:
+    if qname not in tested_genenames:
+        ctr_not_found+=1
+    else:
+        if genenames == tested_genenames[qname]:
+            ctr_correct += 1
+        else:
+            ctr_wrong += 1
+            print("correct:", genenames, "; tested:", tested_genenames[qname])
 
 
 exit()
