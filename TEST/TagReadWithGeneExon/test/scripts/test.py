@@ -2,7 +2,7 @@ import pysam
 import numpy as np
 import pandas as pd
 #from bin.helperClasses.geneIntervalTree.gene_interval_tree import GeneIntervalTree
-from scripts.src.helperClasses.refFlat_repr import RefFlatParsed
+from src.helperClasses.refFlat_repr import RefFlatParsed
 
 
 N_CORES = 10
