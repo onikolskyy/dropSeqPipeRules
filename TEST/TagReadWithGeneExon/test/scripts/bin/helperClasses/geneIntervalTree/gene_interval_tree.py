@@ -18,6 +18,7 @@ import math
 @ray.remote
 class GeneIntervalTree:
     def __init__(self, in_refflat, bam_file):
+        print("CONSTRUCTING TREE")
         self.I_starts = []
         self.I_ends = []
         self.LF = []
