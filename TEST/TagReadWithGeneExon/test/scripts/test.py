@@ -31,7 +31,7 @@ class Worker:
         return res
 
 infile_bam = pysam.AlignmentFile(snakemake.input["inbam"], "rb")
-refFlat_repr = GeneIntervalTree(snakemake.input["refflat"], infile_bam)
+refFlat_repr = GeneIntervalTree.remote(snakemake.input["refflat"], infile_bam)
 outfile = pysam.AlignmentFile(snakemake.output["outbam"], "wb", template=infile_bam)
 correct_bam = pysam.AlignmentFile(snakemake.input["correctbam"], "rb")
 
