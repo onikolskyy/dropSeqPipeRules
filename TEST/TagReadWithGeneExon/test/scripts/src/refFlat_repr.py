@@ -120,7 +120,7 @@ class RefFlatParsed:
 
                     # proceed to next line
 
-                    refflat_line = refflat_file.readline()
+                refflat_line = refflat_file.readline()
 
     def as_intervals(self,ref):
         parsed_mapping_for_ref = self.pased_mapping["ref"]
