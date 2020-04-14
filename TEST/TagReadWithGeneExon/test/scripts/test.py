@@ -57,7 +57,7 @@ for ref, group in refs:
     print("starting ref",ref)
 
     refFlat_intervals =  refFlat.as_intervals(ref)
-    ncl = NCLS(refFlat_intervals.start, refFlat_intervals.end, refFlat_intervals.index.to_list())
+    ncl = NCLS(refFlat_intervals.start.values, refFlat_intervals.end.values, refFlat_intervals.index.to_list())
     query_index, ncl_index = ncl.all_overlaps_both(group.start, group.end, group.index.to_list())
 
     overlaps = pd.DataFrame({"I1" : query_index, "I2" : ncl_index})
