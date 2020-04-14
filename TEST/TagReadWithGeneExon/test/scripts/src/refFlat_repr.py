@@ -86,7 +86,7 @@ class RefFlatParsed:
                 # find chromosome in header
                 found = False
                 for pair in bam_header["SQ"]:
-                    if pair["SN"] == parsed_entries["chrom"]:
+                    if pair["SN"] == parsed_entries["ref"]:
                         found = True
                         break
 
