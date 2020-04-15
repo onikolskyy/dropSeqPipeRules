@@ -124,6 +124,10 @@ class RefFlatParsed:
         print(self.parsed_mapping.keys())
 
     def as_intervals(self,ref):
+
+        if ref not in self.parsed_mapping:
+            return None
+
         parsed_mapping_for_ref = self.parsed_mapping[ref]
 
         start = []

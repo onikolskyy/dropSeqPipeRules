@@ -60,6 +60,11 @@ for ref, group in refs:
     t_start = time()
 
     refFlat_intervals =  refFlat.as_intervals(ref)
+
+    #if ref is not in refFlat, continue to next ref
+    if not refFlat_intervals:
+        continue
+
     ncl = NCLS(refFlat_intervals.start.to_numpy(), refFlat_intervals.end.to_numpy(), refFlat_intervals.index.to_numpy())
     query_index, ncl_index = ncl.all_overlaps_both(group.start.to_numpy(), group.end.to_numpy(), group.index.to_numpy())
 
