@@ -62,7 +62,7 @@ for ref, group in refs:
     refFlat_intervals =  refFlat.as_intervals(ref)
 
     #if ref is not in refFlat, continue to next ref
-    if not refFlat_intervals:
+    if not isinstance(refFlat_intervals,pd.DataFrame):
         continue
 
     ncl = NCLS(refFlat_intervals.start.to_numpy(), refFlat_intervals.end.to_numpy(), refFlat_intervals.index.to_numpy())
