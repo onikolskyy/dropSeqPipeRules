@@ -95,7 +95,7 @@ for ref, group in refs:
 ctr_correct = 0
 ctr_wrong = 0
 ctr_not_found = 0
-for qname, genenames in correct_genenames:
+for qname, genenames in correct_genenames.items():
     if qname not in tested_genenames:
         ctr_not_found+=1
     else:
