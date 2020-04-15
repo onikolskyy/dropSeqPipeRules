@@ -77,7 +77,7 @@ for ref, group in refs:
     res = merged[merged.RB==merged.GB]
 
     t_end = time()
-    logfile.write("ref %s took %f"%(ref,t_end-t_start))
+    logfile.write("ref %s took %s"%(ref,str(t_end-t_start)))
     for read, grouped_by_read in res.groupby("R"):
         genes_for_read = grouped_by_read.G.to_list()
         genes_for_read.sort()
