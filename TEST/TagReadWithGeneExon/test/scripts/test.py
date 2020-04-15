@@ -22,7 +22,7 @@ refFlat = RefFlatParsed(snakemake.input["refflat"], infile_bam)
 print("end parsing refflat")
 #outfile bam
 #outfile = pysam.AlignmentFile(snakemake.output["outbam"], "wb", template=infile_bam)
-logfile = open(snakemake.output["out"],"w")
+logfile = open(snakemake.output["out"],"a")
 #for testing
 correct_bam = pysam.AlignmentFile(snakemake.input["correctbam"], "rb")
 
