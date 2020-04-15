@@ -82,7 +82,10 @@ for ref, group in refs:
     res = merged[merged.RB==merged.GB]
 
     t_end = time()
+
     logfile.write("ref %s took %s"%(ref,str(t_end-t_start)))
+    print("ref %s took %s"%(ref,str(t_end-t_start)))
+
     for read, grouped_by_read in res.groupby("R"):
         genes_for_read = grouped_by_read.G.to_list()
         genes_for_read.sort()
@@ -104,7 +107,7 @@ for qname, genenames in correct_genenames.items():
         else:
             ctr_wrong += 1
            # print("correct:", genenames, "; tested:", tested_genenames[qname])
-
+print("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
 logfile.write("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
 logfile.close()
 exit()
