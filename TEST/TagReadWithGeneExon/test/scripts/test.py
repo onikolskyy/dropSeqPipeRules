@@ -80,7 +80,7 @@ for ref, group in refs:
     merged["GB"] = merged.groupby(["R", "G"]).B.transform("nunique")
 
     # split into reads with singl block and reads with multiple blocks
-    single_block = merged[merged.RB == 1][["R","B","G"]]
+    single_block = merged[merged.RB == 1]
     multiple_blocks = merged[merged.GB != 1]
 
     # filter out only those genes which are overlapped by all blocks of a read
