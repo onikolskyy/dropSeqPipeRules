@@ -79,7 +79,12 @@ for ref, group in refs:
     # how many distinct B's does a G belong to in each R?
     merged["GB"] = merged.groupby(["R", "G"]).B.transform("nunique")
 
-    res = merged[merged.RB==merged.GB]
+    # split into reads with singl block and reads with multiple blocks
+    single_block = merged[merged.RB == 1]
+    multiple_blocks = merged[merged.GB != 1]
+
+    # filter out only those genes which are overlapped by all blocks of a read
+    multiple_blocks_filterd = multiple_blocks[multiple_blocks.RB == multiple_blocks.GB]
 
     t_end = time()
 
@@ -106,7 +111,7 @@ for qname, genenames in tested_genenames.items():
             ctr_correct += 1
         else:
             ctr_wrong += 1
-            print("correct:" ,correct_genenames[qname],"wrong:", genenames, "\n" )
+            logfile.write("correct:" ,correct_genenames[qname],"wrong:", genenames, "\n" )
            # print("correct:", genenames, "; tested:", tested_genenames[qname])
 print("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
 logfile.write("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
