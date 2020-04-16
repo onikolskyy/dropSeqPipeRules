@@ -94,8 +94,8 @@ for ref, group in refs:
 
     t_end = time()
 
-    logfile.write("ref %s took %s"%(ref,str(t_end-t_start)))
-    print("ref %s took %s"%(ref,str(t_end-t_start)))
+    logfile.write("ref %s took %s \n"%(ref,str(t_end-t_start)))
+    print("ref %s took %s \n"%(ref,str(t_end-t_start)))
 
     for read, grouped_by_read in res.groupby("R"):
         genes_for_read = grouped_by_read.G.to_list()
