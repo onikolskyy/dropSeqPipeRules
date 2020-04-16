@@ -98,14 +98,15 @@ for ref, group in refs:
 ctr_correct = 0
 ctr_wrong = 0
 ctr_not_found = 0
-for qname, genenames in correct_genenames.items():
-    if qname not in tested_genenames:
+for qname, genenames in tested_genenames.items():
+    if qname not in correct_genenames:
         ctr_not_found+=1
     else:
-        if genenames == tested_genenames[qname]:
+        if genenames == correct_genenames[qname]:
             ctr_correct += 1
         else:
             ctr_wrong += 1
+            print("correct:" ,correct_genenames[qname],"wrong:", genenames, "\n" )
            # print("correct:", genenames, "; tested:", tested_genenames[qname])
 print("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
 logfile.write("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
