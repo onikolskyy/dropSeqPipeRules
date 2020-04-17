@@ -56,7 +56,7 @@ refs = pd.DataFrame(data={"R": R, "ref": refs, "start": starts_list, "end": ends
 refs["B"] = refs.index
 grouped = refs.groupby("ref")
 
-for ref, group in refs:
+for ref, group in grouped:
 
     print("starting ref",ref)
 
