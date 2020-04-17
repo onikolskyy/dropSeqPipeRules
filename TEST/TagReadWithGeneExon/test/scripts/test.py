@@ -50,8 +50,11 @@ for i in range(len(reads_list)):
         refs.append(infile_bam.getrname(reads_list[i].tid))
         ctr += 1
 
-#group by ref for querying gene tree
-refs = pd.DataFrame(data={"R": R, "ref": refs, "start": starts_list, "end": ends_list}).groupby("ref")
+# group by ref for querying gene tree
+refs = pd.DataFrame(data={"R": R, "ref": refs, "start": starts_list, "end": ends_list})
+# block index is unique for each entry
+refs["B"] = refs.index
+grouped = refs.groupby("ref")
 
 for ref, group in refs:
 
@@ -80,14 +83,14 @@ for ref, group in refs:
     merged["GB"] = merged.groupby(["R", "G"]).B.transform("nunique")
 
     # split into reads with singl block and reads with multiple blocks
-    single_block = merged[merged.RB == 1]
+    single_block = merged[merged.RB == 1][["R","B","G"]]
     multiple_blocks = merged[merged.GB != 1]
 
     # filter out only those genes which are overlapped by all blocks of a read
-    multiple_blocks_filterd = multiple_blocks[multiple_blocks.RB == multiple_blocks.GB][["R","B","G"]]
+    multiple_blocks_filtered = multiple_blocks[multiple_blocks.RB == multiple_blocks.GB][["R","B","G"]]
     # retain unique gene set for each read
-    unique = multiple_blocks_filterd[["R","G"]].drop_duplicates()
-    multiple_blocks_unique = multiple_blocks_filterd[multiple_blocks_filterd.index.isin(unique.index.to_list())]
+    unique = multiple_blocks_filtered[["R","G"]].drop_duplicates()
+    multiple_blocks_unique = multiple_blocks_filtered[multiple_blocks_filtered.index.isin(unique.index.to_list())]
 
     # concat splitted data
     res = pd.concat([multiple_blocks_unique,single_block])
