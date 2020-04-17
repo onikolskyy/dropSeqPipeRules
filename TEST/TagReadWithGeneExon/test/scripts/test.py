@@ -98,7 +98,7 @@ for ref, group in grouped:
         if correct_genenames[reads_list[read].query_name] != as_string:
             ctr_wrong_single+=1
             logfile.write("SINGLE: correct:%s; wrong: %s \n" % (correct_genenames[reads_list[read].query_name], as_string))
-            print("SINGLE: correct:%s; wrong: %s \n" % (correct_genenames[reads_list[read].query_name], as_string))
+            #print("SINGLE: correct:%s; wrong: %s \n" % (correct_genenames[reads_list[read].query_name], as_string))
 
     multiple_blocks = merged[merged.GB != 1]
 
@@ -117,7 +117,7 @@ for ref, group in grouped:
         if correct_genenames[reads_list[read].query_name] != as_string:
             ctr_wrong_multiple += 1
             logfile.write("MULTIPLE: correct:%s; wrong: %s \n" % (correct_genenames[reads_list[read].query_name], as_string))
-            print("MULTIPLE: correct:%s; wrong: %s \n" % (correct_genenames[reads_list[read].query_name], as_string))
+            #print("MULTIPLE: correct:%s; wrong: %s \n" % (correct_genenames[reads_list[read].query_name], as_string))
 
     # concat splitted data
     #res = pd.concat([multiple_blocks_unique,single_block])
