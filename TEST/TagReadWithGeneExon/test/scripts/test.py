@@ -56,6 +56,10 @@ refs = pd.DataFrame(data={"R": R, "ref": refs, "start": starts_list, "end": ends
 refs["B"] = refs.index
 grouped = refs.groupby("ref")
 
+# debug conters
+ctr_wrong_single = 0
+ctr_wrong_multiple = 0
+
 for ref, group in grouped:
 
     print("starting ref",ref)
@@ -84,6 +88,18 @@ for ref, group in grouped:
 
     # split into reads with singl block and reads with multiple blocks
     single_block = merged[merged.RB == 1][["R","B","G"]]
+
+
+    # debug & test single block
+    for read, grouped_by_read in single_block.groupby("R"):
+        genes_for_read = grouped_by_read.G.to_list()
+        genes_for_read.sort()
+        as_string = ','.join(genes_for_read)
+        if correct_genenames[reads_list[read].query_name] != as_string:
+            ctr_wrong_single+=1
+            logfile.write("SINGLE: correct:%s; wrong: %s \n" % (correct_genenames[reads_list[read].query_name], as_string))
+            print("SINGLE: correct:%s; wrong: %s \n" % (correct_genenames[reads_list[read].query_name], as_string))
+
     multiple_blocks = merged[merged.GB != 1]
 
     # filter out only those genes which are overlapped by all blocks of a read
@@ -92,38 +108,50 @@ for ref, group in grouped:
     unique = multiple_blocks_filtered[["R","G"]].drop_duplicates()
     multiple_blocks_unique = multiple_blocks_filtered[multiple_blocks_filtered.index.isin(unique.index.to_list())]
 
-    # concat splitted data
-    res = pd.concat([multiple_blocks_unique,single_block])
 
-    t_end = time()
-
-    logfile.write("ref %s took %s \n"%(ref,str(t_end-t_start)))
-    print("ref %s took %s \n"%(ref,str(t_end-t_start)))
-
-    for read, grouped_by_read in res.groupby("R"):
+    # debug & test multiple blocks
+    for read, grouped_by_read in multiple_blocks_unique.groupby("R"):
         genes_for_read = grouped_by_read.G.to_list()
         genes_for_read.sort()
         as_string = ','.join(genes_for_read)
+        if correct_genenames[reads_list[read].query_name] != as_string:
+            ctr_wrong_multiple += 1
+            logfile.write("MULTIPLE: correct:%s; wrong: %s \n" % (correct_genenames[reads_list[read].query_name], as_string))
+            print("MULTIPLE: correct:%s; wrong: %s \n" % (correct_genenames[reads_list[read].query_name], as_string))
 
-        tested_genenames[reads_list[read].query_name] = as_string
+    # concat splitted data
+    #res = pd.concat([multiple_blocks_unique,single_block])
+
+    #t_end = time()
+
+    #logfile.write("ref %s took %s \n"%(ref,str(t_end-t_start)))
+    #print("ref %s took %s \n"%(ref,str(t_end-t_start)))
+
+    # for read, grouped_by_read in res.groupby("R"):
+    #     genes_for_read = grouped_by_read.G.to_list()
+    #     genes_for_read.sort()
+    #     as_string = ','.join(genes_for_read)
+    #
+    #     tested_genenames[reads_list[read].query_name] = as_string
 
     print("finished ref \n", ref)
 
-ctr_correct = 0
-ctr_wrong = 0
-ctr_not_found = 0
-for qname, genenames in tested_genenames.items():
-    if qname not in correct_genenames:
-        ctr_not_found+=1
-    else:
-        if genenames == correct_genenames[qname]:
-            ctr_correct += 1
-        else:
-            ctr_wrong += 1
-            logfile.write("correct:%s; wrong: %s \n" %(correct_genenames[qname], genenames))
-            print("correct:", genenames, "; tested:", tested_genenames[qname])
-print("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
-logfile.write("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
+# ctr_correct = 0
+# ctr_wrong = 0
+# ctr_not_found = 0
+# for qname, genenames in tested_genenames.items():
+#     if qname not in correct_genenames:
+#         ctr_not_found+=1
+#     else:
+#         if genenames == correct_genenames[qname]:
+#             ctr_correct += 1
+#         else:
+#             ctr_wrong += 1
+#             logfile.write("correct:%s; wrong: %s \n" %(correct_genenames[qname], genenames))
+#             print("correct:", genenames, "; tested:", tested_genenames[qname])
+# print("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
+logfile.write("single: %i; multiple: %i"%(ctr_wrong_single,ctr_wrong_multiple))
+print("single: %i; multiple: %i"%(ctr_wrong_single,ctr_wrong_multiple))
 logfile.close()
 exit()
 
