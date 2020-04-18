@@ -75,9 +75,9 @@ for ref, group in grouped:
 
     print("starting ref",ref)
 
-    t_start = time()
-
     refFlat_intervals =  refFlat.as_intervals(ref)
+
+    t_start = time()
 
     #if ref is not in refFlat, continue to next ref
     if not isinstance(refFlat_intervals,pd.DataFrame):
@@ -111,7 +111,7 @@ for ref, group in grouped:
     print("ref %s took %s \n"%(ref,str(t_end-t_start)))
 
     for read, grouped_by_read in res.groupby("read"):
-        genes_for_read = grouped_by_read.G.to_list()
+        genes_for_read = grouped_by_read.gene.to_list()
         genes_for_read.sort()
         as_string = ','.join(genes_for_read)
 
