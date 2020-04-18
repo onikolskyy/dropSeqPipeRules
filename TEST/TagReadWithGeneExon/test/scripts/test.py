@@ -123,7 +123,7 @@ for qname, genenames in tested_genenames.items():
         else:
             ctr_wrong += 1
             logfile.write("correct:%s; wrong: %s \n" %(correct_genenames[qname], genenames))
-            print("correct:", genenames, "; tested:", tested_genenames[qname])
+            print("correct:", correct_genenames[qname], "; tested:", tested_genenames[qname])
 print("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
 logfile.write("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
 logfile.close()
