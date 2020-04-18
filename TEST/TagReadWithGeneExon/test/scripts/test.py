@@ -94,9 +94,9 @@ for ref, group in grouped:
     print("merge complete \n")
 
     # how many distinct B's does an R have?
-    merged["RB"] = merged[["read", "block"]].groupby("R").B.transform("nunique")
+    merged["RB"] = merged[["read", "block"]].groupby("read").block.transform("nunique")
     # how many distinct B's does a G belong to in each R?
-    merged["GB"] = merged.groupby(["read", "gene"]).B.transform("nunique")
+    merged["GB"] = merged.groupby(["read", "gene"]).block.transform("nunique")
 
     # split into reads with singl block and reads with multiple blocks, handle separately
     single_block = find_LF_for_genes( merged[merged.RB == 1] )
