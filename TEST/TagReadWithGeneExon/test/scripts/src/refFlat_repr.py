@@ -156,7 +156,7 @@ class RefFlatParsed:
                         LF.append(3)
 
                     #INTRONIC
-                    if i < len(transcript["exons"]-1):
+                    if i < len(transcript["exons"])-1:
                         start.append(transcript["exons"][i][1])
                         end.append(transcript["exons"][i+1][1])
                         gene.append(gene_name)
