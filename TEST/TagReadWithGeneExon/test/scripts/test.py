@@ -55,17 +55,9 @@ blocks_list = [reads_list[i].get_blocks()[j] for i in range(len(reads_list)) for
 start = [i for b in range(len(blocks_list)) for i in range(blocks_list[b][0],blocks_list[b][1],1)]
 end = [i+1 for b in range(len(blocks_list)) for i in range(blocks_list[b][0],blocks_list[b][1],1)]
 block = [b for b in range(len(blocks_list)) for i in range(blocks_list[b][0],blocks_list[b][1],1)]
-
-ref = []
-read = []
-
-for r in range(len(reads_list)):
-    rref = infile_bam.getrname(reads_list[r].tid)
-    for b in reads_list[r].get_blocks():
-        for i in range(b[0],b[1],1):
-            ref.append(rref)
-            read.append(r)
-
+read = [r for r in range(len(reads_list)) for b in reads_list[r].get_blocks() for i in range(b[0],b[1],1)]
+ref = [infile_bam.getrname(reads_list[r].tid)\
+       for r in range(len(reads_list)) for b in reads_list[r].get_blocks() for i in range(b[0],b[1],1)]
 
 # group by ref for querying gene tree
 refs = pd.DataFrame(data={"read": read, "ref": ref, "start": start, "end": end, "block": block})
@@ -110,30 +102,30 @@ for ref, group in grouped:
     logfile.write("ref %s took %s \n"%(ref,str(t_end-t_start)))
     print("ref %s took %s \n"%(ref,str(t_end-t_start)))
 
-    for read, grouped_by_read in res.groupby("read"):
-        genes_for_read = grouped_by_read.gene.to_list()
-        genes_for_read.sort()
-        as_string = ','.join(genes_for_read)
-
-        tested_genenames[reads_list[read].query_name] = as_string
+    # for read, grouped_by_read in res.groupby("read"):
+    #     genes_for_read = grouped_by_read.gene.to_list()
+    #     genes_for_read.sort()
+    #     as_string = ','.join(genes_for_read)
+    #
+    #     tested_genenames[reads_list[read].query_name] = as_string
 
     print("finished ref \n", ref)
 
 ctr_correct = 0
 ctr_wrong = 0
 ctr_not_found = 0
-for qname, genenames in tested_genenames.items():
-    if qname not in correct_genenames:
-        ctr_not_found+=1
-    else:
-        if genenames == correct_genenames[qname]:
-            ctr_correct += 1
-        else:
-            ctr_wrong += 1
-            logfile.write("correct:%s; wrong: %s \n" %(correct_genenames[qname], genenames))
-            print("correct:", genenames, "; tested:", tested_genenames[qname])
-print("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
-logfile.write("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
+# for qname, genenames in tested_genenames.items():
+#     if qname not in correct_genenames:
+#         ctr_not_found+=1
+#     else:
+#         if genenames == correct_genenames[qname]:
+#             ctr_correct += 1
+#         else:
+#             ctr_wrong += 1
+#             logfile.write("correct:%s; wrong: %s \n" %(correct_genenames[qname], genenames))
+#             print("correct:", genenames, "; tested:", tested_genenames[qname])
+# print("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
+# logfile.write("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
 logfile.close()
 exit()
 

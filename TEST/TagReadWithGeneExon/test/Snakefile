@@ -2,7 +2,7 @@ rule test:
     input:
         # define input paths
         refflat='/input/annotation.refFlat',
-            inbam='/input/subsamped.bam',
+            inbam='/input/in.bam',
         correctbam='/input/correct.bam'
     output:
         # define output path
