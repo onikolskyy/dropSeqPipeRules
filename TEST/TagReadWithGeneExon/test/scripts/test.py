@@ -6,6 +6,22 @@ from time import time
 #from bin.helperClasses.geneIntervalTree.gene_interval_tree import GeneIntervalTree
 from src.refFlat_repr import RefFlatParsed
 
+LFs = pd.DataFrame({"name" : ["INTERGENIC", "INTRONIC", "UTR", "CODING"]})
+
+def find_LF_for_genes(df, is_multi_block=False):
+    # what is maximum LF of a Base?
+    df.maxLF = df[["read", "block", "start", "gene","start"]].groupby(["read", "block", "start", "gene"]).transform(max)
+    # reatain only max LF
+    df = df[df.maxLF == df.LF]
+    if not is_multi_block:
+        # retain unique list of LF for each gene
+        return df[["read","gene","LF"]].drop_duplicates()
+    else:
+        # filter out only those genes which are overlapped by all blocks of a read
+        # retain a list of unique LFs for each gene
+        return df[df.RB == df.GB][["read", "gene", "LF"]].drop_duplicates()
+
+
 
 N_CORES = 10
 step = 500000
@@ -32,33 +48,27 @@ for read in correct_bam:
 
 reads_list = [read for read in infile_bam]
 blocks_list = [reads_list[i].get_blocks()[j] for i in range(len(reads_list)) for j in range(len(reads_list[i].get_blocks()))]
-starts_list = [blocks_list[i][0] for i in range(len(blocks_list))]
-ends_list = [blocks_list[i][1] for i in range(len(blocks_list))]
 
-total = 0
-for read in reads_list:
-    total += len(read.get_blocks())
+# generate query data as list of one base long halfopen intervals (in 0-based coords)
 
-R = np.zeros(total, dtype='int64')
-#B = np.arange(total)
-refs = []
+start = [i for b in range(len(blocks_list)) for i in range(blocks_list[b][0],blocks_list[b][1],1)]
+end = [i+1 for b in range(len(blocks_list)) for i in range(blocks_list[b][0],blocks_list[b][1],1)]
+block = [b for b in range(len(blocks_list)) for i in range(blocks_list[b][0],blocks_list[b][1],1)]
 
-ctr = 0
-for i in range(len(reads_list)):
-    for j in range(len(reads_list[i].get_blocks())):
-        R[ctr] = i
-        refs.append(infile_bam.getrname(reads_list[i].tid))
-        ctr += 1
+ref = []
+read = []
+
+for r in range(len(reads_list)):
+    rref = infile_bam.getrname(reads_list[r].tid)
+    for b in reads_list[r].get_blocks():
+        for i in range(b[0],b[1],1):
+            ref.append(rref)
+            read.append(r)
+
 
 # group by ref for querying gene tree
-refs = pd.DataFrame(data={"R": R, "ref": refs, "start": starts_list, "end": ends_list})
-# block index is unique for each entry
-refs["B"] = refs.index
+refs = pd.DataFrame(data={"read": read, "ref": ref, "start": start, "end": end, "block": block})
 grouped = refs.groupby("ref")
-
-# debug conters
-ctr_wrong_single = 0
-ctr_wrong_multiple = 0
 
 for ref, group in grouped:
 
@@ -79,79 +89,48 @@ for ref, group in grouped:
     merged = overlaps \
         .merge(group, left_on="I1",right_index=True) \
         .merge(refFlat_intervals, left_on="I2",right_index=True) \
-        [["R","B","G"]]
+        [["read","block","start","gene","LF"]]
 
     # how many distinct B's does an R have?
-    merged["RB"] = merged[["R", "B"]].groupby("R").B.transform("nunique")
+    merged["RB"] = merged[["read", "block"]].groupby("R").B.transform("nunique")
     # how many distinct B's does a G belong to in each R?
-    merged["GB"] = merged.groupby(["R", "G"]).B.transform("nunique")
+    merged["GB"] = merged.groupby(["read", "gene"]).B.transform("nunique")
 
-    # split into reads with singl block and reads with multiple blocks
-    single_block = merged[merged.RB == 1][["R","B","G"]]
-
-
-    # debug & test single block
-    for read, grouped_by_read in single_block.groupby("R"):
-        genes_for_read = grouped_by_read.G.to_list()
-        genes_for_read.sort()
-        as_string = ','.join(genes_for_read)
-        if correct_genenames[reads_list[read].query_name] != as_string:
-            ctr_wrong_single+=1
-            logfile.write("SINGLE: correct:%s; wrong: %s \n" % (correct_genenames[reads_list[read].query_name], as_string))
-            #print("SINGLE: correct:%s; wrong: %s \n" % (correct_genenames[reads_list[read].query_name], as_string))
-
-    multiple_blocks = merged[merged.GB != 1]
-
-    # filter out only those genes which are overlapped by all blocks of a read
-    multiple_blocks_filtered = multiple_blocks[multiple_blocks.RB == multiple_blocks.GB][["R","B","G"]]
-    # retain unique gene set for each read
-    unique = multiple_blocks_filtered[["R","G"]].drop_duplicates()
-    multiple_blocks_unique = multiple_blocks_filtered[multiple_blocks_filtered.index.isin(unique.index.to_list())]
-
-
-    # debug & test multiple blocks
-    for read, grouped_by_read in multiple_blocks_unique.groupby("R"):
-        genes_for_read = grouped_by_read.G.to_list()
-        genes_for_read.sort()
-        as_string = ','.join(genes_for_read)
-        if correct_genenames[reads_list[read].query_name] != as_string:
-            ctr_wrong_multiple += 1
-            logfile.write("MULTIPLE: correct:%s; wrong: %s \n" % (correct_genenames[reads_list[read].query_name], as_string))
-            #print("MULTIPLE: correct:%s; wrong: %s \n" % (correct_genenames[reads_list[read].query_name], as_string))
+    # split into reads with singl block and reads with multiple blocks, handle separately
+    single_block = find_LF_for_genes( merged[merged.RB == 1] )
+    multiple_blocks = find_LF_for_genes( merged[merged.GB != 1], True)
 
     # concat splitted data
-    #res = pd.concat([multiple_blocks_unique,single_block])
+    res = pd.concat([multiple_blocks,single_block]).merge(LFs, right_index=True, left_on="LF")[["read","gene"]]
+    t_end = time()
 
-    #t_end = time()
+    logfile.write("ref %s took %s \n"%(ref,str(t_end-t_start)))
+    print("ref %s took %s \n"%(ref,str(t_end-t_start)))
 
-    #logfile.write("ref %s took %s \n"%(ref,str(t_end-t_start)))
-    #print("ref %s took %s \n"%(ref,str(t_end-t_start)))
+    for read, grouped_by_read in res.groupby("read"):
+        genes_for_read = grouped_by_read.G.to_list()
+        genes_for_read.sort()
+        as_string = ','.join(genes_for_read)
 
-    # for read, grouped_by_read in res.groupby("R"):
-    #     genes_for_read = grouped_by_read.G.to_list()
-    #     genes_for_read.sort()
-    #     as_string = ','.join(genes_for_read)
-    #
-    #     tested_genenames[reads_list[read].query_name] = as_string
+        tested_genenames[reads_list[read].query_name] = as_string
 
     print("finished ref \n", ref)
 
-# ctr_correct = 0
-# ctr_wrong = 0
-# ctr_not_found = 0
-# for qname, genenames in tested_genenames.items():
-#     if qname not in correct_genenames:
-#         ctr_not_found+=1
-#     else:
-#         if genenames == correct_genenames[qname]:
-#             ctr_correct += 1
-#         else:
-#             ctr_wrong += 1
-#             logfile.write("correct:%s; wrong: %s \n" %(correct_genenames[qname], genenames))
-#             print("correct:", genenames, "; tested:", tested_genenames[qname])
-# print("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
-logfile.write("single: %i; multiple: %i"%(ctr_wrong_single,ctr_wrong_multiple))
-print("single: %i; multiple: %i"%(ctr_wrong_single,ctr_wrong_multiple))
+ctr_correct = 0
+ctr_wrong = 0
+ctr_not_found = 0
+for qname, genenames in tested_genenames.items():
+    if qname not in correct_genenames:
+        ctr_not_found+=1
+    else:
+        if genenames == correct_genenames[qname]:
+            ctr_correct += 1
+        else:
+            ctr_wrong += 1
+            logfile.write("correct:%s; wrong: %s \n" %(correct_genenames[qname], genenames))
+            print("correct:", genenames, "; tested:", tested_genenames[qname])
+print("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
+logfile.write("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
 logfile.close()
 exit()
 

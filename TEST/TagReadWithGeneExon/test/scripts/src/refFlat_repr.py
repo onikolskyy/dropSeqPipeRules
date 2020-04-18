@@ -133,12 +133,39 @@ class RefFlatParsed:
         start = []
         end = []
         gene = []
-        #LF = []
+        LF = []
 
         for gene_name, parsed_gene in parsed_mapping_for_ref.items():
+            for transcript in parsed_gene["transcripts"]:
+                for i in range(len(transcript["exons"])):
+                    exon = transcript["exons"][i]
+                    if exon[0] <= transcript["coding_start"]:
+                        #UTR
+                        start.append(exon[0])
+                        if exon[1] <= transcript["coding_start"]:
+                            end.append(exon[1])
+                        else:
+                            end.append(transcript["coding_start"])
+                        LF.append(2)
+                        gene.append(gene_name)
+                    else:
+                        #CODING
+                        start.append(exon[0])
+                        end.append(exon[1])
+                        gene.append(gene_name)
+                        LF.append(3)
+
+                    #INTRONIC
+                    if i < len(transcript["exons"]-1):
+                        start.append(transcript["exons"][i][1])
+                        end.append(transcript["exons"][i+1][1])
+                        gene.append(gene_name)
+                        LF.append(1)
+            # Intergenic
             gene.append(gene_name)
             start.append(parsed_gene["start"])
             end.append(parsed_gene["end"])
+            LF.append(0)
 
-        return pd.DataFrame({"G": gene, "start": start, "end":end})
+        return pd.DataFrame({"gene": gene, "start": start, "end":end, "LF": LF})
 
