@@ -88,7 +88,7 @@ for ref, group in grouped:
     overlaps = pd.DataFrame({"I1" : query_index, "I2" : ncl_index})
     merged = ( overlaps \
         .merge(group, left_on="I1",right_index=True) \
-        .merge(refFlat_intervals, left_on="I2",right_index=True) )\
+        .merge(refFlat_intervals[["gene","LF"]], left_on="I2",right_index=True) )\
         [["read","block","start","gene","LF"]]
 
     print("merge complete \n")
