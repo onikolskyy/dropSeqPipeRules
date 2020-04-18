@@ -135,6 +135,32 @@ class RefFlatParsed:
         gene = []
         LF = []
 
+
+        exons = [
+            g["transcripts"][t]["exons"] for gname,g in parsed_mapping_for_ref.items()  for t in range(len(g["transcripts"]))
+        ]
+        end_coding = []
+        gene_coding = []
+        LF_coding = []
+
+        start_utr = []
+        end_utr = []
+        gene_utr = []
+        LF_utr = []
+
+        start_intronic = []
+        end_intronic = []
+        gene_intronic = []
+        LF_intronic = []
+
+        start_intergenic = []
+        end_intergenic = []
+        gene_intergenic = []
+        LF_intergenic = []
+
+
+
+
         for gene_name, parsed_gene in parsed_mapping_for_ref.items():
             for transcript in parsed_gene["transcripts"]:
                 for i in range(len(transcript["exons"])):
