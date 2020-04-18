@@ -63,6 +63,9 @@ ref = [infile_bam.getrname(reads_list[r].tid)\
 refs = pd.DataFrame(data={"read": read, "ref": ref, "start": start, "end": end, "block": block})
 grouped = refs.groupby("ref")
 
+wrg_single =0
+wrg_multiple = 0
+
 for ref, group in grouped:
 
     print("starting ref",ref)
@@ -95,6 +98,22 @@ for ref, group in grouped:
     single_block = find_LF_for_genes( merged[merged.RB == 1] )
     multiple_blocks = find_LF_for_genes( merged[merged.GB != 1], True)
 
+    for read, grouped_by_read in single_block.groupby("read"):
+        genes_for_read = grouped_by_read.gene.to_list()
+        genes_for_read.sort()
+        as_string = ','.join(genes_for_read)
+        if not correct_genenames[reads_list[read].query_name]  == as_string:
+            print("SINGLE: correct:%s, wrong:%s \n"%(correct_genenames[reads_list[read].query_name],as_string))
+            wrg_single+=1
+
+    for read, grouped_by_read in multiple_blocks.groupby("read"):
+        genes_for_read = grouped_by_read.gene.to_list()
+        genes_for_read.sort()
+        as_string = ','.join(genes_for_read)
+        if not correct_genenames[reads_list[read].query_name] == as_string:
+            print("MULTIPLE: correct:%s, wrong:%s \n" % (correct_genenames[reads_list[read].query_name], as_string))
+            wrg_multiple+=1
+
     # concat splitted data
     res = pd.concat([multiple_blocks,single_block]).merge(LFs, right_index=True, left_on="LF")[["read","gene"]]
     t_end = time()
@@ -102,30 +121,32 @@ for ref, group in grouped:
     logfile.write("ref %s took %s \n"%(ref,str(t_end-t_start)))
     print("ref %s took %s \n"%(ref,str(t_end-t_start)))
 
-    for read, grouped_by_read in res.groupby("read"):
-        genes_for_read = grouped_by_read.gene.to_list()
-        genes_for_read.sort()
-        as_string = ','.join(genes_for_read)
+    # for read, grouped_by_read in res.groupby("read"):
+    #     genes_for_read = grouped_by_read.gene.to_list()
+    #     genes_for_read.sort()
+    #     as_string = ','.join(genes_for_read)
 
-        tested_genenames[reads_list[read].query_name] = as_string
+    #    tested_genenames[reads_list[read].query_name] = as_string
 
     print("finished ref \n", ref)
 
 ctr_correct = 0
 ctr_wrong = 0
 ctr_not_found = 0
-for qname, genenames in tested_genenames.items():
-    if qname not in correct_genenames:
-        ctr_not_found+=1
-    else:
-        if genenames == correct_genenames[qname]:
-            ctr_correct += 1
-        else:
-            ctr_wrong += 1
-            logfile.write("correct:%s; wrong: %s \n" %(correct_genenames[qname], genenames))
-            print("correct:", correct_genenames[qname], "; tested:", tested_genenames[qname])
-print("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
-logfile.write("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
+# for qname, genenames in tested_genenames.items():
+#     if qname not in correct_genenames:
+#         ctr_not_found+=1
+#     else:
+#         if genenames == correct_genenames[qname]:
+#             ctr_correct += 1
+#         else:
+#             ctr_wrong += 1
+#             logfile.write("correct:%s; wrong: %s \n" %(correct_genenames[qname], genenames))
+#             print("correct:", correct_genenames[qname], "; tested:", tested_genenames[qname])
+print("------->single_wrg:%i, mult_wrg:%i"%(wrg_single,wrg_multiple))
+
+#print("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
+#logfile.write("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
 logfile.close()
 exit()
 
