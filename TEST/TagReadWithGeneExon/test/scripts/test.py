@@ -11,6 +11,7 @@ LFs = pd.DataFrame({"name" : ["INTERGENIC", "INTRONIC", "UTR", "CODING"]})
 def find_LF_for_genes(df, is_multi_block=False):
     # what is maximum LF of a Base?
     df.maxLF = df[["read", "block", "start", "gene","LF"]].groupby(["read", "block", "start", "gene"]).transform(max)
+    print(df)
     # reatain only max LF
     df = df[df.maxLF == df.LF]
     if not is_multi_block:
