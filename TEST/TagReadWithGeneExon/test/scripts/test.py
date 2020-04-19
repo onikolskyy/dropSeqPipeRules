@@ -83,6 +83,7 @@ for ref, group in grouped:
     single_block = merged[merged.RB == 1]
     multi_block =  merged[merged.GB != 1]
 
+
     # process single block
     single_block["maxLF"] = single_block[["read", "block", "start", "gene", "LF"]].groupby(["read", "block", "start", "gene"]).transform(max)
     single_block = single_block[single_block["maxLF"]==single_block["LF"]][["read","gene","LF"]].drop_duplicates().sort_values(["read","gene"])

@@ -116,7 +116,7 @@ class RefFlatParsed:
                     parsed_mapping_for_gene["transcripts"].append(transcript)
 
                     parsed_mapping_for_gene["start"] = min(parsed_mapping_for_gene["start"],parsed_entries["transcription_start"] )
-                    parsed_mapping_for_gene["end"] = max(parsed_mapping_for_gene["start"],parsed_entries["transcription_end"] )
+                    parsed_mapping_for_gene["end"] = max(parsed_mapping_for_gene["end"],parsed_entries["transcription_end"] )
 
                     # proceed to next line
 
