@@ -95,6 +95,9 @@ for ref, group in grouped:
     multi_block["maxLF"] = single_block[["read", "block", "start", "gene", "LF"]].groupby(["read", "block", "start", "gene"]).transform(max)
     multi_block = multi_block[multi_block["maxLF"]==multi_block["LF"]][["read","gene","LF"]].drop_duplicates().sort_values(["read","gene"])
 
+    print("--->single block, CODING", single_block["LF"==3])
+    print("--->multi block, CODING", multi_block["LF"==3])
+
     for read, grouped_by_read in single_block.groupby("read"):
         genes_for_read = grouped_by_read.gene.to_list()
         genes_as_string = ','.join(genes_for_read)
