@@ -153,7 +153,7 @@ class RefFlatParsed:
                             gene.append(gene_name)
                         else:
                             # exon exceeds coding region
-                            end.append(exon(1))
+                            end.append(exon[1])
                             if exon[0] >= transcript["coding_end"]:
                                 start.append(exon[0])
                             else:
