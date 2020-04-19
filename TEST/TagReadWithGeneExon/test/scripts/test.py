@@ -8,23 +8,6 @@ from src.refFlat_repr import RefFlatParsed
 
 LFs = pd.DataFrame({"name" : ["INTERGENIC", "INTRONIC", "UTR", "CODING"]})
 
-def find_LF_for_genes(df, is_multi_block=False):
-    # what is maximum LF of a Base?
-    df["maxLF"] = df[["read", "block", "start", "gene","LF"]].groupby(["read", "block", "start", "gene"]).transform(max)
-    print("--->number of CODING:", df[df["maxLF"]==3],"\n")
-    exit()
-    # reatain only max LF
-    df = df[df.maxLF == df.LF]
-    if not is_multi_block:
-        # retain unique list of LF for each gene
-        return df[["read","gene","LF"]].drop_duplicates()
-    else:
-        # filter out only those genes which are overlapped by all blocks of a read
-        # retain a list of unique LFs for each gene
-        return df[df.RB == df.GB][["read", "gene", "LF"]].drop_duplicates()
-
-
-
 N_CORES = 10
 step = 500000
 
@@ -99,17 +82,18 @@ for ref, group in grouped:
     merged["GB"] = merged.groupby(["read", "gene"]).block.transform("nunique")
 
     # split into reads with singl block and reads with multiple blocks, handle separately
-    single_block = find_LF_for_genes( merged[merged.RB == 1] )
-    multiple_blocks = find_LF_for_genes( merged[merged.GB != 1], True)
+    single_block = merged[merged.RB == 1]
+    multi_block =  merged[merged.GB != 1]
 
-    single_block = single_block.merge(LFs, left_on="LF", right_index=True)
-    multiple_blocks = multiple_blocks.merge(LFs, left_on="LF", right_index=True)
+    # process single block
+    single_block["maxLF"] = single_block[["read", "block", "start", "gene", "LF"]].groupby(["read", "block", "start", "gene"]).transform(max)
+    single_block = single_block[single_block["maxLF"]==single_block["LF"]][["read","gene","LF"]].drop_duplicates().sort_values(["read","gene"])
 
-    single_block = single_block.sort_values(["read","gene"])
-    multiple_blocks = multiple_blocks.sort_values(["read","gene"])
-
-    print(single_block)
-    print(multiple_blocks)
+    # process multi block
+    #retain only genes which are overlapped by all blocks
+    multi_block = multi_block[multi_block.RB == multi_block.GB]
+    multi_block["maxLF"] = single_block[["read", "block", "start", "gene", "LF"]].groupby(["read", "block", "start", "gene"]).transform(max)
+    multi_block = multi_block[multi_block["maxLF"]==multi_block["LF"]][["read","gene","LF"]].drop_duplicates().sort_values(["read","gene"])
 
     for read, grouped_by_read in single_block.groupby("read"):
         genes_for_read = grouped_by_read.gene.to_list()
@@ -123,7 +107,7 @@ for ref, group in grouped:
                     lf_as_string))
             wrg_single+=1
 
-    for read, grouped_by_read in multiple_blocks.groupby("read"):
+    for read, grouped_by_read in multi_block.groupby("read"):
         genes_for_read = grouped_by_read.gene.to_list()
         genes_as_string = ','.join(genes_for_read)
         lf_as_string = ",".join(grouped_by_read.name.to_list())
