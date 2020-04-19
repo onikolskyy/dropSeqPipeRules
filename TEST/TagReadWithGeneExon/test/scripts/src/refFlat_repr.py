@@ -140,9 +140,9 @@ class RefFlatParsed:
                 for i in range(len(transcript["exons"])):
                     exon = transcript["exons"][i]
                     #todo: can coding region be inside an exon?
-                    if exon[0] <= transcript["coding_start"] or exon[1] >= transcript["coding_end"]:
+                    if exon[0] < transcript["coding_start"] or exon[1] > transcript["coding_end"]:
                         # UTR
-                        if exon[0] <= transcript["coding_start"]:
+                        if exon[0] < transcript["coding_start"]:
                             # exon preceeds coding region
                             start.append(exon[0])
                             if exon[1] <= transcript["coding_start"]:
