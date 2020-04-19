@@ -74,10 +74,6 @@ for ref, group in grouped:
         .merge(refFlat_intervals[["gene","LF"]], left_on="I2",right_index=True) )\
         [["read","block","start","gene","LF"]]
 
-    print("merged CODING", merged[merged.LF==3])
-
-    print("merge complete \n")
-
     # how many distinct B's does an R have?
     merged["RB"] = merged[["read", "block"]].groupby("read").block.transform("nunique")
     # how many distinct B's does a G belong to in each R?
@@ -90,15 +86,14 @@ for ref, group in grouped:
     # process single block
     single_block["maxLF"] = single_block[["read", "block", "start", "gene", "LF"]].groupby(["read", "block", "start", "gene"]).transform(max)
     single_block = single_block[single_block["maxLF"]==single_block["LF"]][["read","gene","LF"]].drop_duplicates().sort_values(["read","gene"])
+    single_block = single_block.merge(LFs, left_on="LF", right_index=True)[["read","gene","name"]]
 
     # process multi block
     #retain only genes which are overlapped by all blocks
     multi_block = multi_block[multi_block.RB == multi_block.GB]
     multi_block["maxLF"] = multi_block[["read", "block", "start", "gene", "LF"]].groupby(["read", "block", "start", "gene"]).transform(max)
     multi_block = multi_block[multi_block["maxLF"]==multi_block["LF"]][["read","gene","LF"]].drop_duplicates().sort_values(["read","gene"])
-
-    print("--->single block, CODING", single_block[single_block["LF"]==3])
-    print("--->multi block, CODING", multi_block[multi_block["LF"]==3])
+    multi_block = multi_block.merge(LFs, left_on="LF", right_index=True)[["read","gene","name"]]
 
     for read, grouped_by_read in single_block.groupby("read"):
         genes_for_read = grouped_by_read.gene.to_list()

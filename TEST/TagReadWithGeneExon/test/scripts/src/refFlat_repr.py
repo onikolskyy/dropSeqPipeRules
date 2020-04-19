@@ -109,7 +109,7 @@ class RefFlatParsed:
                         "coding_end" : parsed_entries["coding_end"],
                         "transcription_start" : parsed_entries["transcription_start"],
                         "transcription_end" : parsed_entries["transcription_end"],
-                        "exons" : [(parsed_entries["exon_starts"][i], parsed_entries["exon_starts"][i])\
+                        "exons" : [(parsed_entries["exon_starts"][i], parsed_entries["exon_ends"][i])\
                                    for i in range(len(parsed_entries["exon_starts"]))]
                     }
 
