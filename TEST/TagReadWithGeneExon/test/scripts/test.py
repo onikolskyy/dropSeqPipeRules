@@ -101,10 +101,10 @@ for ref, group in grouped:
     single_block = find_LF_for_genes( merged[merged.RB == 1] )
     multiple_blocks = find_LF_for_genes( merged[merged.GB != 1], True)
 
-    single_block = single_block.merge(LFs, left_on="LF", right_index=True)
-    multiple_blocks = multiple_blocks.merge(LFs, left_on="LF", right_index=True)
+    single_block = single_block.merge(LFs, left_on="LF", right_index=True).sort_vlaues(("read","gene"))
+    multiple_blocks = multiple_blocks.merge(LFs, left_on="LF", right_index=True).sort_vlaues(("read","gene"))
 
-    for read, grouped_by_read in single_block.groupby("read").sort_values("gene"):
+    for read, grouped_by_read in single_block.groupby("read"):
         genes_for_read = grouped_by_read.gene.to_list()
         genes_as_string = ','.join(genes_for_read)
         lf_as_string = ",".join(grouped_by_read.name.to_list())
@@ -116,7 +116,7 @@ for ref, group in grouped:
                     lf_as_string))
             wrg_single+=1
 
-    for read, grouped_by_read in multiple_blocks.groupby("read").sort_values("gene"):
+    for read, grouped_by_read in multiple_blocks.groupby("read"):
         genes_for_read = grouped_by_read.gene.to_list()
         genes_as_string = ','.join(genes_for_read)
         lf_as_string = ",".join(grouped_by_read.name.to_list())
