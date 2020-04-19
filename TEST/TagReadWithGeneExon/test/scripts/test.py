@@ -91,7 +91,7 @@ for ref, group in grouped:
 
     #debugging
     if ref=="9":
-        print("searching for Gm10180 in ref 9", single_block[(single_block.gene == "Gm10180") & (single_block.LF==0) ])
+        print("searching for Gm10180 in ref 9", single_block[(single_block["gene"] == "Gm10180") & (single_block["LF"]==0) ])
 
 
     # process multi block
