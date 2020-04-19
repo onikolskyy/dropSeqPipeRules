@@ -92,7 +92,7 @@ for ref, group in grouped:
     # process multi block
     #retain only genes which are overlapped by all blocks
     multi_block = multi_block[multi_block.RB == multi_block.GB]
-    multi_block["maxLF"] = single_block[["read", "block", "start", "gene", "LF"]].groupby(["read", "block", "start", "gene"]).transform(max)
+    multi_block["maxLF"] = multi_block[["read", "block", "start", "gene", "LF"]].groupby(["read", "block", "start", "gene"]).transform(max)
     multi_block = multi_block[multi_block["maxLF"]==multi_block["LF"]][["read","gene","LF"]].drop_duplicates().sort_values(["read","gene"])
 
     print("--->single block, CODING", single_block["LF"==3])
