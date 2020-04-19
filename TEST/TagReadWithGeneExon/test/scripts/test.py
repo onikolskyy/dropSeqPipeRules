@@ -28,6 +28,9 @@ N_CORES = 10
 step = 500000
 
 correct_genenames = {}
+
+correct_lfs = {}
+
 tested_genenames = {}
 
 
@@ -45,7 +48,7 @@ correct_bam = pysam.AlignmentFile(snakemake.input["correctbam"], "rb")
 
 for read in correct_bam:
     correct_genenames[read.query_name] =  read.get_tag("gn") if read.has_tag("gn") else ""
-
+    correct_lfs[read.query_name] = read.get_tag("gf") if read.has_tag("gf") else ""
 
 reads_list = [read for read in infile_bam]
 blocks_list = [reads_list[i].get_blocks()[j] for i in range(len(reads_list)) for j in range(len(reads_list[i].get_blocks()))]
@@ -98,21 +101,32 @@ for ref, group in grouped:
     single_block = find_LF_for_genes( merged[merged.RB == 1] )
     multiple_blocks = find_LF_for_genes( merged[merged.GB != 1], True)
 
-    for read, grouped_by_read in single_block.groupby("read"):
+    single_block = single_block.merge(LFs, left_on="LF", right_index=True)
+    multiple_block = multiple_block.merge(LFs, left_on="LF", right_index=True)
+
+    for read, grouped_by_read in single_block.groupby("read").sort_values("gene"):
         genes_for_read = grouped_by_read.gene.to_list()
-        genes_for_read.sort()
-        as_string = ','.join(genes_for_read)
-        if not correct_genenames[reads_list[read].query_name]  == as_string:
-            print("SINGLE: correct:%s, wrong:%s \n"%(correct_genenames[reads_list[read].query_name],as_string))
+        genes_as_string = ','.join(genes_for_read)
+        lf_as_string = ",".join(grouped_by_read.name.to_list())
+        if not correct_genenames[reads_list[read].query_name]  == genes_as_string:
+            print("SINGLE: correct:%s-->%s, wrong:%s-->%s \n"\
+                  %(correct_genenames[reads_list[read].query_name],
+                    correct_lfs[reads_list[read].query_name],
+                    genes_as_string,
+                    lf_as_string))
             wrg_single+=1
 
-    for read, grouped_by_read in multiple_blocks.groupby("read"):
+    for read, grouped_by_read in multiple_block.groupby("read").sort_values("gene"):
         genes_for_read = grouped_by_read.gene.to_list()
-        genes_for_read.sort()
-        as_string = ','.join(genes_for_read)
-        if not correct_genenames[reads_list[read].query_name] == as_string:
-            print("MULTIPLE: correct:%s, wrong:%s \n" % (correct_genenames[reads_list[read].query_name], as_string))
-            wrg_multiple+=1
+        genes_as_string = ','.join(genes_for_read)
+        lf_as_string = ",".join(grouped_by_read.name.to_list())
+        if not correct_genenames[reads_list[read].query_name] == genes_as_string:
+            print("MULTIPLE: correct:%s-->%s, wrong:%s-->%s \n" \
+                  % (correct_genenames[reads_list[read].query_name],
+                     correct_lfs[reads_list[read].query_name],
+                     genes_as_string,
+                     lf_as_string))
+            wrg_multiple += 1
 
     # concat splitted data
     res = pd.concat([multiple_blocks,single_block]).merge(LFs, right_index=True, left_on="LF")[["read","gene"]]
