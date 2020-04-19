@@ -135,6 +135,9 @@ class RefFlatParsed:
         gene = []
         LF = []
 
+        ctr_coding = 0
+        ctr_utr = 0
+
         for gene_name, parsed_gene in parsed_mapping_for_ref.items():
             for transcript in parsed_gene["transcripts"]:
                 for i in range(len(transcript["exons"])):
@@ -142,6 +145,7 @@ class RefFlatParsed:
                     #todo: can coding region be inside an exon?
                     if exon[0] < transcript["coding_start"] or exon[1] > transcript["coding_end"]:
                         # UTR
+                        ctr_utr+=1
                         if exon[0] < transcript["coding_start"]:
                             # exon preceeds coding region
                             start.append(exon[0])
@@ -161,6 +165,7 @@ class RefFlatParsed:
                             LF.append(2)
                             gene.append(gene_name)
                     else:
+                        ctr_coding +=1
                         #CODING
                         start.append(exon[0])
                         end.append(exon[1])
@@ -178,6 +183,8 @@ class RefFlatParsed:
             start.append(parsed_gene["start"])
             end.append(parsed_gene["end"])
             LF.append(0)
+
+        print("--->coding: %i, UTR: %i"%(ctr_coding,ctr_utr))
 
         return pd.DataFrame({"gene": gene, "start": start, "end":end, "LF": LF})
 
