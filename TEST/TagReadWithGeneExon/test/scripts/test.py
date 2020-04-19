@@ -103,11 +103,11 @@ for ref, group in grouped:
     single_block = single_block.merge(LFs, left_on="LF", right_index=True)
     multiple_blocks = multiple_blocks.merge(LFs, left_on="LF", right_index=True)
 
+    single_block = single_block.sort_values(["read","gene"])
+    multiple_blocks = multiple_blocks.sort_values(["read","gene"])
+
     print(single_block)
     print(multiple_blocks)
-
-    single_block = single_block.sort_values(("read","gene"))
-    multiple_blocks = multiple_blocks.sort_values(("read","gene"))
 
     for read, grouped_by_read in single_block.groupby("read"):
         genes_for_read = grouped_by_read.gene.to_list()
