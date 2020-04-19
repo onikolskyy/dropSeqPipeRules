@@ -120,7 +120,7 @@ for ref, group in grouped:
             wrg_multiple += 1
 
     # concat splitted data
-    res = pd.concat([multiple_blocks,single_block]).merge(LFs, right_index=True, left_on="LF")[["read","gene"]]
+    res = pd.concat([multi_block,single_block]).merge(LFs, right_index=True, left_on="LF")[["read","gene"]]
     t_end = time()
 
     logfile.write("ref %s took %s \n"%(ref,str(t_end-t_start)))
