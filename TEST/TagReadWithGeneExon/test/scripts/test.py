@@ -92,14 +92,15 @@ for ref, group in grouped:
     #retain only genes which are overlapped by all blocks
     multi_block = multi_block[multi_block.RB == multi_block.GB]
     multi_block["maxLF"] = multi_block[["read", "block", "start", "gene", "LF"]].groupby(["read", "block", "start", "gene"]).transform(max)
-    multi_block = multi_block[multi_block["maxLF"]==multi_block["LF"]][["read","gene","LF"]].drop_duplicates().sort_values(["read","gene"])
+    multi_block = multi_block[multi_block["maxLF"]==multi_block["LF"]][["read","gene","LF"]].drop_duplicates()
     multi_block = multi_block.merge(LFs, left_on="LF", right_index=True)[["read","gene","name"]]
 
     for read, grouped_by_read in single_block.groupby("read"):
         ctr_tot+=1
-        genes_for_read = grouped_by_read.gene.to_list()
+        sorted = grouped_by_read.sort_values("gene")
+        genes_for_read = sorted.gene.to_list()
         genes_as_string = ','.join(genes_for_read)
-        lf_as_string = ",".join(grouped_by_read.name.to_list())
+        lf_as_string = ",".join(sorted.name.to_list())
         if not correct_genenames[reads_list[read].query_name]  == genes_as_string:
             logfile.write("SINGLE: correct:%s-->%s, wrong:%s-->%s \n"\
                   %(correct_genenames[reads_list[read].query_name],
@@ -110,9 +111,10 @@ for ref, group in grouped:
 
     for read, grouped_by_read in multi_block.groupby("read"):
         ctr_tot+=1
-        genes_for_read = grouped_by_read.gene.to_list()
+        sorted = grouped_by_read.sort_values("gene")
+        genes_for_read = sorted.gene.to_list()
         genes_as_string = ','.join(genes_for_read)
-        lf_as_string = ",".join(grouped_by_read.name.to_list())
+        lf_as_string = ",".join(sorted.name.to_list())
         if not correct_genenames[reads_list[read].query_name] == genes_as_string:
             logfile.write("MULTIPLE: correct:%s-->%s, wrong:%s-->%s \n" \
                   % (correct_genenames[reads_list[read].query_name],
