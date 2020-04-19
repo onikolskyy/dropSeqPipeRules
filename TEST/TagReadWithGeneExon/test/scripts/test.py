@@ -74,6 +74,8 @@ for ref, group in grouped:
         .merge(refFlat_intervals[["gene","LF"]], left_on="I2",right_index=True) )\
         [["read","block","start","gene","LF"]]
 
+    print("merged CODING", merged[merged.LF==3])
+
     print("merge complete \n")
 
     # how many distinct B's does an R have?
