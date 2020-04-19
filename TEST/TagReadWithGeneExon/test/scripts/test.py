@@ -83,18 +83,10 @@ for ref, group in grouped:
     single_block = merged[merged.RB == 1]
     multi_block =  merged[merged.GB != 1]
 
-    # debugging
-    if ref == "9":
-        print("searching for Gm10180 in ref 9",
-              single_block[(single_block["gene"] == "Gm10180") & (single_block["LF"] == 0)])
-
     # process single block
     single_block["maxLF"] = single_block[["read", "block", "start", "gene", "LF"]].groupby(["read", "block", "start", "gene"]).transform(max)
     single_block = single_block[single_block["maxLF"]==single_block["LF"]][["read","gene","LF"]].drop_duplicates().sort_values(["read","gene"])
     single_block = single_block.merge(LFs, left_on="LF", right_index=True)[["read","gene","name"]]
-
-
-
 
     # process multi block
     #retain only genes which are overlapped by all blocks

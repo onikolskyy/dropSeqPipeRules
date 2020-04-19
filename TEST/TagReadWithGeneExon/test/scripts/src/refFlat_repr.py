@@ -175,7 +175,7 @@ class RefFlatParsed:
                     #INTRONIC
                     if i < len(transcript["exons"])-1:
                         start.append(transcript["exons"][i][1])
-                        end.append(transcript["exons"][i+1][1])
+                        end.append(transcript["exons"][i+1][0])
                         gene.append(gene_name)
                         LF.append(1)
             # Intergenic
