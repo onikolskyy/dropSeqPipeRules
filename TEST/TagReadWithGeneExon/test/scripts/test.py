@@ -151,8 +151,8 @@ ctr_not_found = 0
 #             ctr_wrong += 1
 #             logfile.write("correct:%s; wrong: %s \n" %(correct_genenames[qname], genenames))
 #             print("correct:", correct_genenames[qname], "; tested:", tested_genenames[qname])
-print("------->single_wrg:%i, mult_wrg:%i \n"%(wrg_single,wrg_multiple))
-print("------->total:%i",ctr_tot)
+logfile.write("------->single_wrg:%i, mult_wrg:%i \n"%(wrg_single,wrg_multiple))
+logfile.write("------->total:%i",ctr_tot)
 #print("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
 #logfile.write("correct: %i; wrong: %i"%(ctr_correct,ctr_wrong))
 logfile.close()
