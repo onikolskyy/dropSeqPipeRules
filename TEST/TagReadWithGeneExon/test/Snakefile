@@ -1,9 +1,9 @@
 rule test:
     input:
         # define input paths
-        refflat='/input/annotation.refFlat',
-            inbam='/input/in.bam',
-        correctbam='/input/correct.bam'
+        refflat='/input/curated_annotation.refFlat',
+            inbam='/input/Aligned.repaired.bam',
+        correctbam='/input/gene_exon_tagged.bam'
     output:
         # define output path
         out='log.txt'
