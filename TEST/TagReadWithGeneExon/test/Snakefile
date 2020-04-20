@@ -1,7 +1,7 @@
 rule test:
     input:
         # define input paths
-        refflat='/input/curated_annotation.refFlat',
+        refflat='/input/annotations/curated_annotation.refFlat',
             inbam='/input/Aligned.repaired.bam',
         correctbam='/input/gene_exon_tagged.bam'
     output:
