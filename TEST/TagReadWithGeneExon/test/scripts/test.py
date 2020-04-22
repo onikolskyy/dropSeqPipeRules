@@ -15,7 +15,7 @@ ray.init()
 @ray.remote
 def refs_df_creator(blocks_list,refs_list):
     # unpack
-    blocks_list_unpacked = [blocks_list[b][i] for b in range(len(blocks_list)) for i in range(len(blocks_list[b]))]
+    #blocks_list_unpacked = [blocks_list[b][i] for b in range(len(blocks_list)) for i in range(len(blocks_list[b]))]
     # ranges_start = [np.arange(blocks_list_unpacked[b][0], blocks_list_unpacked[b][1]) for b in
     #                 range(len(blocks_list_unpacked))]
     # ranges_end = [np.arange(blocks_list_unpacked[b][0] + 1, blocks_list_unpacked[b][1] + 1) for b in
