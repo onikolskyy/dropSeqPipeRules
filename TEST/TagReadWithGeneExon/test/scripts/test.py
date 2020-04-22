@@ -59,42 +59,55 @@ ref9 = refs[refs["ref"]=="9"]
 ref = "9"
 
 
-# refFlat_intervals =  refFlat.as_intervals(ref)
-#
-# t_start = time()
-#
-# #if ref is not in refFlat, continue to next ref
-# if not isinstance(refFlat_intervals,pd.DataFrame):
-#     continue
-#
-# ncl = NCLS(refFlat_intervals.start.to_numpy(), refFlat_intervals.end.to_numpy(), refFlat_intervals.index.to_numpy())
-# query_index, ncl_index = ncl.all_overlaps_both(group.start.to_numpy(), group.end.to_numpy(), group.index.to_numpy())
-#
-# overlaps = pd.DataFrame({"I1" : query_index, "I2" : ncl_index})
-# merged = ( overlaps \
-#     .merge(group, left_on="I1",right_index=True) \
-#     .merge(refFlat_intervals[["gene","LF"]], left_on="I2",right_index=True) )\
-#     [["read","block","start","gene","LF"]]
-#
-# # how many distinct B's does an R have?
-# merged["RB"] = merged[["read", "block"]].groupby("read").block.transform("nunique")
-# # how many distinct B's does a G belong to in each R?
-# merged["GB"] = merged.groupby(["read", "gene"]).block.transform("nunique")
-#
-# # split into reads with singl block and reads with multiple blocks, handle separately
-# single_block = merged[merged.RB == 1]
-# #multi_block =  merged[merged.GB != 1]
-#
-# # process single block
-# single_block["maxLF"] = single_block[["read", "block", "start", "gene", "LF"]].groupby(["read", "block", "start", "gene"]).transform(max)
-# single_block = single_block[single_block["maxLF"]==single_block["LF"]][["read","gene","LF"]].drop_duplicates().sort_values(["read","gene"])
-# single_block = single_block.merge(LFs, left_on="LF", right_index=True)[["read","gene","name"]]
-#
-#
-#
-#
-#
-# exit()
+refFlat_intervals =  refFlat.as_intervals(ref)
+
+t_start = time()
+
+
+ncl = NCLS(refFlat_intervals.start.to_numpy(), refFlat_intervals.end.to_numpy(), refFlat_intervals.index.to_numpy())
+query_index, ncl_index = ncl.all_overlaps_both(ref9.start.to_numpy(), ref9.end.to_numpy(), ref9.index.to_numpy())
+
+overlaps = pd.DataFrame({"I1" : query_index, "I2" : ncl_index})
+merged = ( overlaps \
+    .merge(ref9, left_on="I1",right_index=True) \
+    .merge(refFlat_intervals[["gene","LF"]], left_on="I2",right_index=True) )\
+    [["read","block","start","gene","LF"]]
+
+# how many distinct B's does an R have?
+merged["RB"] = merged[["read", "block"]].groupby("read").block.transform("nunique")
+# how many distinct B's does a G belong to in each R?
+merged["GB"] = merged.groupby(["read", "gene"]).block.transform("nunique")
+
+# split into reads with singl block and reads with multiple blocks, handle separately
+single_block = merged[merged.RB == 1]
+#multi_block =  merged[merged.GB != 1]
+
+# process single block
+single_block["maxLF"] = single_block[["read", "block", "start", "gene", "LF"]].groupby(["read", "block", "start", "gene"]).transform(max)
+
+single_block_filterd = single_block[(single_block["read"]==389909) & (single_block["Mir6236"]) & (single_block["LF"] == 0)]
+single_block_coding = single_block[(single_block["read"]==389909) & (single_block["Mir6236"]) & (single_block["LF"] == 1)]
+
+
+print("####### read 389909 overlapps gene Mir6236 in intergenic regions in\n" )
+print(single_block_filterd)
+
+print("####### read 389909 overlapps gene Mir6236 in coding regions in\n" )
+print(single_block_coding)
+
+start_ig = single_block_filterd.start.as_list()
+start_coding = single_block_filterd.start.as_list()
+
+print("##### difference", set(start_ig) - start_coding)
+exit()
+single_block = single_block[single_block["maxLF"]==single_block["LF"]][["read","gene","LF"]].drop_duplicates().sort_values(["read","gene"])
+single_block = single_block.merge(LFs, left_on="LF", right_index=True)[["read","gene","name"]]
+
+
+
+
+
+
 for ref, group in grouped:
 
     print("starting ref",ref)
