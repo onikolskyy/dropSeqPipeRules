@@ -1,92 +1,72 @@
 import pysam
+import math
 import numpy as np
 import pandas as pd
 from ncls import NCLS
 from time import time
+import ray
 #from bin.helperClasses.geneIntervalTree.gene_interval_tree import GeneIntervalTree
 from src.refFlat_repr import RefFlatParsed
 
+ray.init()
+
+@ray.remote
+def refs_df_creator(blocks_list,refs_list):
+    # unpack
+    blocks_list_unpacked = [b for blocks_for_read in blocks_list for b in blocks_for_read]
+    ranges_start = [np.arange(blocks_list_unpacked[b][0], blocks_list_unpacked[b][1]) for b in
+                    range(len(blocks_list_unpacked))]
+    ranges_end = [np.arange(blocks_list_unpacked[b][0] + 1, blocks_list_unpacked[b][1] + 1) for b in
+                  range(len(blocks_list_unpacked))]
+    ranges_read = [
+        np.full(blocks_list[r][b][1] - blocks_list[r][b][0], r)
+        for r in range(len(blocks_list))
+        for b in range(len(blocks_list[r]))
+    ]
+
+    # write
+    start = np.concatenate(ranges_start)
+    end = np.concatenate(ranges_end)
+    block = np.concatenate(ranges_block)
+    read = np.concatenate(ranges_read)
+
+    refs_df = pd.DataFrame({"ref":refs_list})
+    reads_df = pd.DataFrame({"read":read,"start":start,"end":end,"block":block})
+
+    return pd.merge(reads_df,refs_df,left_on="read",right_index=True).to_numpy()
+
+####################################################################################
+
 LFs = pd.DataFrame({"name" : ["INTERGENIC", "INTRONIC", "UTR", "CODING"]})
 
-N_CORES = 10
-step = 500000
-
-correct_genenames = {}
-
-correct_lfs = {}
-
-tested_genenames = {}
-
+##################################################################################
 
 #bam file
 infile_bam = pysam.AlignmentFile(snakemake.input["inbam"], "rb")
-print("start parsing refflat")
 #parse refflat
 refFlat = RefFlatParsed(snakemake.input["refflat"], infile_bam)
-print("end parsing refflat")
-#outfile bam
-#outfile = pysam.AlignmentFile(snakemake.output["outbam"], "wb", template=infile_bam)
 logfile = open(snakemake.output["out"],"a")
-#for testing
-correct_bam = pysam.AlignmentFile(snakemake.input["correctbam"], "rb")
 
-# for read in correct_bam:
-#     correct_genenames[read.query_name] =  read.get_tag("gn") if read.has_tag("gn") else ""
-#     correct_lfs[read.query_name] = read.get_tag("gf") if read.has_tag("gf") else ""
-s = time()
+#################################################################################
+# make reads data frame
+#################################################################################
+
 reads_list = [read for read in infile_bam]
 refs_list = [infile_bam.getrname(reads_list[r].tid) for r in range(len(reads_list))]
 blocks_list = [reads_list[r].get_blocks() for r in range(len(reads_list))]
-blocks_list_unpacked = [b for blocks_for_read in blocks_list for b in blocks_for_read]
-e = time()
-print("lists finished", e-s)
-# generate query data as list of one base long halfopen intervals (in 0-based coords)
-s = time()
-ranges_start = [np.arange(blocks_list_unpacked[b][0],blocks_list_unpacked[b][1]) for b in range(len(blocks_list_unpacked))]
-e = time()
-print("finished start",e-s)
-s = time()
-ranges_end = [np.arange(blocks_list_unpacked[b][0]+1,blocks_list_unpacked[b][1]+1) for b in range(len(blocks_list_unpacked))]
-e = time()
-print("finished end", e-s)
-s = time()
-ranges_block = [np.full(blocks_list_unpacked[b][1]-blocks_list_unpacked[b][0],b) for b in range(len(blocks_list_unpacked))]
-e = time()
-print("finished block",e-s)
-s = time()
-ranges_read = [
-    np.full(blocks_list[r][b][1]-blocks_list[r][b][0],r)
-    for r in range(len(blocks_list))
-    for b in range(len(blocks_list[r]))
-]
-e = time()
-print("finished read",e-s)
 
+num_reads = len(reads_list)
+step = math.ceil(num_reads/snakemake.threads)
 
-s = time()
-start = np.concatenate(ranges_start)
-e = time()
-print("finished start",e-s)
-s = time()
-end = np.concatenate(ranges_end)
-e = time()
-print("finished end",e-s)
-s = time()
-block = np.concatenate(ranges_block)
-e = time()
-print("finished block",e-s)
-s = time()
-read = np.concatenate(ranges_read)
-e = time()
-print("finished read",e-s)
+result_ids = []
+for i in range(snakemake.threads):
+    result_ids.append(refs_df_creator.remote(blocks_list[i*step : (i+1)*step if (i+1)*step < num_reads else num_reads]))
+
+results = ray.get(result_ids)
 
 exit()
 
 
-block = [b for b in range(len(blocks_list)) for i in range(blocks_list[b][0],blocks_list[b][1],1)]
-read = [r for r in range(len(reads_list)) for b in reads_list[r].get_blocks() for i in range(b[0],b[1],1)]
-ref = [infile_bam.getrname(reads_list[r].tid)\
-       for r in range(len(reads_list)) for b in reads_list[r].get_blocks() for i in range(b[0],b[1],1)]
 
 # group by ref for querying gene tree
 refs = pd.DataFrame(data={"read": read, "ref": ref, "start": start, "end": end, "block": block})

@@ -4,6 +4,7 @@ rule test:
         refflat='/annotation/curated_annotation.refFlat',
             inbam='/input/252_S1/Aligned.repaired.bam',
         correctbam='/input/252_S1/gene_exon_tagged.bam'
+    threads : 8
     output:
         # define output path
         out='log.txt'
