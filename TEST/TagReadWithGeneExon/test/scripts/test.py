@@ -30,9 +30,9 @@ logfile = open(snakemake.output["out"],"a")
 #for testing
 correct_bam = pysam.AlignmentFile(snakemake.input["correctbam"], "rb")
 
-for read in correct_bam:
-    correct_genenames[read.query_name] =  read.get_tag("gn") if read.has_tag("gn") else ""
-    correct_lfs[read.query_name] = read.get_tag("gf") if read.has_tag("gf") else ""
+# for read in correct_bam:
+#     correct_genenames[read.query_name] =  read.get_tag("gn") if read.has_tag("gn") else ""
+#     correct_lfs[read.query_name] = read.get_tag("gf") if read.has_tag("gf") else ""
 
 reads_list = [read for read in infile_bam]
 blocks_list = [reads_list[i].get_blocks()[j] for i in range(len(reads_list)) for j in range(len(reads_list[i].get_blocks()))]
@@ -55,58 +55,51 @@ wrg_multiple = 0
 ctr_tot = 0
 
 
-ref9 = refs[refs["ref"]=="9"]
-ref = "9"
-
-
-refFlat_intervals =  refFlat.as_intervals(ref)
-
-t_start = time()
-
-
-ncl = NCLS(refFlat_intervals.start.to_numpy(), refFlat_intervals.end.to_numpy(), refFlat_intervals.index.to_numpy())
-query_index, ncl_index = ncl.all_overlaps_both(ref9.start.to_numpy(), ref9.end.to_numpy(), ref9.index.to_numpy())
-
-overlaps = pd.DataFrame({"I1" : query_index, "I2" : ncl_index})
-merged = ( overlaps \
-    .merge(ref9, left_on="I1",right_index=True) \
-    .merge(refFlat_intervals[["gene","LF"]], left_on="I2",right_index=True) )\
-    [["read","block","start","gene","LF"]]
-
-# how many distinct B's does an R have?
-merged["RB"] = merged[["read", "block"]].groupby("read").block.transform("nunique")
-# how many distinct B's does a G belong to in each R?
-merged["GB"] = merged.groupby(["read", "gene"]).block.transform("nunique")
-
-# split into reads with singl block and reads with multiple blocks, handle separately
-single_block = merged[merged.RB == 1]
-#multi_block =  merged[merged.GB != 1]
-
-# process single block
-single_block["maxLF"] = single_block[["read", "block", "start", "gene", "LF"]].groupby(["read", "block", "start", "gene"]).transform(max)
-
-single_block_filterd = single_block[(single_block["read"]==389909) & (single_block["gene"]=="Mir6236") & (single_block["LF"] == 0)]
-single_block_coding = single_block[(single_block["read"]==389909) & (single_block["gene"]=="Mir6236") & (single_block["LF"] == 3)]
-
-
-print("####### read 389909 overlapps gene Mir6236 in intergenic regions in\n" )
-print(single_block_filterd)
-
-print("####### read 389909 overlapps gene Mir6236 in coding regions in\n" )
-print(single_block_coding)
-
-start_ig = single_block_filterd.start.to_list()
-start_coding = single_block_filterd.start.to_list()
-
-print("##### difference", set(start_ig) - set(start_coding))
-exit()
-single_block = single_block[single_block["maxLF"]==single_block["LF"]][["read","gene","LF"]].drop_duplicates().sort_values(["read","gene"])
-single_block = single_block.merge(LFs, left_on="LF", right_index=True)[["read","gene","name"]]
-
-
-
-
-
+# ref9 = refs[refs["ref"]=="9"]
+# ref = "9"
+#
+#
+# refFlat_intervals =  refFlat.as_intervals(ref)
+#
+# t_start = time()
+#
+#
+# ncl = NCLS(refFlat_intervals.start.to_numpy(), refFlat_intervals.end.to_numpy(), refFlat_intervals.index.to_numpy())
+# query_index, ncl_index = ncl.all_overlaps_both(ref9.start.to_numpy(), ref9.end.to_numpy(), ref9.index.to_numpy())
+#
+# overlaps = pd.DataFrame({"I1" : query_index, "I2" : ncl_index})
+# merged = ( overlaps \
+#     .merge(ref9, left_on="I1",right_index=True) \
+#     .merge(refFlat_intervals[["gene","LF"]], left_on="I2",right_index=True) )\
+#     [["read","block","start","gene","LF"]]
+#
+# # how many distinct B's does an R have?
+# merged["RB"] = merged[["read", "block"]].groupby("read").block.transform("nunique")
+# # how many distinct B's does a G belong to in each R?
+# merged["GB"] = merged.groupby(["read", "gene"]).block.transform("nunique")
+#
+# # split into reads with singl block and reads with multiple blocks, handle separately
+# single_block = merged[merged.RB == 1]
+# #multi_block =  merged[merged.GB != 1]
+#
+# # process single block
+# single_block["maxLF"] = single_block[["read", "block", "start", "gene", "LF"]].groupby(["read", "block", "start", "gene"]).transform(max)
+#
+# single_block_filterd = single_block[(single_block["read"]==389909) & (single_block["gene"]=="Mir6236") & (single_block["LF"] == 0)]
+# single_block_coding = single_block[(single_block["read"]==389909) & (single_block["gene"]=="Mir6236") & (single_block["LF"] == 3)]
+#
+#
+# print("####### read 389909 overlapps gene Mir6236 in intergenic regions in\n" )
+# print(single_block_filterd)
+#
+# print("####### read 389909 overlapps gene Mir6236 in coding regions in\n" )
+# print(single_block_coding)
+#
+# start_ig = single_block_filterd.start.to_list()
+# start_coding = single_block_filterd.start.to_list()
+#
+# print("##### difference", set(start_ig) - set(start_coding))
+# exit()
 
 for ref, group in grouped:
 
@@ -150,36 +143,36 @@ for ref, group in grouped:
     multi_block = multi_block[multi_block["maxLF"]==multi_block["LF"]][["read","gene","LF"]].drop_duplicates()
     multi_block = multi_block.merge(LFs, left_on="LF", right_index=True)[["read","gene","name"]]
 
-    for read, grouped_by_read in single_block.groupby("read"):
-        ctr_tot+=1
-        sorted = grouped_by_read.sort_values("gene")
-        genes_for_read = sorted.gene.to_list()
-        genes_as_string = ','.join(genes_for_read)
-        lf_as_string = ",".join(sorted.name.to_list())
-        if not correct_genenames[reads_list[read].query_name]  == genes_as_string:
-            logfile.write("SINGLE: %i: correct:%s-->%s, wrong:%s-->%s \n"\
-                  %(read,correct_genenames[reads_list[read].query_name],
-                    correct_lfs[reads_list[read].query_name],
-                    genes_as_string,
-                    lf_as_string))
-            wrg_single+=1
-
-    for read, grouped_by_read in multi_block.groupby("read"):
-        ctr_tot+=1
-        sorted = grouped_by_read.sort_values("gene")
-        genes_for_read = sorted.gene.to_list()
-        genes_as_string = ','.join(genes_for_read)
-        lf_as_string = ",".join(sorted.name.to_list())
-        if not correct_genenames[reads_list[read].query_name] == genes_as_string:
-            logfile.write("MULTIPLE: correct:%s-->%s, wrong:%s-->%s \n" \
-                  % (correct_genenames[reads_list[read].query_name],
-                     correct_lfs[reads_list[read].query_name],
-                     genes_as_string,
-                     lf_as_string))
-            wrg_multiple += 1
+    # for read, grouped_by_read in single_block.groupby("read"):
+    #     ctr_tot+=1
+    #     sorted = grouped_by_read.sort_values("gene")
+    #     genes_for_read = sorted.gene.to_list()
+    #     genes_as_string = ','.join(genes_for_read)
+    #     lf_as_string = ",".join(sorted.name.to_list())
+    #     if not correct_genenames[reads_list[read].query_name]  == genes_as_string:
+    #         logfile.write("SINGLE: %i: correct:%s-->%s, wrong:%s-->%s \n"\
+    #               %(read,correct_genenames[reads_list[read].query_name],
+    #                 correct_lfs[reads_list[read].query_name],
+    #                 genes_as_string,
+    #                 lf_as_string))
+    #         wrg_single+=1
+    #
+    # for read, grouped_by_read in multi_block.groupby("read"):
+    #     ctr_tot+=1
+    #     sorted = grouped_by_read.sort_values("gene")
+    #     genes_for_read = sorted.gene.to_list()
+    #     genes_as_string = ','.join(genes_for_read)
+    #     lf_as_string = ",".join(sorted.name.to_list())
+    #     if not correct_genenames[reads_list[read].query_name] == genes_as_string:
+    #         logfile.write("MULTIPLE: correct:%s-->%s, wrong:%s-->%s \n" \
+    #               % (correct_genenames[reads_list[read].query_name],
+    #                  correct_lfs[reads_list[read].query_name],
+    #                  genes_as_string,
+    #                  lf_as_string))
+    #         wrg_multiple += 1
 
     # concat splitted data
-    #res = pd.concat([multi_block,single_block]).merge(LFs, right_index=True, left_on="LF")[["read","gene"]]
+    res = pd.concat([multi_block,single_block]).merge(LFs, right_index=True, left_on="LF")[["read","gene"]]
     t_end = time()
 
     logfile.write("ref %s took %s \n"%(ref,str(t_end-t_start)))
