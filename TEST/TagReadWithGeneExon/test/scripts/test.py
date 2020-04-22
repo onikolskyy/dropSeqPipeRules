@@ -85,8 +85,8 @@ single_block = merged[merged.RB == 1]
 # process single block
 single_block["maxLF"] = single_block[["read", "block", "start", "gene", "LF"]].groupby(["read", "block", "start", "gene"]).transform(max)
 
-single_block_filterd = single_block[(single_block["read"]==389909) & (single_block["Mir6236"]) & (single_block["LF"] == 0)]
-single_block_coding = single_block[(single_block["read"]==389909) & (single_block["Mir6236"]) & (single_block["LF"] == 1)]
+single_block_filterd = single_block[(single_block["read"]==389909) & (single_block["gene"]=="Mir6236") & (single_block["LF"] == 0)]
+single_block_coding = single_block[(single_block["read"]==389909) & (single_block["gene"]=="Mir6236") & (single_block["LF"] == 1)]
 
 
 print("####### read 389909 overlapps gene Mir6236 in intergenic regions in\n" )
