@@ -98,7 +98,7 @@ print(single_block_coding)
 start_ig = single_block_filterd.start.to_list()
 start_coding = single_block_filterd.start.to_list()
 
-print("##### difference", set(start_ig) - start_coding)
+print("##### difference", set(start_ig) - set(start_coding))
 exit()
 single_block = single_block[single_block["maxLF"]==single_block["LF"]][["read","gene","LF"]].drop_duplicates().sort_values(["read","gene"])
 single_block = single_block.merge(LFs, left_on="LF", right_index=True)[["read","gene","name"]]
