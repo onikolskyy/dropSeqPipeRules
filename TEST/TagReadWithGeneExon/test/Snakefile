@@ -2,7 +2,7 @@ rule test:
     input:
         # define input paths
         refflat='/annotation/curated_annotation.refFlat',
-            inbam='/input/252_S1/subsampled.bam',
+            inbam='/input/252_S1/Aligned.repaired.bam',
         correctbam='/input/252_S1/gene_exon_tagged.bam'
     output:
         # define output path
