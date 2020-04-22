@@ -9,32 +9,36 @@ import ray
 from src.refFlat_repr import RefFlatParsed
 
 ray.init()
-
 @ray.remote
-def refs_df_creator(blocks_list,refs_list):
-    # unpack
-    blocks_list_unpacked = [b for blocks_for_read in blocks_list for b in blocks_for_read]
-    ranges_start = [np.arange(blocks_list_unpacked[b][0], blocks_list_unpacked[b][1]) for b in
-                    range(len(blocks_list_unpacked))]
-    ranges_end = [np.arange(blocks_list_unpacked[b][0] + 1, blocks_list_unpacked[b][1] + 1) for b in
-                  range(len(blocks_list_unpacked))]
-    ranges_read = [
-        np.full(blocks_list[r][b][1] - blocks_list[r][b][0], r)
-        for r in range(len(blocks_list))
-        for b in range(len(blocks_list[r]))
-    ]
+def dummy(a):
+    return 0
 
-    # write
-    start = np.concatenate(ranges_start)
-    end = np.concatenate(ranges_end)
-    block = np.concatenate(ranges_block)
-    read = np.concatenate(ranges_read)
 
-    refs_df = pd.DataFrame({"ref":refs_list})
-    reads_df = pd.DataFrame({"read":read,"start":start,"end":end,"block":block})
-
-    return pd.merge(reads_df,refs_df,left_on="read",right_index=True).to_numpy()
-
+# @ray.remote
+# def refs_df_creator(blocks_list,refs_list):
+#     # unpack
+#     blocks_list_unpacked = [b for blocks_for_read in blocks_list for b in blocks_for_read]
+#     ranges_start = [np.arange(blocks_list_unpacked[b][0], blocks_list_unpacked[b][1]) for b in
+#                     range(len(blocks_list_unpacked))]
+#     ranges_end = [np.arange(blocks_list_unpacked[b][0] + 1, blocks_list_unpacked[b][1] + 1) for b in
+#                   range(len(blocks_list_unpacked))]
+#     ranges_read = [
+#         np.full(blocks_list[r][b][1] - blocks_list[r][b][0], r)
+#         for r in range(len(blocks_list))
+#         for b in range(len(blocks_list[r]))
+#     ]
+#
+#     # write
+#     start = np.concatenate(ranges_start)
+#     end = np.concatenate(ranges_end)
+#     block = np.concatenate(ranges_block)
+#     read = np.concatenate(ranges_read)
+#
+#     refs_df = pd.DataFrame({"ref":refs_list})
+#     reads_df = pd.DataFrame({"read":read,"start":start,"end":end,"block":block})
+#
+#     return pd.merge(reads_df,refs_df,left_on="read",right_index=True).to_numpy()
+exit()
 ####################################################################################
 
 LFs = pd.DataFrame({"name" : ["INTERGENIC", "INTRONIC", "UTR", "CODING"]})
