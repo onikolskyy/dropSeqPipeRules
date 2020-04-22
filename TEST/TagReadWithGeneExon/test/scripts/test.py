@@ -26,6 +26,9 @@ def refs_df_creator(blocks_list,refs_list):
         for b in range(len(blocks_list[r]))
     ]
 
+    ranges_block = [np.full(blocks_list_unpacked[b][1] - blocks_list_unpacked[b][0], b) for b in
+                    range(len(blocks_list_unpacked))]
+
     # write
     start = np.concatenate(ranges_start)
     end = np.concatenate(ranges_end)
