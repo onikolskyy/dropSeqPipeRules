@@ -35,12 +35,31 @@ correct_bam = pysam.AlignmentFile(snakemake.input["correctbam"], "rb")
 #     correct_lfs[read.query_name] = read.get_tag("gf") if read.has_tag("gf") else ""
 
 reads_list = [read for read in infile_bam]
-blocks_list = [reads_list[i].get_blocks()[j] for i in range(len(reads_list)) for j in range(len(reads_list[i].get_blocks()))]
+refs_list = [infile_bam.getrname(reads_list[r]) for r in range(len(reads_list))]
+blocks_list = [reads_list[r].get_blocks() for r in range(len(reads_list))]
+blocks_list_unpacked = [b for blocks_for_read in blocks_list for b in blocks_for_read]
 
 # generate query data as list of one base long halfopen intervals (in 0-based coords)
 
-start = [i for b in range(len(blocks_list)) for i in range(blocks_list[b][0],blocks_list[b][1],1)]
-end = [i+1 for b in range(len(blocks_list)) for i in range(blocks_list[b][0],blocks_list[b][1],1)]
+ranges_start = [np.arange(blocks_list_unpacked[b][0],blocks_list_unpacked[b][1]) for b in range(len(blocks_list_unpacked))]
+ranges_end = [np.arange(blocks_list_unpacked[b][0]+1,blocks_list_unpacked[b][1]+1) for b in range(len(blocks_list_unpacked))]
+ranges_block = [np.full(blocks_list_unpacked[b][1]-blocks_list_unpacked[b][0],b) for b in range(len(blocks_list_unpacked))]
+ranges_read = [
+    np.full(blocks_list[r][b][1]-blocks_list[r][b][0],r)
+    for r in range(len(blocks_list))
+    for b in range(len(blocks_list[r]))
+]
+
+
+
+start = np.concatenate(ranges_start)
+end = np.concatenate(ranges_end)
+block = np.concatenate(ranges_block)
+read = np.concatenate(ranges_read)
+
+exit()
+
+
 block = [b for b in range(len(blocks_list)) for i in range(blocks_list[b][0],blocks_list[b][1],1)]
 read = [r for r in range(len(reads_list)) for b in reads_list[r].get_blocks() for i in range(b[0],b[1],1)]
 ref = [infile_bam.getrname(reads_list[r].tid)\
@@ -49,57 +68,6 @@ ref = [infile_bam.getrname(reads_list[r].tid)\
 # group by ref for querying gene tree
 refs = pd.DataFrame(data={"read": read, "ref": ref, "start": start, "end": end, "block": block})
 grouped = refs.groupby("ref")
-
-wrg_single =0
-wrg_multiple = 0
-ctr_tot = 0
-
-
-# ref9 = refs[refs["ref"]=="9"]
-# ref = "9"
-#
-#
-# refFlat_intervals =  refFlat.as_intervals(ref)
-#
-# t_start = time()
-#
-#
-# ncl = NCLS(refFlat_intervals.start.to_numpy(), refFlat_intervals.end.to_numpy(), refFlat_intervals.index.to_numpy())
-# query_index, ncl_index = ncl.all_overlaps_both(ref9.start.to_numpy(), ref9.end.to_numpy(), ref9.index.to_numpy())
-#
-# overlaps = pd.DataFrame({"I1" : query_index, "I2" : ncl_index})
-# merged = ( overlaps \
-#     .merge(ref9, left_on="I1",right_index=True) \
-#     .merge(refFlat_intervals[["gene","LF"]], left_on="I2",right_index=True) )\
-#     [["read","block","start","gene","LF"]]
-#
-# # how many distinct B's does an R have?
-# merged["RB"] = merged[["read", "block"]].groupby("read").block.transform("nunique")
-# # how many distinct B's does a G belong to in each R?
-# merged["GB"] = merged.groupby(["read", "gene"]).block.transform("nunique")
-#
-# # split into reads with singl block and reads with multiple blocks, handle separately
-# single_block = merged[merged.RB == 1]
-# #multi_block =  merged[merged.GB != 1]
-#
-# # process single block
-# single_block["maxLF"] = single_block[["read", "block", "start", "gene", "LF"]].groupby(["read", "block", "start", "gene"]).transform(max)
-#
-# single_block_filterd = single_block[(single_block["read"]==389909) & (single_block["gene"]=="Mir6236") & (single_block["LF"] == 0)]
-# single_block_coding = single_block[(single_block["read"]==389909) & (single_block["gene"]=="Mir6236") & (single_block["LF"] == 3)]
-#
-#
-# print("####### read 389909 overlapps gene Mir6236 in intergenic regions in\n" )
-# print(single_block_filterd)
-#
-# print("####### read 389909 overlapps gene Mir6236 in coding regions in\n" )
-# print(single_block_coding)
-#
-# start_ig = single_block_filterd.start.to_list()
-# start_coding = single_block_filterd.start.to_list()
-#
-# print("##### difference", set(start_ig) - set(start_coding))
-# exit()
 
 for ref, group in grouped:
 
