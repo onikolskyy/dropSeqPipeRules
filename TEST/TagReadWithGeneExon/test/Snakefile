@@ -2,8 +2,8 @@ rule test:
     input:
         # define input paths
         refflat='/input/annotation/curated_annotation.refFlat',
-            inbam='/input/Aligned.repaired.bam',
-        correctbam='/input/gene_exon_tagged.bam'
+            inbam='/input/252_S1/subsampled.bam',
+        correctbam='/input/252_S1/gene_exon_tagged.bam'
     output:
         # define output path
         out='log.txt'
