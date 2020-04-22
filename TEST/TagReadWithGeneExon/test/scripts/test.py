@@ -53,6 +53,48 @@ grouped = refs.groupby("ref")
 wrg_single =0
 wrg_multiple = 0
 ctr_tot = 0
+
+
+ref9 = refs[refs["ref"]=="9"]
+ref = "9"
+
+
+# refFlat_intervals =  refFlat.as_intervals(ref)
+#
+# t_start = time()
+#
+# #if ref is not in refFlat, continue to next ref
+# if not isinstance(refFlat_intervals,pd.DataFrame):
+#     continue
+#
+# ncl = NCLS(refFlat_intervals.start.to_numpy(), refFlat_intervals.end.to_numpy(), refFlat_intervals.index.to_numpy())
+# query_index, ncl_index = ncl.all_overlaps_both(group.start.to_numpy(), group.end.to_numpy(), group.index.to_numpy())
+#
+# overlaps = pd.DataFrame({"I1" : query_index, "I2" : ncl_index})
+# merged = ( overlaps \
+#     .merge(group, left_on="I1",right_index=True) \
+#     .merge(refFlat_intervals[["gene","LF"]], left_on="I2",right_index=True) )\
+#     [["read","block","start","gene","LF"]]
+#
+# # how many distinct B's does an R have?
+# merged["RB"] = merged[["read", "block"]].groupby("read").block.transform("nunique")
+# # how many distinct B's does a G belong to in each R?
+# merged["GB"] = merged.groupby(["read", "gene"]).block.transform("nunique")
+#
+# # split into reads with singl block and reads with multiple blocks, handle separately
+# single_block = merged[merged.RB == 1]
+# #multi_block =  merged[merged.GB != 1]
+#
+# # process single block
+# single_block["maxLF"] = single_block[["read", "block", "start", "gene", "LF"]].groupby(["read", "block", "start", "gene"]).transform(max)
+# single_block = single_block[single_block["maxLF"]==single_block["LF"]][["read","gene","LF"]].drop_duplicates().sort_values(["read","gene"])
+# single_block = single_block.merge(LFs, left_on="LF", right_index=True)[["read","gene","name"]]
+#
+#
+#
+#
+#
+# exit()
 for ref, group in grouped:
 
     print("starting ref",ref)
@@ -102,8 +144,8 @@ for ref, group in grouped:
         genes_as_string = ','.join(genes_for_read)
         lf_as_string = ",".join(sorted.name.to_list())
         if not correct_genenames[reads_list[read].query_name]  == genes_as_string:
-            logfile.write("SINGLE: correct:%s-->%s, wrong:%s-->%s \n"\
-                  %(correct_genenames[reads_list[read].query_name],
+            logfile.write("SINGLE: %i: correct:%s-->%s, wrong:%s-->%s \n"\
+                  %(read,correct_genenames[reads_list[read].query_name],
                     correct_lfs[reads_list[read].query_name],
                     genes_as_string,
                     lf_as_string))
