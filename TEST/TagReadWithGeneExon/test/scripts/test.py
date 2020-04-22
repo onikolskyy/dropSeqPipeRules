@@ -28,17 +28,17 @@ def refs_df_creator(blocks_list,refs_list):
 
     ranges_block = [np.full(blocks_list_unpacked[b][1] - blocks_list_unpacked[b][0], b) for b in
                     range(len(blocks_list_unpacked))]
-
-    # write
-    start = np.concatenate(ranges_start)
-    end = np.concatenate(ranges_end)
-    block = np.concatenate(ranges_block)
-    read = np.concatenate(ranges_read)
-
-    refs_df = pd.DataFrame({"ref":refs_list})
-    reads_df = pd.DataFrame({"read":read,"start":start,"end":end,"block":block})
-
-    return pd.merge(reads_df,refs_df,left_on="read",right_index=True).to_numpy()
+    return True
+    # # write
+    # start = np.concatenate(ranges_start)
+    # end = np.concatenate(ranges_end)
+    # block = np.concatenate(ranges_block)
+    # read = np.concatenate(ranges_read)
+    #
+    # refs_df = pd.DataFrame({"ref":refs_list})
+    # reads_df = pd.DataFrame({"read":read,"start":start,"end":end,"block":block})
+    #
+    # return pd.merge(reads_df,refs_df,left_on="read",right_index=True).to_numpy()
 
 ####################################################################################
 
