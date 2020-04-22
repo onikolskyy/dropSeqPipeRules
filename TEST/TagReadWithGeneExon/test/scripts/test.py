@@ -33,33 +33,33 @@ correct_bam = pysam.AlignmentFile(snakemake.input["correctbam"], "rb")
 # for read in correct_bam:
 #     correct_genenames[read.query_name] =  read.get_tag("gn") if read.has_tag("gn") else ""
 #     correct_lfs[read.query_name] = read.get_tag("gf") if read.has_tag("gf") else ""
-s = time.time()
+s = time()
 reads_list = [read for read in infile_bam]
 refs_list = [infile_bam.getrname(reads_list[r].tid) for r in range(len(reads_list))]
 blocks_list = [reads_list[r].get_blocks() for r in range(len(reads_list))]
 blocks_list_unpacked = [b for blocks_for_read in blocks_list for b in blocks_for_read]
-e = time.time()
+e = time()
 print("lists finished", e-s)
 # generate query data as list of one base long halfopen intervals (in 0-based coords)
-s = time.time()
+s = time()
 ranges_start = [np.arange(blocks_list_unpacked[b][0],blocks_list_unpacked[b][1]) for b in range(len(blocks_list_unpacked))]
-e = time.time()
+e = time()
 print("finished start",e-s)
-s = time.time()
+s = time()
 ranges_end = [np.arange(blocks_list_unpacked[b][0]+1,blocks_list_unpacked[b][1]+1) for b in range(len(blocks_list_unpacked))]
-e = time.time()
+e = time()
 print("finished end", e-s)
-s = time.time()
+s = time()
 ranges_block = [np.full(blocks_list_unpacked[b][1]-blocks_list_unpacked[b][0],b) for b in range(len(blocks_list_unpacked))]
-e = time.time()
+e = time()
 print("finished block",e-s)
-s = time.time()
+s = time()
 ranges_read = [
     np.full(blocks_list[r][b][1]-blocks_list[r][b][0],r)
     for r in range(len(blocks_list))
     for b in range(len(blocks_list[r]))
 ]
-e = time.time()
+e = time()
 print("finished read",e-s)
 
 
