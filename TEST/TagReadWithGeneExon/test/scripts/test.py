@@ -4,7 +4,7 @@ import pandas as pd
 from ncls import NCLS
 from time import time
 #from bin.helperClasses.geneIntervalTree.gene_interval_tree import GeneIntervalTree
-from src.refFlat_repr import RefFlatParsed
+from scripts.src.refFlat_repr import RefFlatParsed
 
 LFs = pd.DataFrame({"name" : ["INTERGENIC", "INTRONIC", "UTR", "CODING"]})
 
