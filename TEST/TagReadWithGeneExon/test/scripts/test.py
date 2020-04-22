@@ -63,11 +63,22 @@ e = time()
 print("finished read",e-s)
 
 
-
+s = time()
 start = np.concatenate(ranges_start)
+e = time()
+print("finished start",e-s)
+s = time()
 end = np.concatenate(ranges_end)
+e = time()
+print("finished end",e-s)
+s = time()
 block = np.concatenate(ranges_block)
+e = time()
+print("finished block",e-s)
+s = time()
 read = np.concatenate(ranges_read)
+e = time()
+print("finished read",e-s)
 
 exit()
 
