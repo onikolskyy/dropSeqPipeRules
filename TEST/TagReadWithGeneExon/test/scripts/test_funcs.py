@@ -4,7 +4,7 @@ import pandas as pd
 from ncls import NCLS
 from time import time
 #from bin.helperClasses.geneIntervalTree.gene_interval_tree import GeneIntervalTree
-from scripts.src.refFlat_repr import RefFlatParsed
+from src.refFlat_repr import RefFlatParsed
 
 def parse_correct(correct_bam):
     correct_genenames = {}
