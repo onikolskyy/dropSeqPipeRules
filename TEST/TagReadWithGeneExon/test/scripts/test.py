@@ -4,16 +4,13 @@ import numpy as np
 import pandas as pd
 from ncls import NCLS
 from time import time
-import ray
 #from bin.helperClasses.geneIntervalTree.gene_interval_tree import GeneIntervalTree
 from src.refFlat_repr import RefFlatParsed
 
-ray.init()
 
 
 
-@ray.remote
-def refs_df_creator():
+def refs_df_creator(blocks_list, refs_list):
     # unpack
     blocks_list_unpacked = [blocks_list[b][i] for b in range(len(blocks_list)) for i in range(len(blocks_list[b]))]
     ranges_start = [np.arange(blocks_list_unpacked[b][0], blocks_list_unpacked[b][1]) for b in
@@ -62,18 +59,32 @@ print("blocks ready..\n")
 num_reads = len(reads_list)
 step = math.ceil(num_reads/snakemake.threads)
 
-result_ids = []
-for i in range(snakemake.threads):
-    result_ids.append(refs_df_creator.remote(blocks_list[i*step : (i+1)*step if (i+1)*step < num_reads else num_reads]))
+blocks_list_unpacked = [blocks_list[b][i] for b in range(len(blocks_list)) for i in range(len(blocks_list[b]))]
+ranges_start = [np.arange(blocks_list_unpacked[b][0], blocks_list_unpacked[b][1]) for b in
+                range(len(blocks_list_unpacked))]
+ranges_end = [np.arange(blocks_list_unpacked[b][0] + 1, blocks_list_unpacked[b][1] + 1) for b in
+              range(len(blocks_list_unpacked))]
+ranges_read = [
+    np.full(blocks_list[r][b][1] - blocks_list[r][b][0], r)
+    for r in range(len(blocks_list))
+    for b in range(len(blocks_list[r]))
+]
 
-results = ray.get(result_ids)
+ranges_block = [np.full(blocks_list_unpacked[b][1] - blocks_list_unpacked[b][0], b) for b in
+                range(len(blocks_list_unpacked))]
+# write
+start = np.concatenate(ranges_start)
+end = np.concatenate(ranges_end)
+block = np.concatenate(ranges_block)
+read = np.concatenate(ranges_read)
 
-exit()
+refs_df = pd.DataFrame({"ref": refs_list})
+reads_df = pd.DataFrame({"read": read, "start": start, "end": end, "block": block})
 
+refs =  pd.merge(reads_df, refs_df, left_on="read", right_index=True).to_numpy()
 
 
 # group by ref for querying gene tree
-refs = pd.DataFrame(data={"read": read, "ref": ref, "start": start, "end": end, "block": block})
 grouped = refs.groupby("ref")
 
 for ref, group in grouped:
