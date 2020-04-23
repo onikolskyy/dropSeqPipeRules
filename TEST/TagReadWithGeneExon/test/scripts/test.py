@@ -93,7 +93,7 @@ def worker(blocks_list):
 #bam file
 infile_bam = pysam.AlignmentFile(snakemake.input["inbam"], "rb")
 print("fnished indexing")
-indexed_bam = pysam.IndexedReads(infile_bam)
+indexed_bam = pysam.IndexedReads(infile_bam).build()
 #parse refflat
 refFlat = RefFlatParsed(snakemake.input["refflat"], infile_bam)
 logfile = open(snakemake.output["out"],"a")
@@ -101,6 +101,7 @@ logfile = open(snakemake.output["out"],"a")
 #################################################################################
 # make reads data frame
 #################################################################################
+
 bam_header = infile_bam.header
 reads_for_ref ={}
 packed_blocks_for_ref = {}
@@ -108,7 +109,7 @@ packed_blocks_for_ref = {}
 refs = [pair["SN"] for pair in bam_header["SQ"]]
 
 for ref in refs:
-    reads_for_ref["ref"] = [read for read in indexed_bam.fetch(ref)]
+    reads_for_ref["ref"] = [read for read in indexed_bam.find(ref)]
 
 packed_blocks_for_ref = {}
 for ref in refs:
