@@ -103,10 +103,15 @@ bam_header = infile_bam.header
 
 
 # subsample for each ref
-refs = [pair["SN"] for pair in bam_header["SQ"]]
-reads_for_ref = {}
-for ref in refs:
-    reads_for_ref["ref"] = [read for read in infile_bam.fetch(ref)]
+reads_for_ref ={}
+packed_blocks_for_ref = {}
+
+reads = [read for read in infile_bam]
+refs = [infile_bam.getrname(reads[r].tid) for r in range(len(reads))]
+refs_df = pd.DataFrame({"ref":refs})
+
+for ref, group in refs_df.groupby("ref"):
+    reads_for_ref[ref] = [reads[i] for i in group.index.to_list()]
 
 packed_blocks_for_ref = {}
 for ref in refs:
