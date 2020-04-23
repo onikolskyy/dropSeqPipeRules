@@ -15,30 +15,29 @@ ray.init()
 @ray.remote
 def refs_df_creator():
     # unpack
-    #blocks_list_unpacked = [blocks_list[b][i] for b in range(len(blocks_list)) for i in range(len(blocks_list[b]))]
-    # ranges_start = [np.arange(blocks_list_unpacked[b][0], blocks_list_unpacked[b][1]) for b in
-    #                 range(len(blocks_list_unpacked))]
-    # ranges_end = [np.arange(blocks_list_unpacked[b][0] + 1, blocks_list_unpacked[b][1] + 1) for b in
-    #               range(len(blocks_list_unpacked))]
-    # ranges_read = [
-    #     np.full(blocks_list[r][b][1] - blocks_list[r][b][0], r)
-    #     for r in range(len(blocks_list))
-    #     for b in range(len(blocks_list[r]))
-    # ]
-    #
-    # ranges_block = [np.full(blocks_list_unpacked[b][1] - blocks_list_unpacked[b][0], b) for b in
-    #                 range(len(blocks_list_unpacked))]
-    return True
-    # # write
-    # start = np.concatenate(ranges_start)
-    # end = np.concatenate(ranges_end)
-    # block = np.concatenate(ranges_block)
-    # read = np.concatenate(ranges_read)
-    #
-    # refs_df = pd.DataFrame({"ref":refs_list})
-    # reads_df = pd.DataFrame({"read":read,"start":start,"end":end,"block":block})
-    #
-    # return pd.merge(reads_df,refs_df,left_on="read",right_index=True).to_numpy()
+    blocks_list_unpacked = [blocks_list[b][i] for b in range(len(blocks_list)) for i in range(len(blocks_list[b]))]
+    ranges_start = [np.arange(blocks_list_unpacked[b][0], blocks_list_unpacked[b][1]) for b in
+                    range(len(blocks_list_unpacked))]
+    ranges_end = [np.arange(blocks_list_unpacked[b][0] + 1, blocks_list_unpacked[b][1] + 1) for b in
+                  range(len(blocks_list_unpacked))]
+    ranges_read = [
+        np.full(blocks_list[r][b][1] - blocks_list[r][b][0], r)
+        for r in range(len(blocks_list))
+        for b in range(len(blocks_list[r]))
+    ]
+
+    ranges_block = [np.full(blocks_list_unpacked[b][1] - blocks_list_unpacked[b][0], b) for b in
+                    range(len(blocks_list_unpacked))]
+    # write
+    start = np.concatenate(ranges_start)
+    end = np.concatenate(ranges_end)
+    block = np.concatenate(ranges_block)
+    read = np.concatenate(ranges_read)
+
+    refs_df = pd.DataFrame({"ref":refs_list})
+    reads_df = pd.DataFrame({"read":read,"start":start,"end":end,"block":block})
+
+    return pd.merge(reads_df,refs_df,left_on="read",right_index=True).to_numpy()
 
 ####################################################################################
 
@@ -59,7 +58,7 @@ logfile = open(snakemake.output["out"],"a")
 reads_list = [read for read in infile_bam]
 refs_list = [infile_bam.getrname(reads_list[r].tid) for r in range(len(reads_list))]
 blocks_list = [reads_list[r].get_blocks() for r in range(len(reads_list))]
-
+print("blocks ready..\n")
 num_reads = len(reads_list)
 step = math.ceil(num_reads/snakemake.threads)
 
