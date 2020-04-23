@@ -110,7 +110,7 @@ refs = [pair["SN"] for pair in bam_header["SQ"]]
 
 for ref in refs:
     reads_for_ref["ref"] = [read for read in infile_bam.fetch(ref)]
-
+print("finish building reads for ref")
 packed_blocks_for_ref = {}
 for ref in refs:
     packed_blocks_for_ref[ref] = [reads_for_ref[ref][r].get_blocks() for r in range(len(reads_for_ref[ref]))]
