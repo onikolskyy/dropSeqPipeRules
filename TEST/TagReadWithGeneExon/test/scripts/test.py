@@ -109,7 +109,7 @@ packed_blocks_for_ref = {}
 refs = [pair["SN"] for pair in bam_header["SQ"]]
 
 for ref in refs:
-    reads_for_ref["ref"] = [read for read in indexed_bam.find(ref)]
+    reads_for_ref["ref"] = [read for read in infile_bam.find(ref)]
 
 packed_blocks_for_ref = {}
 for ref in refs:
