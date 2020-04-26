@@ -38,8 +38,8 @@ rule fast_whitelist:
 rule merge_and_repair:
     input:
         # define input paths
-        R1='{results_dir}/samples/{sample}/trimmmed_repaired_R1.fastq.gz'
-        R2='{results_dir}/samples/{sample}/Aligned.out.bam',
+        R1='{results_dir}/samples/{sample}/trimmmed_repaired_R1.fastq.gz',
+        R2='{results_dir}/samples/{sample}/Aligned.out.bam'
     params:
         cell_barcode_length=(config['FILTER']['cell-barcode']['end'] - config['FILTER']['cell-barcode']['start'] + 1),
         umi_barcode_length=(config['FILTER']['UMI-barcode']['end'] - config['FILTER']['UMI-barcode']['start'] + 1),
