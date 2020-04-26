@@ -20,7 +20,7 @@ rule merge_and_repair:
         mapping='{results_dir}/samples/{sample}/top_barcodes.csv'
     conda: '../envs/merge_and_repair.yaml'
     benchmark : '{results_dir}/sample/MERGE_AND_REPAIR.{sample}.txt'
-    script: 'scripts/merge_and_repair.py'
+    script: '../scripts/merge_and_repair.py'
 
 # for plotting
 rule get_cell_whitelist:
