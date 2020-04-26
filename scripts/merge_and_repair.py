@@ -13,20 +13,9 @@ def save_obj(obj,name):
     with open(name, 'wb') as f:
         pickle.dump(obj,f,pickle.HIGHEST_PROTOCOL)
 
-def extract_barcodes(seq, regex):
-    pattern = re.compile(regex)
-    match = pattern.match(seq)
-    groupdict = match.groupdict()
-    cell = ""
-    umi = ""
 
-    for k in sorted(list(groupdict)):
-        span = match.span(k)
-        if k.startswith("cell_"):
-            cell += groupdict[k]
-        if k.startswith("umi_"):
-            umi += groupdict[k]
-    return cell, umi
+def extract_barcodes(seq, bc_len,umi_len):
+    return seq[:bc_len], seq[bc_len:bc_len+umi_len]
 
 
 def subst_base(seq, base, i):
@@ -69,14 +58,12 @@ lines_fastq = b_fastq.decode().split("\n")
 line_ctr = 4
 read_id = ""
 
-
-regex = "(?P<cell_1>.{"+str(snakemake.params["cell_barcode_length"])+"})(?P<umi_1>.{"+str(snakemake.params["umi_barcode_length"])+"})"
 print(regex)
 for line in lines_fastq:
     if line_ctr % 4 == 0:
         read_id = line[1:]
     elif line_ctr % 5 == 0:
-        bc, umi = extract_barcodes(line, regex)
+        bc, umi = extract_barcodes(line, snakemake.params["cell_barcode_length"], snakemake.params["umi_barcode_length"])
         tags_for_id[read_id]["UMI"] = umi
         tags_for_id[read_id]["cellBC"] = bc
         ids_for_barcode[bc].add(read_id)
