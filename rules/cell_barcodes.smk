@@ -2,7 +2,7 @@ whitelist_opts = pd.read_table("whitelist_opts.csv", sep=",").set_index("index",
 
 localrules:
     get_cell_whitelist,
-    extend_barcode_whitelist,
+#    extend_barcode_whitelist,
 #    extend_barcode_top
 
 rule merge_and_repair:
