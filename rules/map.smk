@@ -226,15 +226,15 @@ rule plot_knee_plot:
 
 
 
-rule tag_with_true_barcodes:
-    input: '{results_dir}/samples/{sample}/trimmmed_repaired_R1.fastq.gz','{results_dir}/samples/{sample}/Aligned.out.bam','{results_dir}/samples/{sample}/top_barcodes.csv'
-    benchmark: '{results_dir}/benchmarks/{sample}.tag_true.txt'
-    output:'{results_dir}/samples/{sample}/Aligned.repaired.bam'
-    params:
-        BC_start=config['FILTER']['cell-barcode']['start']-1,
-        BC_end=config['FILTER']['cell-barcode']['end'],
-        UMI_start=config['FILTER']['UMI-barcode']['start']-1,
-        UMI_end=config['FILTER']['UMI-barcode']['end'],
-        discard_secondary_alignements=True
-    conda: '../envs/tag_true.yaml'
-    script: '../scripts/tag_with_true_barcodes.py'
+# rule tag_with_true_barcodes:
+#     input: '{results_dir}/samples/{sample}/trimmmed_repaired_R1.fastq.gz','{results_dir}/samples/{sample}/Aligned.out.bam','{results_dir}/samples/{sample}/top_barcodes.csv'
+#     benchmark: '{results_dir}/benchmarks/{sample}.tag_true.txt'
+#     output:'{results_dir}/samples/{sample}/Aligned.repaired.bam'
+#     params:
+#         BC_start=config['FILTER']['cell-barcode']['start']-1,
+#         BC_end=config['FILTER']['cell-barcode']['end'],
+#         UMI_start=config['FILTER']['UMI-barcode']['start']-1,
+#         UMI_end=config['FILTER']['UMI-barcode']['end'],
+#         discard_secondary_alignements=True
+#     conda: '../envs/tag_true.yaml'
+#     script: '../scripts/tag_with_true_barcodes.py'
