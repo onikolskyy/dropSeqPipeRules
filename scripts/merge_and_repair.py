@@ -1,5 +1,7 @@
 import mmap
 import os
+import sys
+import pickle
 import re
 import gzip
 import pysan
@@ -7,6 +9,9 @@ from collections import defaultdict, Counter
 
 bases = ['T', 'G', 'A', 'C', 'N']
 
+def save_obj(obj,name):
+    with open(name, 'wb') as f:
+        pickle.dump(obj,f,pickle.HIGHEST_PROTOCOL)
 
 def extract_barcodes(seq, regex):
     pattern = re.compile(regex)
