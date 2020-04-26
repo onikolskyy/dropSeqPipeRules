@@ -78,7 +78,7 @@ rule multiqc_star:
     wrapper:
         '0.21.0/bio/multiqc'
 
-<
+
 rule TagReadWithGeneExon:
     input:
         data='{results_dir}/samples/{sample}/Aligned.repaired.bam',
