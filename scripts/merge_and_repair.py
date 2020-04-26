@@ -58,7 +58,6 @@ lines_fastq = b_fastq.decode().split("\n")
 line_ctr = 4
 read_id = ""
 
-print(regex)
 for line in lines_fastq:
     if line_ctr % 4 == 0:
         read_id = line[1:]
