@@ -50,6 +50,9 @@ tags_for_id = defaultdict(lambda: {"UMI": "", "cellBC": ""})
 # mapping barcode -> [id1,id2,..]
 ids_for_barcode = defaultdict(lambda: set())
 
+# mapping for csv
+mapping = defaultdict(lambda: set())
+
 # counter of reads for each bc
 barcode_counts = Counter()
 
@@ -88,13 +91,14 @@ for cell, ids in ids_for_barcode.items():
             match = next(iter(match))
             for read_id in ids:
                 tags_for_id[read_id]["BC"] = match
+                mapping[match].add(cell)
         else:
             for read_id in ids:
                 del tags_for_id[read_id]
 
 infile_bam = pysam.AlignmentFile(snakemake.input["R2"], "rb")
 
-outfile = pysam.AlignmentFile(snakemake.output[0], "wb", template=infile_bam)
+out_bam = pysam.AlignmentFile(snakemake.output["repaired_bam"], "wb", template=infile_bam)
 
 for read in infile_bam:
     if (discard_secondary_alignements & bam_read.is_secondary):
@@ -103,5 +107,18 @@ for read in infile_bam:
         read.set_tags([
             ('XC', tags_for_id["BC"], 'Z'),
             ('XM', tags_for_id["umi"], 'Z')])
-    outfile.write(read)
+    out_bam.write(read)
 
+out_csv = open(snakemake.output["mapping"])
+
+for final_barcode in final_barcodes:
+        corrected_barcodes = ",".join(
+            sorted(mapping[final_barcode]))
+        corrected_barcode_counts = ",".join(
+            map(str, [barcode_counts[x] for x
+                      in sorted(mapping[final_barcode])]))
+        out_csv.write("%s\t%s\t%s\t%s\n" % (
+            final_barcode, corrected_barcodes, barcode_counts[final_barcode],
+            corrected_barcode_counts))
+
+out_csv.close()

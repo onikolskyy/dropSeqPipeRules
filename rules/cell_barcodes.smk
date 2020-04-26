@@ -22,19 +22,6 @@ rule extend_barcode_whitelist:
     script:
         '../scripts/generate_extended_ref.py'
 
-
-# rule fast_whitelist:
-#     input: '{results_dir}/samples/{sample}/trimmmed_repaired_R1.fastq.gz'
-#     params:
-#         cell_barcode_length=(config['FILTER']['cell-barcode']['end'] - config['FILTER']['cell-barcode']['start'] + 1),
-#         umi_barcode_length=(config['FILTER']['UMI-barcode']['end'] - config['FILTER']['UMI-barcode']['start'] + 1),
-#         num_cells=lambda wildcards: round(int(samples.loc[wildcards.sample,'expected_cells'])*1.2),
-#     threads: 8
-#     output: '{results_dir}/samples/{sample}/top_barcodes.csv'
-#     benchmark: '{results_dir}/benchmarks/fast_whitelist.{sample}.txt'
-#     conda: '../envs/fast_whitelist.yaml'
-#     shell: "python /dropSeqPipe/scripts/whitelist.py --fastq={input} --csv={output} --regex='(?P<cell_1>.{{{params.cell_barcode_length}}})(?P<umi_1>.{{{params.umi_barcode_length}}})' --threads={threads} --cells={params.num_cells}"
-
 rule merge_and_repair:
     input:
         # define input paths
@@ -46,11 +33,7 @@ rule merge_and_repair:
         num_cells=lambda wildcards: round(int(samples.loc[wildcards.sample,'expected_cells'])*1.2),
     output:
         '{results_dir}/samples/{sample}/Aligned.repaired.bam',
-        # dummy
         '{results_dir}/samples/{sample}/top_barcodes.csv',
-        '{results_dir}/samples/{sample}/barcode_ref.pkl',
-        '{results_dir}/samples/{sample}/barcode_ext_ref.pkl',
-        '{results_dir}/samples/{sample}/empty_barcode_mapping.pkl'
     conda: 'envs/merge_and_repair.yaml'
     benchmark : '{results_dir}/sample/MERGE_AND_REPAIR.{sample}.txt'
     script: 'scripts/merge_and_repair.py'
