@@ -48,9 +48,9 @@ rule merge_and_repair:
         '{results_dir}/samples/{sample}/Aligned.repaired.bam',
         # dummy
         '{results_dir}/samples/{sample}/top_barcodes.csv',
-        'barcode_ref='{results_dir}/samples/{sample}/barcode_ref.pkl',
-        'barcode_ext_ref='{results_dir}/samples/{sample}/barcode_ext_ref.pkl',
-        'barcode_mapping='{results_dir}/samples/{sample}/empty_barcode_mapping.pkl'
+        '{results_dir}/samples/{sample}/barcode_ref.pkl',
+        '{results_dir}/samples/{sample}/barcode_ext_ref.pkl',
+        '{results_dir}/samples/{sample}/empty_barcode_mapping.pkl'
     conda: 'envs/merge_and_repair.yaml'
     benchmark : 'MERGE_AND_REPAIR.{sample}.txt'
     script: 'scripts/merge_and_repair.py'
