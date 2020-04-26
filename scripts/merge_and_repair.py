@@ -105,7 +105,7 @@ for read in infile_bam:
             ('XM', tags_for_id["umi"], 'Z')])
     out_bam.write(read)
 
-out_csv = open(snakemake.output["mapping"])
+out_csv = open(snakemake.output["mapping"],"w")
 
 for final_barcode in final_barcodes:
         corrected_barcodes = ",".join(
