@@ -76,6 +76,7 @@ for line in lines_fastq:
     if line_ctr % 4 == 0:
         read_id = line[1:]
     elif line_ctr % 2 == 0:
+        print(line)
         bc, umi = extract_barcodes(line, regex)
         tags_for_id[read_id]["UMI"] = umi
         tags_for_id[read_id]["cellBC"] = bc
