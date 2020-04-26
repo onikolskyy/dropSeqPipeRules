@@ -78,27 +78,7 @@ rule multiqc_star:
     wrapper:
         '0.21.0/bio/multiqc'
 
-
-
-#rule MergeBamAlignment:
-#    input:
-        #mapped='{results_dir}/samples/{sample}/Aligned.out.bam',
-        #R1_ref = '{results_dir}/samples/{sample}/trimmmed_repaired_R1.fastq.gz'
-    #output:
-        #temp('{results_dir}/samples/{sample}/Aligned.merged.bam')
-    #params:
-        #BC_start=config['FILTER']['cell-barcode']['start']-1,
-        #BC_end=config['FILTER']['cell-barcode']['end'],
-        #UMI_start=config['FILTER']['UMI-barcode']['start']-1,
-        #UMI_end=config['FILTER']['UMI-barcode']['end'],
-        #discard_secondary_alignements=True
-    #benchmark: '{results_dir}/benchmarks/MergeBamAlignment.{sample}.txt'
-    #conda: '../envs/merge_bam.yaml'
-    #script:
-        #'../scripts/merge_bam.py'
-
-
-
+<
 rule TagReadWithGeneExon:
     input:
         data='{results_dir}/samples/{sample}/Aligned.repaired.bam',
@@ -224,17 +204,3 @@ rule plot_knee_plot:
     script:
         '../scripts/plot_knee_plot.R'
 
-
-
-# rule tag_with_true_barcodes:
-#     input: '{results_dir}/samples/{sample}/trimmmed_repaired_R1.fastq.gz','{results_dir}/samples/{sample}/Aligned.out.bam','{results_dir}/samples/{sample}/top_barcodes.csv'
-#     benchmark: '{results_dir}/benchmarks/{sample}.tag_true.txt'
-#     output:'{results_dir}/samples/{sample}/Aligned.repaired.bam'
-#     params:
-#         BC_start=config['FILTER']['cell-barcode']['start']-1,
-#         BC_end=config['FILTER']['cell-barcode']['end'],
-#         UMI_start=config['FILTER']['UMI-barcode']['start']-1,
-#         UMI_end=config['FILTER']['UMI-barcode']['end'],
-#         discard_secondary_alignements=True
-#     conda: '../envs/tag_true.yaml'
-#     script: '../scripts/tag_with_true_barcodes.py'
