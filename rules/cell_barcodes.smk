@@ -52,7 +52,7 @@ rule merge_and_repair:
         '{results_dir}/samples/{sample}/barcode_ext_ref.pkl',
         '{results_dir}/samples/{sample}/empty_barcode_mapping.pkl'
     conda: 'envs/merge_and_repair.yaml'
-    benchmark : 'MERGE_AND_REPAIR.{sample}.txt'
+    benchmark : '{results_dir}/sample/MERGE_AND_REPAIR.{sample}.txt'
     script: 'scripts/merge_and_repair.py'
 
 #rule get_top_barcodes:
