@@ -82,6 +82,7 @@ for line in lines_fastq:
         ids_for_barcode[bc].add(read_id)
         barcode_counts[bc] += 1
 
+print(len(barcode_counts.values()))
 
 sorted_counts = sorted(barcode_counts.values(), reverse=True)
 threshold = sorted_counts[snakemake.params['num_cells']]
