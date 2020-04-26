@@ -35,6 +35,20 @@ rule fast_whitelist:
     conda: '../envs/fast_whitelist.yaml'
     shell: "python /dropSeqPipe/scripts/whitelist.py --fastq={input} --csv={output} --regex='(?P<cell_1>.{{{params.cell_barcode_length}}})(?P<umi_1>.{{{params.umi_barcode_length}}})' --threads={threads} --cells={params.num_cells}"
 
+rule merge_and_repair:
+    input:
+        # define input paths
+        R1='{results_dir}/samples/{sample}/trimmmed_repaired_R1.fastq.gz'
+        R2='{results_dir}/samples/{sample}/Aligned.out.bam',
+    params:
+        cell_barcode_length=(config['FILTER']['cell-barcode']['end'] - config['FILTER']['cell-barcode']['start'] + 1),
+        umi_barcode_length=(config['FILTER']['UMI-barcode']['end'] - config['FILTER']['UMI-barcode']['start'] + 1),
+        num_cells=lambda wildcards: round(int(samples.loc[wildcards.sample,'expected_cells'])*1.2),
+    output: temp('{results_dir}/samples/{sample}/Aligned.repaired.bam')
+    conda: 'envs/merge_and_repair.yaml'
+    benchmark : 'MERGE_AND_REPAIR.{sample}.txt'
+    script: 'scripts/merge_and_repair.py'
+
 #rule get_top_barcodes:
 #    input:
 #        '{results_dir}/samples/{sample}/trimmmed_repaired_R1.fastq.gz'
