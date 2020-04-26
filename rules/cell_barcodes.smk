@@ -45,7 +45,7 @@ rule merge_and_repair:
         umi_barcode_length=(config['FILTER']['UMI-barcode']['end'] - config['FILTER']['UMI-barcode']['start'] + 1),
         num_cells=lambda wildcards: round(int(samples.loc[wildcards.sample,'expected_cells'])*1.2),
     output:
-        temp('{results_dir}/samples/{sample}/Aligned.repaired.bam'),
+        '{results_dir}/samples/{sample}/Aligned.repaired.bam',
         # dummy
         '{results_dir}/samples/{sample}/top_barcodes.csv'
         'barcode_ref='{results_dir}/samples/{sample}/barcode_ref.pkl',
