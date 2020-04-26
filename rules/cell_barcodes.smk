@@ -14,6 +14,7 @@ rule merge_and_repair:
         cell_barcode_length=(config['FILTER']['cell-barcode']['end'] - config['FILTER']['cell-barcode']['start'] + 1),
         umi_barcode_length=(config['FILTER']['UMI-barcode']['end'] - config['FILTER']['UMI-barcode']['start'] + 1),
         num_cells=lambda wildcards: round(int(samples.loc[wildcards.sample,'expected_cells'])*1.2),
+        discard_secondary_alignements=True
     output:
         repaired_bam=temp('{results_dir}/samples/{sample}/Aligned.repaired.bam'),
         mapping='{results_dir}/samples/{sample}/top_barcodes.csv'

@@ -106,7 +106,7 @@ infile_bam = pysam.AlignmentFile(snakemake.input["R2"], "rb")
 out_bam = pysam.AlignmentFile(snakemake.output["repaired_bam"], "wb", template=infile_bam)
 
 for read in infile_bam:
-    if (discard_secondary_alignements & bam_read.is_secondary):
+    if (snakemake.params["discard_secondary_alignements"] & read.is_secondary):
         continue
     if read.query_name in tags_for_id:
         read.set_tags([
