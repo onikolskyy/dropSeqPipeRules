@@ -4,7 +4,7 @@ import sys
 import pickle
 import re
 import gzip
-import pysan
+import pysam
 from collections import defaultdict, Counter
 
 bases = ['T', 'G', 'A', 'C', 'N']
