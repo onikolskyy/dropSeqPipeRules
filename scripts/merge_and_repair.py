@@ -71,7 +71,7 @@ read_id = ""
 
 
 regex = "(?P<cell_1>.{"+str(snakemake.params["cell_barcode_length"])+"})(?P<umi_1>.{"+str(snakemake.params["umi_barcode_length"])+"})"
-
+print(regex)
 for line in lines_fastq:
     if line_ctr % 4 == 0:
         read_id = line[1:]
