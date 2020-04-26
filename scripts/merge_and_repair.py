@@ -66,7 +66,7 @@ mm_fastqgz = mmap.mmap(fastgz, 0, prot=mmap.PROT_READ)
 b_fastq = gzip.GzipFile(mode="r", fileobj=mm_fastqgz).read()
 lines_fastq = b_fastq.decode().split("\n")
 
-line_ctr = 0
+line_ctr = 4
 read_id = ""
 
 
@@ -75,14 +75,13 @@ print(regex)
 for line in lines_fastq:
     if line_ctr % 4 == 0:
         read_id = line[1:]
-    elif line_ctr % 2 == 0:
-        print(line)
+    elif line_ctr % 5 == 0:
         bc, umi = extract_barcodes(line, regex)
         tags_for_id[read_id]["UMI"] = umi
         tags_for_id[read_id]["cellBC"] = bc
         ids_for_barcode[bc].add(read_id)
         barcode_counts[bc] += 1
-    line_ctr+=1
+    line_ctr = line_ctr + 1 if line_ctr < 7 else 4
 
 print(len(barcode_counts.values()))
 
