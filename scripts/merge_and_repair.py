@@ -81,6 +81,7 @@ for line in lines_fastq:
         tags_for_id[read_id]["cellBC"] = bc
         ids_for_barcode[bc].add(read_id)
         barcode_counts[bc] += 1
+    line_ctr+=1
 
 print(len(barcode_counts.values()))
 
