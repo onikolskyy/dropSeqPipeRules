@@ -61,7 +61,7 @@ read_id = ""
 
 for line in lines_fastq:
     if line_ctr % 4 == 0:
-        read_id = line[1:]
+        read_id = line.split(' ')[1][1:]
     elif line_ctr % 5 == 0:
         bc, umi = extract_barcodes(line, snakemake.params["cell_barcode_length"], snakemake.params["umi_barcode_length"])
         tags_for_id[read_id]["UMI"] = umi
@@ -100,6 +100,8 @@ infile_bam = pysam.AlignmentFile(snakemake.input["R2"], "rb")
 
 out_bam = pysam.AlignmentFile(snakemake.output["repaired_bam"], "wb", template=infile_bam)
 
+ctr_tagged = 0
+
 for read in infile_bam:
     if (snakemake.params["discard_secondary_alignements"] & read.is_secondary):
         continue
@@ -107,7 +109,10 @@ for read in infile_bam:
         read.set_tags([
             ('XC', tags_for_id[read.query_name]["cellBC"], 'Z'),
             ('XM', tags_for_id[read.query_name]["UMI"], 'Z')])
+        ctr_tagged+=1
     out_bam.write(read)
+
+print("READS tagged",ctr_tagged)
 
 out_csv = open(snakemake.output["mapping"],"w")
 
