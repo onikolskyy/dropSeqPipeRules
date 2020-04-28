@@ -1,4 +1,5 @@
 import mmap
+import os
 import gzip
 from collections import defaultdict, Counter
 
