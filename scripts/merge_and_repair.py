@@ -93,6 +93,9 @@ for cell, ids in ids_for_barcode.items():
             for read_id in ids:
                 del tags_for_id[read_id]
 
+print("######################Barcodes to tag:", len(tags_for_id.items()))
+
+
 infile_bam = pysam.AlignmentFile(snakemake.input["R2"], "rb")
 
 out_bam = pysam.AlignmentFile(snakemake.output["repaired_bam"], "wb", template=infile_bam)
