@@ -1,7 +1,7 @@
 rule test:
     input:
         # define input paths
-        fastq='/input/trimmed_repaired_R1.fastq.gz'
+        fastq='/input/trimmmed_repaired_R1.fastq.gz'
     threads : 8
     output:
         mapping= '/output/whitelist.csv'
