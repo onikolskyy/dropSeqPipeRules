@@ -2,7 +2,11 @@ rule test:
     input:
         # define input paths
         fastq='/input/trimmmed_repaired_R1.fastq.gz'
-    threads : 8
+    threads : 1
+    params:
+        cell_barcode_length=52,
+        umi_barcode_length=8,
+        num_cells=72000,
     output:
         mapping= '/output/whitelist.csv'
     benchmark : '/output/ benchmark.txt'
