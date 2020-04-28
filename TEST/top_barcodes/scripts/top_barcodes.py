@@ -1,12 +1,8 @@
 import mmap
-import os
-import pickle
 import gzip
-import pysam
 from collections import defaultdict, Counter
 
 bases = ['T', 'G', 'A', 'C', 'N']
-
 
 def save_obj(obj,name):
     with open(name, 'wb') as f:
@@ -49,7 +45,7 @@ mapping = defaultdict(lambda: set())
 # counter of reads for each bc
 barcode_counts = Counter()
 
-fastgz = os.open(snakemake.input["R1"], os.O_RDONLY)
+fastgz = os.open(snakemake.input["fastq"], os.O_RDONLY)
 mm_fastqgz = mmap.mmap(fastgz, 0, prot=mmap.PROT_READ)
 b_fastq = gzip.GzipFile(mode="r", fileobj=mm_fastqgz).read()
 lines_fastq = b_fastq.decode().split("\n")
@@ -68,7 +64,6 @@ for line in lines_fastq:
         barcode_counts[bc] += 1
     line_ctr = line_ctr + 1 if line_ctr < 7 else 4
 
-print(len(barcode_counts.values()))
 
 sorted_counts = sorted(barcode_counts.values(), reverse=True)
 threshold = sorted_counts[snakemake.params['num_cells']]
@@ -90,27 +85,6 @@ for cell, ids in ids_for_barcode.items():
         else:
             for read_id in ids:
                 del tags_for_id[read_id]
-
-print("######################Barcodes to tag:", len(tags_for_id.items()))
-
-
-infile_bam = pysam.AlignmentFile(snakemake.input["R2"], "rb")
-
-out_bam = pysam.AlignmentFile(snakemake.output["repaired_bam"], "wb", template=infile_bam)
-
-ctr_tagged = 0
-
-for read in infile_bam:
-    if (snakemake.params["discard_secondary_alignements"] & read.is_secondary):
-        continue
-    if read.query_name in tags_for_id:
-        read.set_tags([
-            ('XC', tags_for_id[read.query_name]["cellBC"], 'Z'),
-            ('XM', tags_for_id[read.query_name]["UMI"], 'Z')])
-        ctr_tagged+=1
-    out_bam.write(read)
-
-print("READS tagged",ctr_tagged)
 
 out_csv = open(snakemake.output["mapping"],"w")
 
