@@ -72,7 +72,7 @@ threshold = sorted_counts[snakemake.params['num_cells']]
 final_barcodes = set([
     x for x, y in barcode_counts.items() if y > threshold])
 
-
+print("start mapping")
 for cell, ids in ids_for_barcode.items():
     if cell in final_barcodes:
         pass
