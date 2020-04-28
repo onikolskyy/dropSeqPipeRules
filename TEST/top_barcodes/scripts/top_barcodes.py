@@ -73,6 +73,7 @@ final_barcodes = set([
     x for x, y in barcode_counts.items() if y > threshold])
 
 print("start mapping")
+ctr = 0
 for cell, ids in ids_for_barcode.items():
     if cell in final_barcodes:
         pass
@@ -87,6 +88,9 @@ for cell, ids in ids_for_barcode.items():
         else:
             for read_id in ids:
                 del tags_for_id[read_id]
+    ctr+=1
+    if ctr % 10**6 == 0:
+        print("processed", ctr)
 
 out_csv = open(snakemake.output["mapping"],"w")
 
