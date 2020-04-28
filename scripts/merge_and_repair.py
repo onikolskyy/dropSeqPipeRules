@@ -9,6 +9,7 @@ from collections import defaultdict, Counter
 
 bases = ['T', 'G', 'A', 'C', 'N']
 
+
 def save_obj(obj,name):
     with open(name, 'wb') as f:
         pickle.dump(obj,f,pickle.HIGHEST_PROTOCOL)
@@ -86,7 +87,7 @@ for cell, ids in ids_for_barcode.items():
         if len(match) == 1:
             match = next(iter(match))
             for read_id in ids:
-                tags_for_id[read_id]["BC"] = match
+                tags_for_id[read_id]["cellBC"] = match
                 mapping[match].add(cell)
         else:
             for read_id in ids:
