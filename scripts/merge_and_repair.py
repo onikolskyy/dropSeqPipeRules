@@ -105,8 +105,8 @@ for read in infile_bam:
         continue
     if read.query_name in tags_for_id:
         read.set_tags([
-            ('XC', tags_for_id["BC"], 'Z'),
-            ('XM', tags_for_id["umi"], 'Z')])
+            ('XC', tags_for_id[read.query_name]["cellBC"], 'Z'),
+            ('XM', tags_for_id[read.query_name]["UMI"], 'Z')])
     out_bam.write(read)
 
 out_csv = open(snakemake.output["mapping"],"w")
