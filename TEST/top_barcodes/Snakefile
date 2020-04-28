@@ -1,11 +1,10 @@
 rule test:
     input:
         # define input paths
-        fastq: 'input/trimmed_repaired_R1.fastq.gz'
+        fastq= 'input/trimmed_repaired_R1.fastq.gz'
     threads : 8
     output:
-
-        mapping:'output/whitelist.csv'
+        mapping= 'output/whitelist.csv'
     conda: 'envs/tag_read_with_gene_exon.yaml'
     benchmark : 'benchmark.txt'
     script: 'scripts/top_barcodes.py'
