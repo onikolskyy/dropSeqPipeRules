@@ -1,9 +1,9 @@
 rule test:
     input:
         # define input paths
-        fastq= '/input/trimmed_repaired_R1.fastq.gz'
+        fastq='/input/trimmed_repaired_R1.fastq.gz'
     threads : 8
     output:
         mapping= '/output/whitelist.csv'
-    benchmark : '/output/benchmark.txt'
+    benchmark : '/output/ benchmark.txt'
     script: 'scripts/top_barcodes.py'
