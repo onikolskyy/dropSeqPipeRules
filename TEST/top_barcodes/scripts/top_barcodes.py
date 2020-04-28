@@ -1,6 +1,7 @@
 import mmap
 import os
 import gzip
+from multiprocessing import RawArray
 from collections import defaultdict, Counter
 
 bases = ['T', 'G', 'A', 'C', 'N']
