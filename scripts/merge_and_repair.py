@@ -61,7 +61,7 @@ read_id = ""
 
 for line in lines_fastq:
     if line_ctr % 4 == 0:
-        read_id = line.split(' ')[1][1:]
+        read_id = line.split(' ')[0][1:]
     elif line_ctr % 5 == 0:
         bc, umi = extract_barcodes(line, snakemake.params["cell_barcode_length"], snakemake.params["umi_barcode_length"])
         tags_for_id[read_id]["UMI"] = umi
