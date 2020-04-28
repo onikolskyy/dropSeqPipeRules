@@ -1,13 +1,20 @@
+
+SAMPLES=["252_S1","253_S2","254_S3","255_S4"]
+
+rule all:
+  input: ["/output/{sample}/whitelist.csv".format(sample=sample) for sample in SAMPLES]
+
+
 rule test:
     input:
         # define input paths
-        fastq='/input/trimmmed_repaired_R1.fastq.gz'
+        fastq='/input/{sample}/trimmmed_repaired_R1.fastq.gz'
     threads : 1
     params:
         cell_barcode_length=52,
         umi_barcode_length=8,
-        num_cells=72000,
+        num_cells=24000,
     output:
-        mapping= '/output/whitelist.csv'
-    benchmark : '/output/ benchmark.txt'
+        mapping= '/output/{sample}/whitelist.csv'
+    benchmark : '/output/benchmark.{sample}.txt'
     script: 'scripts/top_barcodes.py'
