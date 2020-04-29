@@ -37,6 +37,7 @@ def generate_possible(sequence):
 
 def init_reader(raw):
     BUFFER["buf"] = raw
+    print("reader init")
 
 
 def reader(startend):
@@ -85,7 +86,7 @@ barcode_counts = Counter()
 fastgz = os.open(snakemake.input["fastq"], os.O_RDONLY)
 mm_fastqgz = mmap.mmap(fastgz, 0, prot=mmap.PROT_READ)
 b_fastq = gzip.GzipFile(mode="r", fileobj=mm_fastqgz).read()
-
+print(b_fastq)
 lines_fastq = len(b_fastq.decode().split("\n"))
 num_reads = int(lines_fastq / 4)
 print("ungzipped and mmaped")
@@ -93,6 +94,7 @@ print("ungzipped and mmaped")
 raw = RawArray('b', len(b_fastq))
 raw[:] = b_fastq
 print("built rawarray")
+print(raw)
 # make chunks
 size_chunk = int(num_reads / snakemake.threads)
 chunks = []
@@ -101,6 +103,8 @@ for i in range(snakemake.threads):
         chunks.append((4 * i * size_chunk, num_reads * 4))
     else:
         chunks.append((4 * (i) * size_chunk, 4 * (i + 1) * size_chunk))
+
+print(chunks)
 
 with Pool(processes=snakemake.threads, initializer=init_reader, initargs=(raw)) as pool:
     print("start pool")
