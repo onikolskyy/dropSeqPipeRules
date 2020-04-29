@@ -42,32 +42,32 @@ def init_reader(raw):
 
 def reader(startend):
     print("starting worker")
-
-    bfastq = bytearray(BUFFER["buf"])
-    lines = bfastq.decode().split('\n')
-    start = startend[0]
-    end = startend[1]
-
-    print("Worker work")
-
-    tags_for_id = defaultdict(lambda: {"UMI": "", "cellBC": ""})
-
-    line_ctr = 4
-
-    for l in range(start, end):
-        line = lines[l]
-        if line_ctr % 4 == 0:
-            read_id = line.split(' ')[0][1:]
-        elif line_ctr % 5 == 0:
-            bc, umi = extract_barcodes(line, BARCODE_LENGTH,
-                                       UMI_LENGTH)
-            tags_for_id[read_id]["UMI"] = umi
-            tags_for_id[read_id]["cellBC"] = bc
-            ids_for_barcode[bc].add(read_id)
-            barcode_counts[bc] += 1
-        line_ctr = line_ctr + 1 if line_ctr < 7 else 4
-
-    return (tags_for_id, ids_for_barcode)
+    return 0
+    # bfastq = bytearray(BUFFER["buf"])
+    # lines = bfastq.decode().split('\n')
+    # start = startend[0]
+    # end = startend[1]
+    #
+    # print("Worker work")
+    #
+    # tags_for_id = defaultdict(lambda: {"UMI": "", "cellBC": ""})
+    #
+    # line_ctr = 4
+    #
+    # for l in range(start, end):
+    #     line = lines[l]
+    #     if line_ctr % 4 == 0:
+    #         read_id = line.split(' ')[0][1:]
+    #     elif line_ctr % 5 == 0:
+    #         bc, umi = extract_barcodes(line, BARCODE_LENGTH,
+    #                                    UMI_LENGTH)
+    #         tags_for_id[read_id]["UMI"] = umi
+    #         tags_for_id[read_id]["cellBC"] = bc
+    #         ids_for_barcode[bc].add(read_id)
+    #         barcode_counts[bc] += 1
+    #     line_ctr = line_ctr + 1 if line_ctr < 7 else 4
+    #
+    # return (tags_for_id, ids_for_barcode)
 
 
 # mapping id -> (UMI,bc)
