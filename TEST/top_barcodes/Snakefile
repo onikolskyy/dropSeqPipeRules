@@ -17,4 +17,4 @@ rule test:
     output:
         mapping= '/output/{sample}/whitelist.csv'
     benchmark : '/output/benchmark.{sample}.txt'
-    script: 'scripts/top_barcodes.py'
+    script: 'scripts/top_barcodes_parallel.py'
