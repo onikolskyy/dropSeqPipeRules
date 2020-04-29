@@ -40,10 +40,14 @@ def init_reader(raw):
 
 
 def reader(startend):
+    print("starting worker")
+
     bfastq = bytearray(BUFFER["buf"])
     lines = bfastq.decode().split('\n')
     start = startend[0]
     end = startend[1]
+
+    print("Worker work")
 
     tags_for_id = defaultdict(lambda: {"UMI": "", "cellBC": ""})
 
@@ -88,7 +92,7 @@ num_reads = int(lines_fastq / 4)
 # save to shared memory
 raw = RawArray('b', len(b_fastq))
 raw[:] = b_fastq
-
+print("built rawarray")
 # make chunks
 size_chunk = int(num_reads / snakemake.threads)
 chunks = []
