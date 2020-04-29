@@ -36,8 +36,9 @@ def generate_possible(sequence):
 
 
 def init_reader(rawarr):
-    BUFFER["buf"] = rawarr
     print("reader init")
+    BUFFER["buf"] = rawarr
+
 
 
 def reader(startend):
@@ -106,7 +107,7 @@ for i in range(snakemake.threads):
 
 print(chunks)
 
-with Pool(processes=snakemake.threads) as pool:
+with Pool(processes=snakemake.threads, initializer=init_reader, initargs=raw) as pool:
     print("start pool")
     results = pool.map(reader, iterable=chunks)
     print(results)
