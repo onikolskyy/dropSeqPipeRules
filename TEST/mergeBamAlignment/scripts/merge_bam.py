@@ -11,7 +11,7 @@ def extract_barcodes(seq, bc_len, umi_len):
 
 discard_secondary_alignements = snakemake.params['discard_secondary_alignements']
 
-infile_bam = pysam.AlignmentFile(snakemake.input["bam"], "rb")
+infile_bam = pysam.AlignmentFile(snakemake.input["bam   "], "rb")
 outfile = pysam.AlignmentFile(snakemake.output[0], "wb", template=infile_bam)
 
 fastgz = os.open(snakemake.input["fastq"], os.O_RDONLY)
