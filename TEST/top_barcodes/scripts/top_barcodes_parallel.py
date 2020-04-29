@@ -93,7 +93,7 @@ num_reads = int(lines_fastq / 4)
 print("ungzipped and mmaped")
 # save to shared memory
 raw = RawArray('b', len(b_fastq))
-raw[:] = b_fastq
+#raw[:] = b_fastq
 print("built rawarray")
 print(raw)
 # make chunks
