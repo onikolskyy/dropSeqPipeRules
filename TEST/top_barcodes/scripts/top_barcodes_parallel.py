@@ -60,27 +60,23 @@ barcode_counts = Counter()
 fastgz = os.open(snakemake.input["fastq"], os.O_RDONLY)
 mm_fastqgz = mmap.mmap(fastgz, 0, prot=mmap.PROT_READ)
 b_fastq = gzip.GzipFile(mode="r", fileobj=mm_fastqgz).read()
-print(type(b_fastq))
 lines_fastq = len(b_fastq.decode().split("\n"))
 num_reads = int(lines_fastq / 4)
 print("ungzipped and mmaped")
 # save to shared memory
-raw = RawArray('b', len(b_fastq))
-raw[:] = b_fastq
-print("built rawarray")
-print(raw)
+
 
 
 def reader(startend):
     print("starting worker")
-    bfastq = bytearray(raw)
+    bfastq = gzip.GzipFile(mode="r", fileobj=mm_fastqgz).read()
     lines = bfastq.decode().split('\n')
     start = startend[0]
     end = startend[1]
 
     print("Worker work")
 
-    tags_for_id = defaultdict(lambda: {"UMI": "", "cellBC": ""})
+    tags_for_id = {}
 
     line_ctr = 4
 
@@ -91,6 +87,7 @@ def reader(startend):
         elif line_ctr % 5 == 0:
             bc, umi = extract_barcodes(line, BARCODE_LENGTH,
                                        UMI_LENGTH)
+            tags_for_id[read_id] = {}
             tags_for_id[read_id]["UMI"] = umi
             tags_for_id[read_id]["cellBC"] = bc
             ids_for_barcode[bc].add(read_id)
