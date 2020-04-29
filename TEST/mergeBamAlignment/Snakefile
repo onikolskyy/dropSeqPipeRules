@@ -1,20 +1,18 @@
 SAMPLES=["252_S1","253_S2","254_S3","255_S4"]
 
 rule all:
-  input: ["{output}/{sample}/Aligned.merged.bam".format(sample=sample) for sample in SAMPLES]
+  input: ["/output/{sample}/Aligned.merged.bam".format(sample=sample) for sample in SAMPLES]
 
 
 
 rule test:
     input:
-        mapped='{results_dir}/{sample}/Aligned.out.bam',
-        R1_ref = '{results_dir}/{sample}/trimmmed_repaired_R1.fastq.gz'
-    output: '{output}/{sample}/Aligned.merged.bam'
+        mapped='/input/{sample}/Aligned.out.bam',
+        R1_ref = '/input/{sample}/trimmmed_repaired_R1.fastq.gz'
+    output: '/output/{sample}/Aligned.merged.bam'
     params:
-        BC_start=config['FILTER']['cell-barcode']['start']-1,
-        BC_end=config['FILTER']['cell-barcode']['end'],
-        UMI_start=config['FILTER']['UMI-barcode']['start']-1,
-        UMI_end=config['FILTER']['UMI-barcode']['end'],
+        cell_barcode_length=12,
+        umi_barcode_length=8,
         discard_secondary_alignements=True
     benchmark: '{output}/benchmark.{sample}.txt'
     conda: 'envs/merge_bam.yaml'
