@@ -88,7 +88,7 @@ b_fastq = gzip.GzipFile(mode="r", fileobj=mm_fastqgz).read()
 
 lines_fastq = len(b_fastq.decode().split("\n"))
 num_reads = int(lines_fastq / 4)
-
+print("ungzipped and mmaped")
 # save to shared memory
 raw = RawArray('b', len(b_fastq))
 raw[:] = b_fastq
