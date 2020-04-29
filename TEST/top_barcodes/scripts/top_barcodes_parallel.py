@@ -71,6 +71,7 @@ def reader(startend):
     print("starting worker")
     bfastq = gzip.GzipFile(mode="r", fileobj=mm_fastqgz).read()
     lines = bfastq.decode().split('\n')
+    print(lines)
     start = startend[0]
     end = startend[1]
 
