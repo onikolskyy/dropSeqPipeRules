@@ -3,6 +3,7 @@ import os
 import gzip
 from multiprocessing import RawArray, Pool
 from collections import defaultdict, Counter
+from multiprocessing import Manager
 
 bases = ['T', 'G', 'A', 'C', 'N']
 BUFFER = {}
@@ -68,7 +69,7 @@ print("ungzipped and mmaped")
 
 
 def reader(startend):
-    print(mm_fastqgz.read())
+    mm_fastqgz = mmap.mmap(fastgz, 0, prot=mmap.MAP_SHARED)
     bfastq = gzip.GzipFile(mode="r", fileobj=mm_fastqgz).read()
     lines = bfastq.decode().split('\n')
     print(lines)
