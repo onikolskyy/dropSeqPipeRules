@@ -68,7 +68,7 @@ print("ungzipped and mmaped")
 
 
 def reader(startend):
-    print(mm_fastqgz)
+    print(mm_fastqgz.read())
     bfastq = gzip.GzipFile(mode="r", fileobj=mm_fastqgz).read()
     lines = bfastq.decode().split('\n')
     print(lines)
