@@ -97,7 +97,7 @@ print("built rawarray")
 size_chunk = int(num_reads / snakemake.threads)
 chunks = []
 for i in range(snakemake.threads):
-    if i == snakemake.thrads - 1:
+    if i == snakemake.threads - 1:
         chunks.append((4 * i * size_chunk, num_reads * 4))
     else:
         chunks.append((4 * (i) * size_chunk, 4 * (i + 1) * size_chunk))
