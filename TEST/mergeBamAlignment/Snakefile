@@ -14,6 +14,6 @@ rule test:
         cell_barcode_length=12,
         umi_barcode_length=8,
         discard_secondary_alignements=True
-    benchmark: '{output}/benchmark.{sample}.txt'
+    benchmark: '/output/benchmark.{sample}.txt'
     conda: 'envs/merge_bam.yaml'
     script: 'scripts/merge_bam.py'
