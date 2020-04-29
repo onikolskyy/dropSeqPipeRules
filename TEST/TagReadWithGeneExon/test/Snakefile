@@ -9,11 +9,10 @@ rule test:
         # define input paths
         refflat='/annotation/curated_annotation.refFlat',
             inbam='/input/{sample}/Aligned.repaired.bam',
-        correctbam='/input/{sample}/gene_exon_tagged.bam'
     threads : 8
     output:
         # define output path
-        out='log.txt'
+        '/output/{sample}/gene_exon_tagged.bam'
     conda: 'envs/tag_read_with_gene_exon.yaml'
     benchmark : 'benchmark.{sample}.txt'
     script: 'scripts/test.py'

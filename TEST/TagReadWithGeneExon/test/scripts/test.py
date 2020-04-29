@@ -82,7 +82,7 @@ def worker(blocks_list):
     multi_block = multi_block.merge(LFs, left_on="LF", right_index=True)[["read", "gene", "name"]]
 
     # concat splitted data
-    res = pd.concat([multi_block, single_block]).merge(LFs, right_index=True, left_on="LF")[["read", "gene"]]
+    res = pd.concat([multi_block, single_block]).merge(LFs, right_index=True, left_on="LF")[["read", "gene", "LF"]]
 
     return res
 
@@ -92,9 +92,7 @@ def worker(blocks_list):
 
 #bam file
 infile_bam = pysam.AlignmentFile(snakemake.input["inbam"], "rb")
-print("fnished indexing")
-indexed_bam = pysam.IndexedReads(infile_bam)
-indexed_bam.build()
+outfile = pysam.AlignmentFile(snakemake.output[0], "wb", template=infile_bam)
 #parse refflat
 refFlat = RefFlatParsed(snakemake.input["refflat"], infile_bam)
 logfile = open(snakemake.output["out"],"a")
