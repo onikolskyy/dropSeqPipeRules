@@ -103,6 +103,7 @@ for i in range(snakemake.threads):
         chunks.append((4 * (i) * size_chunk, 4 * (i + 1) * size_chunk))
 
 with Pool(processes=snakemake.threads, initializer=init_reader, initargs=(raw)) as pool:
+    print("start pool")
     results = pool.map(reader, chunks)
     print(results)
 
