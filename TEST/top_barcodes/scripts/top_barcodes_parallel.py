@@ -58,7 +58,7 @@ barcode_counts = Counter()
 
 # mmap and unzip fastq
 fastgz = os.open(snakemake.input["fastq"], os.O_RDONLY)
-mm_fastqgz = mmap.mmap(fastgz, 0, prot=mmap.PROT_READ)
+mm_fastqgz = mmap.mmap(fastgz, 0, prot=mmap.MAP_SHARED)
 b_fastq = gzip.GzipFile(mode="r", fileobj=mm_fastqgz).read()
 lines_fastq = len(b_fastq.decode().split("\n"))
 num_reads = int(lines_fastq / 4)
