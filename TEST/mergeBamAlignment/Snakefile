@@ -7,8 +7,8 @@ rule all:
 
 rule test:
     input:
-        mapped='/input/{sample}/Aligned.out.bam',
-        R1_ref = '/input/{sample}/trimmmed_repaired_R1.fastq.gz'
+        bam='/input/{sample}/Aligned.out.bam',
+        fastq = '/input/{sample}/trimmmed_repaired_R1.fastq.gz'
     output: '/output/{sample}/Aligned.merged.bam'
     params:
         cell_barcode_length=12,
