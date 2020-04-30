@@ -16,12 +16,8 @@ rule test:
         fastq='/input/{sample}/trimmmed_repaired_R1.fastq.gz'
     threads : 3
     params:
-        #ds1
         #cell_barcode_length=12,
-
-        #ds2
         cell_barcode_length=52,
-
         umi_barcode_length=8,
         num_cells=72000,
     output:
