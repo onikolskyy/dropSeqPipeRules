@@ -1,7 +1,7 @@
 
 
 #ds2
-SAMPLES=["HBP_Ape_266_CN","HBP_Ape_266_SN","HBP_Ape_267_CN","HBP_Ape_268_CN","HBP_Ape_266_CN_Putamen","HBP_Ape_268_Putamen"]
+SAMPLES=["HBP_Ape_266_CN","HBP_Ape_266_SN","HBP_Ape_267_CN","HBP_Ape_268_CN","HBP_Ape_266_Putamen","HBP_Ape_268_Putamen"]
 
 #ds1
 #SAMPLES = ["252_S1","253_S2","254_S3","255_S4"]
