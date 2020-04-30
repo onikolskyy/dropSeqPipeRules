@@ -95,7 +95,7 @@ infile_bam = pysam.AlignmentFile(snakemake.input["inbam"], "rb")
 outfile = pysam.AlignmentFile(snakemake.output[0], "wb", template=infile_bam)
 #parse refflat
 refFlat = RefFlatParsed(snakemake.input["refflat"], infile_bam)
-logfile = open(snakemake.output["out"],"a")
+
 
 #################################################################################
 # make reads data frame
