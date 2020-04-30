@@ -14,7 +14,7 @@ rule test:
     input:
         # define input paths
         fastq='/input/{sample}/trimmmed_repaired_R1.fastq.gz'
-    threads : 3
+    threads : 1
     params:
         #cell_barcode_length=12,
         cell_barcode_length=52,
