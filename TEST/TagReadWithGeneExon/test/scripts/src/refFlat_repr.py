@@ -133,10 +133,13 @@ class RefFlatParsed:
         start = []
         end = []
         gene = []
+        gene_idx = []
         LF = []
 
         ctr_coding = 0
         ctr_utr = 0
+
+        gene_ctr = 0
 
         for gene_name, parsed_gene in parsed_mapping_for_ref.items():
             for transcript in parsed_gene["transcripts"]:
@@ -154,7 +157,7 @@ class RefFlatParsed:
                             else:
                                 end.append(transcript["coding_start"])
                             LF.append(2)
-                            gene.append(gene_name)
+                            gene_idx.append(gene_ctr)
                         else:
                             # exon exceeds coding region
                             end.append(exon[1])
@@ -163,28 +166,33 @@ class RefFlatParsed:
                             else:
                                 start.append(transcript["coding_end"])
                             LF.append(2)
-                            gene.append(gene_name)
+                            gene_idx.append(gene_ctr)
                     else:
                         ctr_coding +=1
                         #CODING
                         start.append(exon[0])
                         end.append(exon[1])
-                        gene.append(gene_name)
+                        gene_idx.append(gene_ctr)
                         LF.append(3)
 
                     #INTRONIC
                     if i < len(transcript["exons"])-1:
                         start.append(transcript["exons"][i][1])
                         end.append(transcript["exons"][i+1][0])
-                        gene.append(gene_name)
+                        gene_idx.append(gene_ctr)
                         LF.append(1)
             # Intergenic
             gene.append(gene_name)
+            gene_idx.append(gene_ctr)
             start.append(parsed_gene["start"])
             end.append(parsed_gene["end"])
             LF.append(0)
 
+            # store gene name sparately
+            gene.append(gene_name)
+            gene_ctr+=1
+
         print("--->coding: %i, UTR: %i"%(ctr_coding,ctr_utr))
 
-        return pd.DataFrame({"gene": gene, "start": start, "end":end, "LF": LF})
+        return gene, pd.DataFrame({"gene": gene_idx, "start": start, "end":end, "LF": LF})
 
