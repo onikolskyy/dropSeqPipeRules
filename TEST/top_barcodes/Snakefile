@@ -1,10 +1,10 @@
 
 
 #ds2
-SAMPLES=["HBP_Ape_266_CN","HBP_Ape_266_SN","HBP_Ape_267_CN","HBP_Ape_268_CN","HBP_Ape_266_Putamen","HBP_Ape_268_Putamen"]
+#SAMPLES=["HBP_Ape_266_CN","HBP_Ape_266_SN","HBP_Ape_267_CN","HBP_Ape_268_CN","HBP_Ape_266_Putamen","HBP_Ape_268_Putamen"]
 
 #ds1
-#SAMPLES = ["252_S1","253_S2","254_S3","255_S4"]
+SAMPLES = ["252_S1","253_S2","254_S3","255_S4"]
 
 rule all:
   input: ["/output/{sample}/whitelist.csv".format(sample=sample) for sample in SAMPLES]
@@ -16,8 +16,8 @@ rule test:
         fastq='/input/{sample}/trimmmed_repaired_R1.fastq.gz'
     threads : 1
     params:
-        #cell_barcode_length=12,
-        cell_barcode_length=52,
+        cell_barcode_length=12,
+        #cell_barcode_length=52,
         umi_barcode_length=8,
         num_cells=72000,
     output:
