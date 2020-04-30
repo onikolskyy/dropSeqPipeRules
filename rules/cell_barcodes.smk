@@ -19,7 +19,7 @@ rule merge_and_repair:
         repaired_bam=temp('{results_dir}/samples/{sample}/Aligned.repaired.bam'),
         mapping='{results_dir}/samples/{sample}/top_barcodes.csv'
     conda: '../envs/merge_and_repair.yaml'
-    benchmark : '{results_dir}/sample/MERGE_AND_REPAIR.{sample}.txt'
+    benchmark : '{results_dir}/benchmarks/MERGE_AND_REPAIR.{sample}.txt'
     script: '../scripts/merge_and_repair.py'
 
 # for plotting
